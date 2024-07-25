@@ -42,8 +42,8 @@ def execute_query(query: str):
 @app.get("/BOM") 
 async def get_bom(): 
     try: 
-        cursor.execute("SELECT * FROM dbo.BOM$") 
-        children = rows_to_dict(cursor, "bom_id")  # Replace "bom_id" with the actual unique column name 
+        query="SELECT * FROM dbo.BOM$"
+        children = execute_query(query)
         return children 
     except Exception as e: 
         logging.error(f"Error in /BOM endpoint: {e}") 
@@ -53,8 +53,8 @@ async def get_bom():
 @app.get("/routings") 
 async def get_routings(): 
     try: 
-        cursor.execute("SELECT * FROM dbo.Routings$$") 
-        children = rows_to_dict(cursor, "routing_id")  # Replace "routing_id" with the actual unique column name 
+        query="SELECT * FROM dbo.Routings$$"
+        children = execute_query(query)
         return children 
     except Exception as e: 
         logging.error(f"Error in /routings endpoint: {e}") 
@@ -64,8 +64,8 @@ async def get_routings():
 @app.get("/partmasterrecords") 
 async def get_partmasterrecords(): 
     try: 
-        cursor.execute("SELECT * FROM dbo.Part_Master_Records$$") 
-        children = rows_to_dict(cursor, "part_id")  # Replace "part_id" with the actual unique column name 
+        query="SELECT * FROM dbo.Part_Master_Records$$"
+        children = execute_query(query)
         return children 
     except Exception as e: 
         logging.error(f"Error in /partmasterrecords endpoint: {e}") 
@@ -75,8 +75,8 @@ async def get_partmasterrecords():
 @app.get("/orders") 
 async def get_orders(): 
     try: 
-        cursor.execute("SELECT * FROM dbo.Orders$") 
-        children = rows_to_dict(cursor, "order_id")  # Replace "order_id" with the actual unique column name 
+        query="SELECT * FROM dbo.Orders$"
+        children = execute_query(query)
         return children 
     except Exception as e: 
         logging.error(f"Error in /orders endpoint: {e}") 
@@ -86,8 +86,8 @@ async def get_orders():
 @app.get("/workcentre") 
 async def get_work_centre(): 
     try: 
-        cursor.execute("SELECT * FROM dbo.Work_Centre$$") 
-        children = rows_to_dict(cursor, "order_id")  # Replace "order_id" with the actual unique column name 
+        query="SELECT * FROM dbo.Work_Centre$$"
+        children = execute_query(query)
         return children 
     except Exception as e: 
         logging.error(f"Error in /orders endpoint: {e}") 
