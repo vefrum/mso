@@ -79,7 +79,7 @@ async def get_orders():
  
 @app.get("/workcentre") 
 async def get_work_centre(): 
-    test={"name": "John",
-          "age": 30,
+    test={"name": [1,2,3],
+          "age": {"youth":"1 to 10","adult":"10 to 20","old fk":"20 to 30"},
           "city": "New York"}
     return test
