@@ -24,13 +24,19 @@ app = FastAPI()
 print("Server Running") 
  
 # Helper function to convert cursor rows to a dictionary keyed by a unique column 
-def rows_to_dict(cursor, key_column: str) -> Dict[Union[str, int], Dict[str, Union[str, int, float]]]: 
-    columns = [column[0] for column in cursor.description] 
-    result = {} 
-    for row in cursor.fetchall(): 
-        row_dict = dict(zip(columns, row)) 
-        result[row_dict[key_column]] = row_dict 
-    return result 
+def execute_query(query: str):
+    cursor.execute(query)
+    data = cursor.fetchall()
+    columns = [column[0] for column in cursor.description]
+
+    # Create a dictionary where keys are from the first column's values and values are the remaining row data
+    result = {}
+    for row in data:
+        key = row[0]  # Using the first column's value as the key
+        result[key] = list(row[1:])  # Storing the rest of the row as the value
+
+    print(type(result))
+    return result
  
 # Define endpoints 
 @app.get("/BOM") 
@@ -79,7 +85,11 @@ async def get_orders():
  
 @app.get("/workcentre") 
 async def get_work_centre(): 
-    test={"name": [1,2,3],
-          "age": {"youth":"1 to 10","adult":"10 to 20","old fk":"20 to 30"},
-          "city": "New York"}
-    return test
+    try: 
+        cursor.execute("SELECT * FROM dbo.Work_Centre$$") 
+        children = rows_to_dict(cursor, "order_id")  # Replace "order_id" with the actual unique column name 
+        return children 
+    except Exception as e: 
+        logging.error(f"Error in /orders endpoint: {e}") 
+        logging.error(traceback.format_exc()) 
+        raise HTTPException(status_code=500, detail="Internal Server Error") 
