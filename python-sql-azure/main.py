@@ -82,4 +82,4 @@ async def get_work_centre():
     test={"name": "John",
           "age": 30,
           "city": "New York"}
-    return json.dumps(test)
+    return test
