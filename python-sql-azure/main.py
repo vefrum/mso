@@ -29,11 +29,14 @@ def execute_query(query: str):
     data = cursor.fetchall()
     columns = [column[0] for column in cursor.description]
 
-    # Create a dictionary where keys are from the first column's values and values are the remaining row data
-    result = {}
+    # Create a list of dictionaries, each representing a row
+    rows = []
     for row in data:
-        key = row[0]  # Using the first column's value as the key
-        result[key] = list(row[1:])  # Storing the rest of the row as the value
+        row_dict = {columns[i]: row[i] for i in range(len(columns))}
+        rows.append(row_dict)
+
+    # Return the result in the desired format
+    result = {"value": rows}
 
     print(type(result))
     return result
