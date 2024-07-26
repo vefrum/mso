@@ -1,8 +1,10 @@
 from dotenv import load_dotenv 
 import os 
 import pyodbc 
-from fastapi import FastAPI 
-import json
+from fastapi import FastAPI
+from fastapi.responses import StreamingResponse
+import pandas as pd
+from io import StringIO
  
 load_dotenv() 
 connection_string = os.getenv("AZURE_SQL_CONNECTIONSTRING") 
@@ -55,7 +57,15 @@ async def get_orders():
  
 @app.get("/workcentre") 
 async def get_work_centre(): 
-    test = {"dic":[{"dic3":"hello3"},{"dic4":"hello4"}],"dic2":"hello2"}
-    return test
+    query = "SELECT * FROM dbo.Work_Centre$"
+    df = pd.read_sql(query, connection)
+  # Convert DataFrame to CSV
+    output = StringIO()
+    df.to_csv(output, index=False)
+    output.seek(0)  # Rewind the buffer to the beginning
+  # Create a StreamingResponse with the CSV data
+    response = StreamingResponse(output, media_type="text/csv")
+    response.headers["Content-Disposition"] = "attachment; filename=export.csv"
+    return response
 
 
