@@ -12,11 +12,11 @@ from datetime import date
 workcentre_counter = 5
 
 class WorkCentre(BaseModel):
-    work_centre_name: str
+    workcentre_name: str
     capacity_unit: str
     cost_rate_per_hour: float
     cost_rate_per_hour_base: str
-    work_centre_description: str
+    workcentre_description: str
     capacity: int
     last_updated_date: date
     workcentre_id: str = None
@@ -98,16 +98,16 @@ async def create_workcentre(workcentre: WorkCentre):
     workcentre_counter += 1
     
     insert_query = """
-    INSERT INTO dbo.Work_Centre$ (workcentre_id, work_centre_name, capacity_unit, cost_rate_per_hour, cost_rate_per_hour_base, work_centre_description, capacity, last_updated_date)
+    INSERT INTO dbo.Work_Centre$ (workcentre_id, workcentre_name, capacity_unit, cost_rate_per_hour, cost_rate_per_hour_base, workcentre_description, capacity, last_updated_date)
     VALUES (?, ?, ?, ?, ?, ?, ?, ?)
     """
     cursor.execute(insert_query, (
         workcentre.workcentre_id,
-        workcentre.work_centre_name,
+        workcentre.workcentre_name,
         workcentre.capacity_unit,
         workcentre.cost_rate_per_hour,
         workcentre.cost_rate_per_hour_base,
-        workcentre.work_centre_description,
+        workcentre.workcentre_description,
         workcentre.capacity,
         workcentre.last_updated_date
     ))
