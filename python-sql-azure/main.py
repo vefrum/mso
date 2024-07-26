@@ -16,7 +16,7 @@ class WorkCentre(BaseModel):
     work_center_description: str
     capacity: int
     last_updated_date: date
-    workcentre_id: str  
+     
     
  
 load_dotenv() 
