@@ -55,7 +55,7 @@ async def get_orders():
  
 @app.get("/workcentre") 
 async def get_work_centre(): 
-    test = {"dic":"onetwothree","dic2":"hello2"}
+    test = {"dic":[2333,5555,3333]}
     return test
 
 
