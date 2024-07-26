@@ -6,10 +6,18 @@ from fastapi.responses import StreamingResponse
 import pandas as pd
 from io import StringIO
 from pydantic import BaseModel
+from datetime import date
 
 class WorkCentre(BaseModel):
-    name: str
+    work_center_name: str
+    capacity_unit: str
+    cost_rate_per_hour: float
+    cost_rate_per_hour_base: str
+    work_center_description: str
     capacity: int
+    last_updated_date: date
+    #workcentre_id: str  
+    workcentre_id: "WC99999"
  
 load_dotenv() 
 connection_string = os.getenv("AZURE_SQL_CONNECTIONSTRING") 
