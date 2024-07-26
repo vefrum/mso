@@ -71,7 +71,15 @@ async def get_part_master_records():
 @app.get("/orders") 
 async def get_orders(): 
     query = "SELECT * FROM dbo.Orders$" 
-    return execute_query(query) 
+    df = pd.read_sql(query, connection)
+  # Convert DataFrame to CSV
+    output = StringIO()
+    df.to_csv(output, index=False)
+    output.seek(0)  # Rewind the buffer to the beginning
+  # Create a StreamingResponse with the CSV data
+    response = StreamingResponse(output, media_type="text/csv")
+    response.headers["Content-Disposition"] = "attachment; filename=export_orders.csv"
+    return response
  
 @app.get("/workcentre") 
 async def get_work_centre(): 
