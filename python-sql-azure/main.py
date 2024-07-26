@@ -8,6 +8,9 @@ from io import StringIO
 from pydantic import BaseModel
 from datetime import date
 
+# Global counter for Workcentre ID
+workcentre_counter = 5
+
 class WorkCentre(BaseModel):
     work_center_name: str
     capacity_unit: str
@@ -16,8 +19,10 @@ class WorkCentre(BaseModel):
     work_center_description: str
     capacity: int
     last_updated_date: date
-     
+    workcentre_id: str = None
     
+
+
  
 load_dotenv() 
 connection_string = os.getenv("AZURE_SQL_CONNECTIONSTRING") 
@@ -81,14 +86,39 @@ async def get_work_centre():
     response.headers["Content-Disposition"] = "attachment; filename=export.csv"
     return response
 
+
 @app.post("/workcentre")
 async def create_workcentre(workcentre: WorkCentre):
-    print(workcentre)
+    
+    global workcentre_counter
+    
+    # Generate the Workcentre ID
+    workcentre_id = f"WC{str(workcentre_counter).zfill(3)}"
+    workcentre.workcentre_id = workcentre_id
+    workcentre_counter += 1
+    
+    insert_query = """
+    INSERT INTO dbo.Work_Centre$ (workcentre_id, work_center_name, capacity_unit, cost_rate_per_hour, cost_rate_per_hour_base, work_center_description, capacity, last_updated_date)
+    VALUES (?, ?, ?, ?, ?, ?, ?, ?)
+    """
+    cursor.execute(insert_query, (
+        workcentre.workcentre_id,
+        workcentre.work_center_name,
+        workcentre.capacity_unit,
+        workcentre.cost_rate_per_hour,
+        workcentre.cost_rate_per_hour_base,
+        workcentre.work_center_description,
+        workcentre.capacity,
+        workcentre.last_updated_date
+    ))
+    
+    connection.commit()
+    cursor.close()
+    connection.close()
+
     response = {
         "message": "WorkCentre created successfully",
         "data": workcentre
     }
     return response
     
-
-
