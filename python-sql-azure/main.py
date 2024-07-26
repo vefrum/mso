@@ -83,7 +83,7 @@ async def get_orders():
  
 @app.get("/workcentre") 
 async def get_work_centre(): 
-    query = "SELECT * FROM dbo.Work_Centre$"
+    query = "SELECT * FROM dbo.Workcentre$"
     df = pd.read_sql(query, connection)
   # Convert DataFrame to CSV
     output = StringIO()
