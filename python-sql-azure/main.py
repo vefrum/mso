@@ -12,11 +12,11 @@ from datetime import date
 workcentre_counter = 5
 
 class WorkCentre(BaseModel):
-    work_center_name: str
+    work_centre_name: str
     capacity_unit: str
     cost_rate_per_hour: float
     cost_rate_per_hour_base: str
-    work_center_description: str
+    work_centre_description: str
     capacity: int
     last_updated_date: date
     workcentre_id: str = None
@@ -103,11 +103,11 @@ async def create_workcentre(workcentre: WorkCentre):
     """
     cursor.execute(insert_query, (
         workcentre.workcentre_id,
-        workcentre.work_center_name,
+        workcentre.work_centre_name,
         workcentre.capacity_unit,
         workcentre.cost_rate_per_hour,
         workcentre.cost_rate_per_hour_base,
-        workcentre.work_center_description,
+        workcentre.work_centre_description,
         workcentre.capacity,
         workcentre.last_updated_date
     ))
