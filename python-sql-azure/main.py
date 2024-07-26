@@ -98,7 +98,7 @@ async def create_workcentre(workcentre: WorkCentre):
     workcentre_counter += 1
     
     insert_query = """
-    INSERT INTO dbo.Work_Centre$ (workcentre_id, work_center_name, capacity_unit, cost_rate_per_hour, cost_rate_per_hour_base, work_center_description, capacity, last_updated_date)
+    INSERT INTO dbo.Work_Centre$ (workcentre_id, work_centre_name, capacity_unit, cost_rate_per_hour, cost_rate_per_hour_base, work_centre_description, capacity, last_updated_date)
     VALUES (?, ?, ?, ?, ?, ?, ?, ?)
     """
     cursor.execute(insert_query, (
