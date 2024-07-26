@@ -5,6 +5,11 @@ from fastapi import FastAPI
 from fastapi.responses import StreamingResponse
 import pandas as pd
 from io import StringIO
+from pydantic import BaseModel
+
+class WorkCentre(BaseModel):
+    name: str
+    capacity: int
  
 load_dotenv() 
 connection_string = os.getenv("AZURE_SQL_CONNECTIONSTRING") 
