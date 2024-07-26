@@ -55,5 +55,7 @@ async def get_orders():
  
 @app.get("/workcentre") 
 async def get_work_centre(): 
-    query = "SELECT * FROM dbo.Work_Centre$" 
-    return execute_query(query) 
+    test = {"dic":[{"dic3":"hello3"},{"dic4":"hello4"}],"dic2":"hello2"}
+    return test
+
+
