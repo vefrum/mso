@@ -68,12 +68,12 @@ async def get_work_centre():
     response.headers["Content-Disposition"] = "attachment; filename=export.csv"
     return response
 
-@app.post("/workcentre") 
-async def set_work_centre(post): 
-    print(post)
+@app.post("/workcentre")
+async def create_workcentre(workcentre: WorkCentre):
+    print(workcentre)
     response = {
-        "message": "Post created successfully",
-        "data": post
+        "message": "WorkCentre created successfully",
+        "data": workcentre
     }
     return response
     
