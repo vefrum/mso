@@ -2,21 +2,22 @@ import datetime
 from dotenv import load_dotenv 
 import os 
 import pyodbc 
-from fastapi import FastAPI
+from fastapi import FastAPI, HTTPException
 from fastapi.responses import StreamingResponse
 import pandas as pd
+import requests
 from io import StringIO
 from pydantic import BaseModel, ConfigDict
-from datetime import date
+from datetime import date, datetime
 
 # Global counter for Workcentre ID (this part need to change to get the highest workcentre ID then +1 to it)
 workcentre_counter = 5
+bom_counter = 470
 
 class WorkCentre(BaseModel):
     workcentre_name: str
     capacity_unit: str
     cost_rate_h: float
-    #cost_rate_per_hour_base: str
     workcentre_description: str
     capacity: int
     last_updated_date: date
@@ -24,7 +25,6 @@ class WorkCentre(BaseModel):
     
 class Order(BaseModel):
     order_id: str
-    part_name: str
     part_id: str
     part_qty: int
     order_date: date
@@ -36,7 +36,7 @@ class Order(BaseModel):
 
 class BOM(BaseModel):
     BOM_id: str
-    parent_id: str
+    part_id: str
     child_id: str
     child_qty: int
     child_leadtime: int
@@ -47,11 +47,8 @@ class BOM(BaseModel):
 
 class Routing(BaseModel):
     routing_id: str
-    part_name: str
-    parent_id: str
-    child_id: str
+    BOM_id: str
     operations_sequence: int
-    child_qty: int
     workcentre_id: str
     process_description: str
     setup_time: int
@@ -74,6 +71,10 @@ class Part(BaseModel):
 
     class Config:
         arbitrary_types_allowed = True
+
+class PartIDUpdate(BaseModel):
+    old_part_id: str
+    new_part_id: str
  
 load_dotenv() 
 connection_string = os.getenv("AZURE_SQL_CONNECTIONSTRING") 
@@ -114,12 +115,12 @@ async def create_bom(bom: BOM):
     # Insert data into the database
     
     insert_query = """
-    INSERT INTO dbo.dbo.BOM$(BOM_id, parent_id, child_id, child_qty, child_leadtime, BOM_last_updated)
+    INSERT INTO dbo.dbo.BOM$(BOM_id, part_id, child_id, child_qty, child_leadtime, BOM_last_updated)
     VALUES (?, ?, ?, ?, ?, ?)
     """
     cursor.execute(insert_query, (
         bom.BOM_id,
-        bom.parent_id,
+        bom.part_id,
         bom.child_id,
         bom.child_qty,
         bom.child_leadtime,
@@ -135,6 +136,47 @@ async def create_bom(bom: BOM):
         "data": bom
     }
     return response
+
+@app.delete("/bom/{BOM_id}")
+async def delete_bom(BOM_id: str):
+
+    delete_query = "DELETE FROM dbo.BOM$ WHERE BOM_id = ?"
+    cursor.execute(delete_query, BOM_id)
+    if cursor.rowcount == 0:
+        raise HTTPException(status_code=404, detail="BOM not found")
+    connection.commit()
+
+    response = {
+        "message": "BOM deleted successfully",
+        "BOM_id": BOM_id
+    }
+    return response
+
+@app.put("/BOM/{BOM_id}")
+async def update_bom(BOM_id: str, bom: BOM):
+    update_query = """
+    UPDATE dbo.BOM$
+    SET part_id = ?, child_id = ?, child_qty = ?, child_leadtime = ?, BOM_last_updated = ?
+    WHERE BOM_id = ?
+    """
+    cursor.execute(update_query, (
+        bom.part_id,
+        bom.child_id,
+        bom.child_qty,
+        bom.child_leadtime,
+        bom.BOM_last_updated,
+        bom.BOM_id
+    ))
+    
+    if cursor.rowcount == 0:
+        raise HTTPException(status_code=404, detail="BOM not found")
+    
+    connection.commit()
+    response = {
+        "message": "BOM updated successfully",
+        "data": bom
+    }
+    return response
  
 @app.get("/routings") 
 async def get_routings(): 
@@ -146,16 +188,13 @@ async def get_routings():
 async def create_routing(routing: Routing):
     # Insert data into the database
     insert_query = """
-    INSERT INTO dbo.Routings$(routing_id, part_name, parent_id, child_id, operations_sequence, child_qty, workcentre_id, process_description, setup_time, runtime, routings_last_update)
-    VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+    INSERT INTO dbo.Routings$(routing_id, BOM_id, operations_sequence, workcentre_id, process_description, setup_time, runtime, routings_last_update)
+    VALUES (?, ?, ?, ?, ?, ?, ?, ?)
     """
     cursor.execute(insert_query, (
         routing.routing_id,
-        routing.part_name,
-        routing.parent_id,
-        routing.child_id,
+        routing.BOM_id,
         routing.operations_sequence,
-        routing.child_qty,
         routing.workcentre_id,
         routing.process_description,
         routing.setup_time,
@@ -172,7 +211,49 @@ async def create_routing(routing: Routing):
         "data": routing
     }
     return response
+
+@app.put("/routings/{routing_id}")
+async def update_routing(routing_id: str, routing: Routing):
+    update_query = """
+    UPDATE dbo.Routings$
+    SET BOM_id = ?, operations_sequence = ?, workcentre_id = ?, process_description = ?, setup_time = ?, runtime = ?, routings_last_update = ?
+    WHERE routing_id = ?
+    """
+    cursor.execute(update_query, (
+        routing.BOM_id,
+        routing.operations_sequence,
+        routing.workcentre_id,
+        routing.process_description,
+        routing.setup_time,
+        routing.runtime,
+        routing.routings_last_update,
+        routing.routing_id
+    ))
+
+    if cursor.rowcount == 0:
+        raise HTTPException(status_code=404, detail="Routing not found")
+    
+    connection.commit()
+    response = {
+        "message": "Routing updated successfully",
+        "data": routing
+    }
+    return response
  
+@app.delete("/routing/{routing_id}")
+async def delete_routing(routing_id: str):
+    delete_query = "DELETE FROM dbo.Routings$ WHERE routing_id = ?"
+    cursor.execute(delete_query, routing_id)
+    if cursor.rowcount == 0:
+        raise HTTPException(status_code=404, detail="Routing not found")
+    connection.commit()
+
+    response = {
+        "message": "Routing deleted successfully",
+        "routing_id": routing_id
+    }
+    return response
+
 @app.get("/partmasterrecords") 
 async def get_part_master_records(): 
     query = "SELECT * FROM dbo.Part_Master_Records$" 
@@ -207,8 +288,50 @@ async def create_part(part: Part):
         "data": part
     }
     return response
- 
 
+@app.put("/partmasterrecords/{part_id}")
+async def update_part(part_id: str, part: Part):
+    update_query = """
+    UPDATE dbo.Part_Master_Records$
+    SET part_name = ?, inventory = ?, POM = ?, UOM = ?, part_description = ?, unit_cost = ?, lead_time = ?, part_last_updated = ?
+    WHERE part_id = ?
+    """
+    cursor.execute(update_query, (
+        part.part_name,
+        part.inventory,
+        part.POM,
+        part.UOM,
+        part.part_description,
+        part.unit_cost,
+        part.lead_time,
+        part.part_last_updated,
+        part.part_id
+    ))
+
+    if cursor.rowcount == 0:
+        raise HTTPException(status_code=404, detail="Part not found")
+    
+    connection.commit()
+    response = {
+        "message": "Part updated successfully",
+        "data": part
+    }
+    return response
+
+@app.delete("/partmasterrecords/{part_id}")
+async def delete_part(part_id: str):
+    delete_query = "DELETE FROM dbo.Part_Master_Records$ WHERE part_id = ?"
+    cursor.execute(delete_query, part_id)
+    if cursor.rowcount == 0:
+        raise HTTPException(status_code=404, detail="Part not found")
+    connection.commit()
+
+    response = {
+        "message": "Part deleted successfully",
+        "part_id": part_id
+    }
+    return response
+ 
 @app.get("/orders") 
 async def get_orders(): 
     query = "SELECT * FROM dbo.Orders$" 
@@ -228,12 +351,11 @@ async def create_order(order: Order):
     # Insert data into the database
     
     insert_query = """
-    INSERT INTO dbo.dbo.Orders$(order_id, part_name, part_id, part_qty, order_date, due_date, order_last_updated)
-    VALUES (?, ?, ?, ?, ?, ?, ?)
+    INSERT INTO dbo.dbo.Orders$(order_id, part_id, part_qty, order_date, due_date, order_last_updated)
+    VALUES (?, ?, ?, ?, ?, ?)
     """
     cursor.execute(insert_query, (
         order.order_id,
-        order.part_name,
         order.part_id,
         order.part_qty,
         order.order_date,
@@ -251,6 +373,45 @@ async def create_order(order: Order):
     }
     return response
 
+@app.put("/orders/{order_id}")
+async def update_order(order_id: str, order: Order):
+    update_query = """
+    UPDATE dbo.Orders$
+    SET part_id = ?, part_qty = ?, order_date = ?, due_date = ?, order_last_updated = ?
+    WHERE order_id = ?
+    """
+    cursor.execute(update_query, (
+        order.part_id,
+        order.part_qty,
+        order.order_date,
+        order.due_date,
+        order.order_last_updated,
+        order.order_id
+    ))
+
+    if cursor.rowcount == 0:
+        raise HTTPException(status_code=404, detail="Order not found")
+    
+    connection.commit()
+    response = {
+        "message": "Order updated successfully",
+        "data": order
+    }
+    return response
+
+@app.delete("/orders/{order_id}")
+async def delete_order(order_id: str):
+    delete_query = "DELETE FROM dbo.Orders$ WHERE order_id = ?"
+    cursor.execute(delete_query, order_id)
+    if cursor.rowcount == 0:
+        raise HTTPException(status_code=404, detail="Order not found")
+    connection.commit()
+    
+    response = {
+        "message": "Order deleted successfully",
+        "order_id": order_id
+    }
+    return response
  
 @app.get("/workcentre") 
 async def get_work_centre(): 
@@ -277,7 +438,7 @@ async def create_workcentre(workcentre: WorkCentre):
     workcentre_counter += 1
     
     insert_query = """
-    INSERT INTO dbo.Workcentre$(workcentre_id, workcentre_name, workcentre_description, capacity,capacity_unit, cost_rate_h,workcentre_last_updated)
+    INSERT INTO dbo.Workcentre$(workcentre_id, workcentre_name, workcentre_description, capacity, capacity_unit, cost_rate_h,workcentre_last_updated)
     VALUES (?, ?, ?, ?, ?, ?, ?)
     """
     cursor.execute(insert_query, (
@@ -286,7 +447,6 @@ async def create_workcentre(workcentre: WorkCentre):
         workcentre.workcentre_description,
         workcentre.capacity,
         workcentre.capacity_unit,
-       
         workcentre.cost_rate_h,
         workcentre.last_updated_date
     ))
@@ -300,4 +460,162 @@ async def create_workcentre(workcentre: WorkCentre):
         "data": workcentre
     }
     return response
+
+@app.put("/workcentre/{workcentre_id}")
+async def update_workcentre(workcentre_id: str, workcentre: WorkCentre):
+    update_query = """
+    UPDATE dbo.Workcentre$
+    SET workcentre_name = ?, workcentre_description = ?, capacity = ?, capacity_unit = ?, cost_rate_h = ?, workcentre_last_updated = ?
+    WHERE workcentre_id = ?
+    """
+    cursor.execute(update_query, (
+        workcentre.workcentre_name,
+        workcentre.workcentre_description,
+        workcentre.capacity,
+        workcentre.capacity_unit,
+        workcentre.cost_rate_h,
+        workcentre.last_updated_date,
+        workcentre.workcentre_id
+    ))
+
+    if cursor.rowcount == 0:
+        raise HTTPException(status_code=404, detail="Workcentre not found")
     
+    connection.commit()
+    response = {
+        "message": "Workcentre updated successfully",
+        "data": workcentre
+    }
+    return response
+    
+@app.delete("/workcentre/{workcentre_id}")
+async def delete_workcentre(workcentre_id: str):
+    delete_query = "DELETE FROM dbo.Workcentre$ WHERE workcentre_id = ?"
+    cursor.execute(delete_query, workcentre_id)
+    if cursor.rowcount == 0:
+        raise HTTPException(status_code=404, detail="WorkCentre not found")
+    connection.commit()
+
+    response = {
+        "message": "Workcentre deleted successfully",
+        "workcentre_id": workcentre_id
+    }
+    return response
+
+#####################################################################################################
+# updating part_id across tables
+
+@app.put("/partmasterrecords/update_part_id")
+async def update_part_id(part_update: PartIDUpdate):
+    old_part_id = part_update.old_part_id
+    new_part_id = part_update.new_part_id
+
+    try:
+        # Update Part_Master_Records$
+        update_query = "UPDATE dbo.Part_Master_Records$ SET part_id = ? WHERE part_id = ?"
+        cursor.execute(update_query, new_part_id, old_part_id)
+        
+        # Update BOM$
+        update_query = "UPDATE dbo.BOM$ SET part_id = ? WHERE part_id = ?"
+        cursor.execute(update_query, new_part_id, old_part_id)
+        
+        # Update Routings$
+        update_query = "UPDATE dbo.Routings$ SET BOM_id = ? WHERE BOM_id = ?"
+        cursor.execute(update_query, new_part_id, old_part_id)
+        
+        # Update Orders$
+        update_query = "UPDATE dbo.Orders$ SET part_id = ? WHERE part_id = ?"
+        cursor.execute(update_query, new_part_id, old_part_id)
+
+        connection.commit()
+
+        response = {
+            "message": "Part ID updated successfully across all relevant tables",
+            "old_part_id": old_part_id,
+            "new_part_id": new_part_id
+        }
+        return response
+
+    except Exception as e:
+        connection.rollback()
+        raise HTTPException(status_code=500, detail=str(e))
+
+##############################################
+@app.post("/test_delete_bom")
+async def test_delete_bom():
+    # Insert sample BOM entry for testing
+    sample_bom = BOM(
+        BOM_id="B001",
+        part_id="P001",
+        child_id="P009",
+        child_qty=0.5,
+        child_leadtime=10,
+        BOM_last_updated=datetime.now()
+    )
+
+    # Insert the sample BOM entry
+    await create_bom(sample_bom)
+
+    # Delete the BOM entry with BOM_id B001
+    response = await delete_bom("B001")
+    return response
+
+
+
+
+
+
+
+
+    
+####################################################################################################
+
+# def validate_item(item: dict, disallowed_keys: list):
+#     for key in disallowed_keys:
+#         if key in item:
+#             raise HTTPException(status_code=400, detail=f"Adding or updating {key} is not allowed")
+
+# # Endpoint to add an item
+# @app.post("/addItem")
+# async def add_item(item: dict):
+#     # List of disallowed keys
+#     disallowed_keys = ['parent_id', 'other_disallowed_key']
+    
+#     # Validate the item
+#     validate_item(item, disallowed_keys)
+    
+#     columns = ', '.join(item.keys())
+#     values = ', '.join([f"'{v}'" for v in item.values()])
+#     query = f"INSERT INTO dbo.YourTableName ({columns}) VALUES ({values})"
+    
+#     cursor.execute(query)
+#     connection.commit()
+    
+#     return {"message": "Item added successfully"}
+
+# # Endpoint to update an item
+# @app.put("/updateItem/{id}")
+# async def update_item(id: int, item: dict):
+#     # List of disallowed keys
+#     disallowed_keys = ['parent_id', 'other_disallowed_key']
+    
+#     # Validate the item
+#     validate_item(item, disallowed_keys)
+    
+#     set_clause = ', '.join([f"{k} = '{v}'" for k, v in item.items()])
+#     query = f"UPDATE dbo.YourTableName SET {set_clause} WHERE id = {id}"
+    
+#     cursor.execute(query)
+#     connection.commit()
+    
+#     return {"message": "Item updated successfully"}
+
+# # Endpoint to delete an item
+# @app.delete("/deleteItem/{id}")
+# async def delete_item(id: int):
+#     query = f"DELETE FROM dbo.YourTableName WHERE id = {id}"
+    
+#     cursor.execute(query)
+#     connection.commit()
+    
+#     return {"message": "Item deleted successfully"}
