@@ -7,7 +7,7 @@ from fastapi.responses import StreamingResponse
 import pandas as pd
 import requests
 from io import StringIO
-from pydantic import BaseModel, ConfigDict
+from pydantic import BaseModel
 from datetime import date, datetime
 
 # Global counter for Workcentre ID (this part need to change to get the highest workcentre ID then +1 to it)
@@ -31,9 +31,6 @@ class Order(BaseModel):
     due_date: date
     order_last_updated: datetime
 
-    class Config:
-        arbitrary_types_allowed = True
-
 class BOM(BaseModel):
     BOM_id: str
     part_id: str
@@ -41,9 +38,6 @@ class BOM(BaseModel):
     child_qty: int
     child_leadtime: int
     BOM_last_updated: datetime
-
-    class Config:
-        arbitrary_types_allowed = True
 
 class Routing(BaseModel):
     routing_id: str
@@ -55,9 +49,6 @@ class Routing(BaseModel):
     runtime: int
     routings_last_update: datetime
 
-    class Config:
-        arbitrary_types_allowed = True
-
 class Part(BaseModel):
     part_id: str
     part_name: str
@@ -68,9 +59,6 @@ class Part(BaseModel):
     unit_cost: float
     lead_time: int
     part_last_updated: datetime
-
-    class Config:
-        arbitrary_types_allowed = True
 
 class PartIDUpdate(BaseModel):
     old_part_id: str
@@ -137,17 +125,71 @@ async def create_bom(bom: BOM):
     }
     return response
 
+# @app.delete("/BOM/{bom_id}")
+# async def delete_bom(bom: BOM):
+
+#     global bom_counter
+    
+#     # Decrease BOM ID
+#     BOM_id = f"B{str(bom_counter).zfill(3)}"
+#     bom.BOM_id = BOM_id
+#     bom_counter -= 1
+
+#     delete_query = "DELETE FROM dbo.BOM$ WHERE BOM_id = ?"
+#     cursor.execute(delete_query, (BOM_id,))
+#     if cursor.rowcount == 0:
+#         raise HTTPException(status_code=404, detail="BOM not found")
+#     connection.commit()
+
+#     response = {
+#         "message": "BOM deleted successfully",
+#         "BOM_id": BOM_id
+#     }
+#     return response
+
 @app.delete("/bom/{BOM_id}")
 async def delete_bom(BOM_id: str):
 
-    delete_query = "DELETE FROM dbo.BOM$ WHERE BOM_id = ?"
-    cursor.execute(delete_query, BOM_id)
-    if cursor.rowcount == 0:
-        raise HTTPException(status_code=404, detail="BOM not found")
-    connection.commit()
+    try:
+        # Check if the database connection is established
+        if connection is None:
+            raise HTTPException(status_code=503, detail="Database connection is not available")
+
+        # Check if the cursor is initialized
+        if cursor is None:
+            raise HTTPException(status_code=503, detail="Database cursor is not initialized")
+
+        # Check for referencing entries in dbo.Routings$
+        check_query = "SELECT COUNT(*) FROM dbo.Routings$ WHERE BOM_id = ?"
+        cursor.execute(check_query, (BOM_id,))
+        referencing_count = cursor.fetchone()[0]
+
+        if referencing_count > 0:
+            raise HTTPException(status_code=409, detail="Cannot delete BOM entry because it is referenced by Routings$ table.")
+
+        # Delete BOM entry
+        delete_query = "DELETE FROM dbo.BOM$ WHERE BOM_id = ?"
+        cursor.execute(delete_query, (BOM_id,))
+        
+        if cursor.rowcount == 0:
+            raise HTTPException(status_code=404, detail="BOM not found")
+        
+        # Commit the transaction
+        connection.commit()
+
+    except pyodbc.IntegrityError as e:
+        # Handle specific database integrity errors
+        raise HTTPException(status_code=400, detail="Database integrity error: Check constraints and foreign keys.")
+    except pyodbc.DatabaseError as e:
+        # Handle general database errors
+        raise HTTPException(status_code=500, detail="Database error occurred.")
+    except Exception as e:
+        # Handle any other unexpected errors
+        raise HTTPException(status_code=500, detail=f"An unexpected error occurred: {str(e)}")
+
 
     response = {
-        "message": "BOM deleted successfully",
+        "message": "BOM cannot be deleted",
         "BOM_id": BOM_id
     }
     return response
