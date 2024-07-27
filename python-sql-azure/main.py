@@ -189,7 +189,7 @@ async def delete_bom(BOM_id: str):
 
         # If no exceptions, return success response
         response = {
-            "message": "BOM deleted successfully",
+            "message": error_messages["unexpected_error"],
             "BOM_id": BOM_id
         }
         return response
