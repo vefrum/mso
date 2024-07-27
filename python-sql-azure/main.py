@@ -6,7 +6,7 @@ from fastapi import FastAPI
 from fastapi.responses import StreamingResponse
 import pandas as pd
 from io import StringIO
-from pydantic import BaseModel
+from pydantic import BaseModel, ConfigDict
 from datetime import date
 
 # Global counter for Workcentre ID (this part need to change to get the highest workcentre ID then +1 to it)
@@ -31,6 +31,9 @@ class Order(BaseModel):
     due_date: date
     order_last_updated: datetime
 
+    class Config:
+        arbitrary_types_allowed = True
+
 class BOM(BaseModel):
     BOM_id: str
     parent_id: str
@@ -38,6 +41,9 @@ class BOM(BaseModel):
     child_qty: int
     child_leadtime: int
     BOM_last_updated: datetime
+
+    class Config:
+        arbitrary_types_allowed = True
 
 class Routing(BaseModel):
     routing_id: str
@@ -52,6 +58,9 @@ class Routing(BaseModel):
     runtime: int
     routings_last_update: datetime
 
+    class Config:
+        arbitrary_types_allowed = True
+
 class Part(BaseModel):
     part_id: str
     part_name: str
@@ -62,6 +71,9 @@ class Part(BaseModel):
     unit_cost: float
     lead_time: int
     part_last_updated: datetime
+
+    class Config:
+        arbitrary_types_allowed = True
  
 load_dotenv() 
 connection_string = os.getenv("AZURE_SQL_CONNECTIONSTRING") 
