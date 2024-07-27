@@ -175,7 +175,11 @@ async def delete_bom(BOM_id: str):
         referencing_count = cursor.fetchone()[0]
 
         if referencing_count > 0:
-            raise HTTPException(status_code=409, detail=error_messages["referenced_entry"])
+            #raise HTTPException(status_code=409, detail=error_messages["referenced_entry"])
+            return {
+                "message": "Cannot delete BOM entry because it is referenced by Routings$ table.",
+                "BOM_id": BOM_id
+            }
 
         # Delete BOM entry
         delete_query = "DELETE FROM dbo.BOM$ WHERE BOM_id = ?"
