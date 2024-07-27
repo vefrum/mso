@@ -194,14 +194,20 @@ async def delete_bom(BOM_id: str):
         }
         
         return response
-
+       
     except pyodbc.IntegrityError:
-        raise HTTPException(status_code=400, detail=error_messages["integrity_error"])
+        return error_messages["integrity_error"]
     except pyodbc.DatabaseError:
         raise HTTPException(status_code=500, detail=error_messages["database_error"])
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"{error_messages['unexpected_error']}: {str(e)}")
 
+    # Default response if an error occurs
+    # response = {
+    #     "message": error_messages["unexpected_error"],
+    #     "BOM_id": BOM_id
+    # }
+    # return response
 
 @app.put("/BOM/{BOM_id}")
 async def update_bom(BOM_id: str, bom: BOM):
