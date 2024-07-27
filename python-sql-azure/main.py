@@ -150,14 +150,24 @@ async def create_bom(bom: BOM):
 @app.delete("/bom/{BOM_id}")
 async def delete_bom(BOM_id: str):
 
+    error_messages = {
+        "connection_unavailable": "Database connection is not available",
+        "cursor_uninitialized": "Database cursor is not initialized",
+        "referenced_entry": "Cannot delete BOM entry because it is referenced by Routings$ table.",
+        "bom_not_found": "BOM not found",
+        "integrity_error": "Database integrity error: Check constraints and foreign keys.",
+        "database_error": "Database error occurred.",
+        "unexpected_error": "An unexpected error occurred."
+    }
+
     try:
         # Check if the database connection is established
         if connection is None:
-            raise HTTPException(status_code=503, detail="Database connection is not available")
+            raise HTTPException(status_code=503, detail=error_messages["connection_unavailable"])
 
         # Check if the cursor is initialized
         if cursor is None:
-            raise HTTPException(status_code=503, detail="Database cursor is not initialized")
+            raise HTTPException(status_code=503, detail=error_messages["cursor_uninitialized"])
 
         # Check for referencing entries in dbo.Routings$
         check_query = "SELECT COUNT(*) FROM dbo.Routings$ WHERE BOM_id = ?"
@@ -165,34 +175,38 @@ async def delete_bom(BOM_id: str):
         referencing_count = cursor.fetchone()[0]
 
         if referencing_count > 0:
-            raise HTTPException(status_code=409, detail="Cannot delete BOM entry because it is referenced by Routings$ table.")
+            raise HTTPException(status_code=409, detail=error_messages["referenced_entry"])
 
         # Delete BOM entry
         delete_query = "DELETE FROM dbo.BOM$ WHERE BOM_id = ?"
         cursor.execute(delete_query, (BOM_id,))
         
         if cursor.rowcount == 0:
-            raise HTTPException(status_code=404, detail="BOM not found")
+            raise HTTPException(status_code=404, detail=error_messages["bom_not_found"])
         
         # Commit the transaction
         connection.commit()
 
-    except pyodbc.IntegrityError as e:
-        # Handle specific database integrity errors
-        raise HTTPException(status_code=400, detail="Database integrity error: Check constraints and foreign keys.")
-    except pyodbc.DatabaseError as e:
-        # Handle general database errors
-        raise HTTPException(status_code=500, detail="Database error occurred.")
+        # If no exceptions, return success response
+        response = {
+            "message": "BOM deleted successfully",
+            "BOM_id": BOM_id
+        }
+        return response
+
+    except pyodbc.IntegrityError:
+        raise HTTPException(status_code=400, detail=error_messages["integrity_error"])
+    except pyodbc.DatabaseError:
+        raise HTTPException(status_code=500, detail=error_messages["database_error"])
     except Exception as e:
-        # Handle any other unexpected errors
-        raise HTTPException(status_code=500, detail=f"An unexpected error occurred: {str(e)}")
+        raise HTTPException(status_code=500, detail=f"{error_messages['unexpected_error']}: {str(e)}")
 
-
-    response = {
-        "message": "BOM cannot be deleted",
-        "BOM_id": BOM_id
-    }
-    return response
+    # Default response if an error occurs
+    # response = {
+    #     "message": error_messages["unexpected_error"],
+    #     "BOM_id": BOM_id
+    # }
+    # return response
 
 @app.put("/BOM/{BOM_id}")
 async def update_bom(BOM_id: str, bom: BOM):
