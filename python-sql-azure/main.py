@@ -226,11 +226,11 @@ async def update_bom(BOM_id: str, bom: BOM):
         bom.child_qty,
         bom.child_leadtime,
         bom.BOM_last_updated,
-        bom.BOM_id
+        BOM_id
     ))
     
     if cursor.rowcount == 0:
-        raise HTTPException(status_code=404, detail="BOM not found")
+        raise HTTPException(status_code=404, detail=f"BOM_id {BOM_id} not found")
     
     connection.commit()
     response = {
@@ -238,6 +238,8 @@ async def update_bom(BOM_id: str, bom: BOM):
         "data": bom
     }
     return response
+
+
  
 @app.get("/routings") 
 async def get_routings(): 
