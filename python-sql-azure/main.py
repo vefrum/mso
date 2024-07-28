@@ -35,8 +35,8 @@ class BOM(BaseModel):
     BOM_id: str
     part_id: str
     child_id: str
-    child_qty: int
-    child_leadtime: int
+    child_qty: float
+    child_leadtime: float
     BOM_last_updated: datetime
 
 class Routing(BaseModel):
@@ -57,7 +57,7 @@ class Part(BaseModel):
     UOM: str
     part_description: str
     unit_cost: float
-    lead_time: int
+    lead_time: float
     part_last_updated: datetime
 
 class PartIDUpdate(BaseModel):
