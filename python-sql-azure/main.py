@@ -226,7 +226,7 @@ async def update_bom(BOM_id: str, bom: BOM):
         bom.child_qty,
         bom.child_leadtime,
         bom.BOM_last_updated,
-        BOM_id
+        bom.BOM_id
     ))
     
     if cursor.rowcount == 0:
