@@ -5,6 +5,7 @@ import pyodbc
 from fastapi import FastAPI, HTTPException
 from fastapi.responses import StreamingResponse
 import pandas as pd
+import json
 import requests
 from io import StringIO
 from pydantic import BaseModel
@@ -119,7 +120,7 @@ async def create_bom(bom: BOM):
     if count > 0:
         # cursor.close()
         # connection.close()
-        raise HTTPException(status_code=400, detail="BOM_id already exists and cannot be added")
+        raise HTTPException(status_code=400, detail="_id already exists and cannot be added")
 
     # Insert data into the database
     insert_query = """
@@ -221,6 +222,19 @@ async def delete_bom(BOM_id: str):
 
 @app.put("/BOM/{BOM_id}")
 async def update_bom(BOM_id: str, bom: BOM):
+    # # Generate the new BOM_id with a prime symbol
+    # new_BOM_id = BOM_id + "'"
+
+    # check_query = "SELECT COUNT(*) FROM dbo.BOM$ WHERE BOM_id = ?"
+    # cursor.execute(check_query, (new_BOM_id,))
+    # count = cursor.fetchone()[0]
+
+    # if count > 0:
+    #     raise HTTPException(status_code=400, detail=f"BOM_id {new_BOM_id} already exists")
+    
+    # # Update bom object with new BOM_id
+    # bom.BOM_id = new_BOM_id
+    
     # update_query = """
     # UPDATE dbo.BOM$
     # SET part_id = ?, child_id = ?, child_qty = ?, child_leadtime = ?, BOM_last_updated = ?
@@ -234,6 +248,23 @@ async def update_bom(BOM_id: str, bom: BOM):
     #     bom.BOM_last_updated,
     #     BOM_id
     # ))
+
+    # Fetch the last BOM_id and increment it
+    last_id_query = "SELECT TOP 1 BOM_id FROM dbo.BOM$ ORDER BY CAST(SUBSTRING(BOM_id, 2, LEN(BOM_id)-1) AS INT) DESC"
+    cursor.execute(last_id_query)
+    last_id_row = cursor.fetchone()
+
+    if not last_id_row:
+        # If no existing BOMs, start with a base ID, e.g., "B001"
+        new_BOM_id = "B001"
+    else:
+        last_id = last_id_row[0]
+        # Assuming the format "B###", extract the numeric part, increment, and reformat
+        prefix, number = last_id[0], int(last_id[1:])
+        new_BOM_id = f"{prefix}{str(number + 1).zfill(3)}"
+
+        bom.BOM_id = new_BOM_id
+
     insert_query = """
     INSERT INTO dbo.BOM$ (BOM_id, part_id, child_id, child_qty, child_leadtime, BOM_last_updated)
     VALUES (?, ?, ?, ?, ?, ?)
@@ -252,8 +283,15 @@ async def update_bom(BOM_id: str, bom: BOM):
     
     connection.commit()
     response = {
-        "message": "BOM updated successfully",
-        "data": bom
+        "message": "BOM updated successfully with new BOM_id",
+        "data": {
+            "BOM_id": bom.BOM_id,
+            "part_id": bom.part_id,
+            "child_id": bom.child_id,
+            "child_qty": bom.child_qty,
+            "child_leadtime": bom.child_leadtime,
+            "BOM_last_updated": bom.BOM_last_updated, 
+        }
     }
     return response
  
@@ -309,6 +347,19 @@ async def create_routing(routing: Routing):
 
 @app.put("/routings/{routing_id}")
 async def update_routing(routing_id: str, routing: Routing):
+    # # Generate the new BOM_id with a prime symbol
+    # new_routing_id = routing_id + "'"
+
+    # check_query = "SELECT COUNT(*) FROM dbo.Routings$ WHERE routing_id = ?"
+    # cursor.execute(check_query, (new_routing_id,))
+    # count = cursor.fetchone()[0]
+
+    # if count > 0:
+    #     raise HTTPException(status_code=400, detail=f"BOM_id {new_routing_id} already exists")
+    
+    # # Update bom object with new BOM_id
+    # routing.routing_id = new_routing_id
+
     # update_query = """
     # UPDATE dbo.Routings$
     # SET BOM_id = ?, operations_sequence = ?, workcentre_id = ?, process_description = ?, setup_time = ?, runtime = ?, routings_last_update = ?
@@ -324,6 +375,22 @@ async def update_routing(routing_id: str, routing: Routing):
     #     routing.routings_last_update,
     #     routing.routing_id
     # ))
+
+    last_id_query = "SELECT TOP 1 routing_id FROM dbo.Routings$ ORDER BY CAST(SUBSTRING(routing_id, 2, LEN(routing_id)-1) AS INT) DESC"
+    cursor.execute(last_id_query)
+    last_id_row = cursor.fetchone()
+
+    if not last_id_row:
+        # If no existing BOMs, start with a base ID, e.g., "B001"
+        new_routing_id = "R001"
+    else:
+        last_id = last_id_row[0]
+        # Assuming the format "B###", extract the numeric part, increment, and reformat
+        prefix, number = last_id[0], int(last_id[1:])
+        new_routing_id = f"{prefix}{str(number + 1).zfill(3)}"
+
+        routing.routing_id = new_routing_id
+
     insert_query = """
     INSERT INTO dbo.Routings$ (routing_id, BOM_id, operations_sequence, workcentre_id, process_description, setup_time, runtime, routings_last_update)
     VALUES (?, ?, ?, ?, ?, ?, ?, ?)
@@ -340,12 +407,21 @@ async def update_routing(routing_id: str, routing: Routing):
     ))
 
     if cursor.rowcount == 0:
-        raise HTTPException(status_code=404, detail="Routing not found")
+        raise HTTPException(status_code=404, detail=f"routing_id {routing_id} not found")
     
     connection.commit()
     response = {
-        "message": "Routing updated successfully",
-        "data": routing
+        "message": "Routings updated successfully with new routing_id",
+        "data": {
+            "routing_id": routing.routing_id,
+            "BOM_id": routing.BOM_id,
+            "operations_sequence": routing.operations_sequence,
+            "workcentre_id": routing.workcentre_id,
+            "process_description": routing.process_description,
+            "setup_time": routing.setup_time, 
+            "runtime": routing.setup_time,
+            "routings_last_update": routing.routings_last_update
+        }
     }
     return response
  
@@ -475,28 +551,25 @@ async def create_part(part: Part):
 
 @app.put("/partmasterrecords/{part_id}")
 async def update_part(part_id: str, part: Part):
-    # update_query = """
-    # UPDATE dbo.Part_Master_Records$
-    # SET part_name = ?, inventory = ?, POM = ?, UOM = ?, part_description = ?, unit_cost = ?, lead_time = ?, part_last_updated = ?
-    # WHERE part_id = ?
-    # """
-    # cursor.execute(update_query, (
-    #     part.part_name,
-    #     part.inventory,
-    #     part.POM,
-    #     part.UOM,
-    #     part.part_description,
-    #     part.unit_cost,
-    #     part.lead_time,
-    #     part.part_last_updated,
-    #     part.part_id
-    # ))
-    insert_query = """
-    INSERT INTO dbo.Part_Master_Records$ (part_id, part_name, inventory, POM, UOM, part_description, unit_cost, lead_time, part_last_updated)
-    VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
+    # # Generate the new BOM_id with a prime symbol
+    # new_part_id = part_id + "'"
+
+    # check_query = "SELECT COUNT(*) FROM dbo.Routings$ WHERE part_id = ?"
+    # cursor.execute(check_query, (new_part_id,))
+    # count = cursor.fetchone()[0]
+
+    # if count > 0:
+    #     raise HTTPException(status_code=400, detail=f"BOM_id {new_part_id} already exists")
+    
+    # # Update bom object with new BOM_id
+    # part.part_id = new_part_id
+
+    update_query = """
+    UPDATE dbo.Part_Master_Records$
+    SET part_name = ?, inventory = ?, POM = ?, UOM = ?, part_description = ?, unit_cost = ?, lead_time = ?, part_last_updated = ?
+    WHERE part_id = ?
     """
-    cursor.execute(insert_query, (
-        part.part_id,
+    cursor.execute(update_query, (
         part.part_name,
         part.inventory,
         part.POM,
@@ -504,16 +577,41 @@ async def update_part(part_id: str, part: Part):
         part.part_description,
         part.unit_cost,
         part.lead_time,
-        part.part_last_updated
+        part.part_last_updated,
+        part.part_id
     ))
-
+    # insert_query = """
+    # INSERT INTO dbo.Part_Master_Records$ (part_id, part_name, inventory, POM, UOM, part_description, unit_cost, lead_time, part_last_updated)
+    # VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
+    # """
+    # cursor.execute(insert_query, (
+    #     part.part_id,
+    #     part.part_name,
+    #     part.inventory,
+    #     part.POM,
+    #     part.UOM,
+    #     part.part_description,
+    #     part.unit_cost,
+    #     part.lead_time,
+    #     part.part_last_updated
+    # ))
     if cursor.rowcount == 0:
-        raise HTTPException(status_code=404, detail="Part not found")
+        raise HTTPException(status_code=404, detail=f"part_id {part_id} not found")
     
     connection.commit()
     response = {
-        "message": "Part updated successfully",
-        "data": part
+        "message": "Part Master Records updated successfully with new part_id",
+        "data": {
+            "part_id": part.part_id,
+            "part_name": part.part_name,
+            "inventory": part.inventory,
+            "POM": part.POM,
+            "UOM": part.UOM,
+            "part_description": part.part_description, 
+            "unit_cost": part.unit_cost,
+            "lead_time": part.lead_time,
+            "part_last_updated": part.part_last_updated
+        }
     }
     return response
 
@@ -640,6 +738,19 @@ async def create_order(order: Order):
 
 @app.put("/orders/{order_id}")
 async def update_order(order_id: str, order: Order):
+    # Generate the new BOM_id with a prime symbol
+    # new_order_id = order_id + "'"
+
+    # check_query = "SELECT COUNT(*) FROM dbo.Orders$ WHERE order_id = ?"
+    # cursor.execute(check_query, (new_order_id,))
+    # count = cursor.fetchone()[0]
+
+    # if count > 0:
+    #     raise HTTPException(status_code=400, detail=f"order_id {new_order_id} already exists")
+    
+    # # Update bom object with new BOM_id
+    # order.order_id = new_order_id
+
     # update_query = """
     # UPDATE dbo.Orders$
     # SET part_id = ?, part_qty = ?, order_date = ?, due_date = ?, order_last_updated = ?
@@ -653,6 +764,21 @@ async def update_order(order_id: str, order: Order):
     #     order.order_last_updated,
     #     order.order_id
     # ))
+    last_id_query = "SELECT TOP 1 order_id FROM dbo.Orders$ ORDER BY CAST(SUBSTRING(order_id, 2, LEN(order_id)-1) AS INT) DESC"
+    cursor.execute(last_id_query)
+    last_id_row = cursor.fetchone()
+
+    if not last_id_row:
+        # If no existing BOMs, start with a base ID, e.g., "B001"
+        new_order_id = "O0001"
+    else:
+        last_id = last_id_row[0]
+        # Assuming the format "B###", extract the numeric part, increment, and reformat
+        prefix, number = last_id[0], int(last_id[1:])
+        new_order_id = f"{prefix}{str(number + 1).zfill(4)}"
+
+        order.order_id = new_order_id
+
     insert_query = """
     INSERT INTO dbo.Orders$ (order_id, part_id, part_qty, order_date, due_date, order_last_updated)
     VALUES (?, ?, ?, ?, ?, ?)
@@ -665,15 +791,20 @@ async def update_order(order_id: str, order: Order):
         order.due_date,
         order.order_last_updated
     ))
-
-
     if cursor.rowcount == 0:
-        raise HTTPException(status_code=404, detail="Order not found")
+        raise HTTPException(status_code=404, detail=f"order_id {order_id} not found")
     
     connection.commit()
     response = {
-        "message": "Order updated successfully",
-        "data": order
+        "message": "Orders updated successfully with new order_id",
+        "data": {
+            "order_id": order.order_id,
+            "part_id": order.part_id,
+            "part_qty": order.part_qty,
+            "order_date": order.order_date,
+            "due_date": order.due_date,
+            "order_last_updated": order.order_last_updated
+        }
     }
     return response
 
@@ -812,6 +943,19 @@ async def create_workcentre(workcentre: WorkCentre):
 
 @app.put("/workcentre/{workcentre_id}")
 async def update_workcentre(workcentre_id: str, workcentre: WorkCentre):
+    # Generate the new BOM_id with a prime symbol
+    # new_workcentre_id = workcentre_id + "'"
+
+    # check_query = "SELECT COUNT(*) FROM dbo.Workcentre$ WHERE workcentre_id = ?"
+    # cursor.execute(check_query, (new_workcentre_id,))
+    # count = cursor.fetchone()[0]
+
+    # if count > 0:
+    #     raise HTTPException(status_code=400, detail=f"BOM_id {new_workcentre_id} already exists")
+    
+    # # Update bom object with new BOM_id
+    # workcentre.workcentre_id = new_workcentre_id
+
     # update_query = """
     # UPDATE dbo.Workcentre$
     # SET workcentre_name = ?, workcentre_description = ?, capacity = ?, capacity_unit = ?, cost_rate_h = ?, workcentre_last_updated = ?
@@ -826,12 +970,27 @@ async def update_workcentre(workcentre_id: str, workcentre: WorkCentre):
     #     workcentre.last_updated_date,
     #     workcentre.workcentre_id
     # ))
+    last_id_query = "SELECT TOP 1 order_id FROM dbo.Workcentre$ ORDER BY CAST(SUBSTRING(workcentre_id, 2, LEN(workcentre_id)-1) AS INT) DESC"
+    cursor.execute(last_id_query)
+    last_id_row = cursor.fetchone()
+
+    if not last_id_row:
+        # If no existing BOMs, start with a base ID, e.g., "B001"
+        new_workcentre_id = "WC001"
+    else:
+        last_id = last_id_row[0]
+        # Assuming the format "B###", extract the numeric part, increment, and reformat
+        prefix, number = last_id[0], int(last_id[1:])
+        new_workcentre_id = f"{prefix}{str(number + 1).zfill(3)}"
+
+        workcentre.workcentre_id = new_workcentre_id
+
     insert_query = """
     INSERT INTO dbo.Workcentre$ (workcentre_id, workcentre_name, workcentre_description, capacity, capacity_unit, cost_rate_h, workcentre_last_updated)
     VALUES (?, ?, ?, ?, ?, ?, ?)
     """
     cursor.execute(insert_query, (
-        workcentre_id,
+        workcentre.workcentre_id,
         workcentre.workcentre_name,
         workcentre.workcentre_description,
         workcentre.capacity,
@@ -839,16 +998,15 @@ async def update_workcentre(workcentre_id: str, workcentre: WorkCentre):
         workcentre.cost_rate_h,
         workcentre.workcentre_last_updated
     ))
-
     if cursor.rowcount == 0:
-        raise HTTPException(status_code=404, detail="Workcentre not found")
+        raise HTTPException(status_code=404, detail=f"workcentre_id {workcentre_id} not found")
     
     connection.commit()
-
+    
     response = {
-        "message": "Workcentre added successfully",
+        "message": "Workcentre updated successfully with new workcentre_id",
         "data": {
-            "workcentre_id": workcentre_id,
+            "workcentre_id": workcentre.workcentre_id,
             "workcentre_name": workcentre.workcentre_name,
             "workcentre_description": workcentre.workcentre_description,
             "capacity": workcentre.capacity,
@@ -858,6 +1016,9 @@ async def update_workcentre(workcentre_id: str, workcentre: WorkCentre):
         }
     }
     return response
+
+    # "data": workcentre.dict()
+
     # connection.commit()
     # response = {
     #     "message": "Workcentre updated successfully",
@@ -967,3 +1128,4 @@ async def update_part_id(part_update: PartIDUpdate):
     except Exception as e:
         connection.rollback()
         raise HTTPException(status_code=500, detail=str(e))
+    
