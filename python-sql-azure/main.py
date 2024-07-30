@@ -2,7 +2,7 @@ import datetime
 from dotenv import load_dotenv 
 import os 
 import pyodbc 
-from fastapi import FastAPI, HTTPException
+from fastapi import FastAPI, HTTPException, Body
 from fastapi.responses import StreamingResponse
 import pandas as pd
 import json
@@ -10,6 +10,8 @@ import requests
 from io import StringIO
 from pydantic import BaseModel
 from datetime import date, datetime
+from typing import List
+
 
 # Global counter for Workcentre ID (this part need to change to get the highest workcentre ID then +1 to it)
 workcentre_counter = 5
@@ -67,6 +69,10 @@ class Part(BaseModel):
 class PartIDUpdate(BaseModel):
     old_part_id: str
     new_part_id: str
+
+class UpdateBOMRequest(BaseModel):
+    bom: BOM
+    routing: List[Routing]
  
 load_dotenv() 
 connection_string = os.getenv("AZURE_SQL_CONNECTIONSTRING") 
@@ -106,43 +112,68 @@ async def get_bom():
 async def create_bom(bom: BOM):
 
     global bom_counter
-    
-    # Generate the bom ID
-    BOM_id = f"WC{str(bom_counter).zfill(3)}"
-    bom.BOM_id = BOM_id
-    bom_counter += 1
 
-    # Check if BOM_id already exists
-    check_query = "SELECT COUNT(*) FROM dbo.BOM$ WHERE BOM_id = ?"
-    cursor.execute(check_query, (bom.BOM_id,))
-    count = cursor.fetchone()[0]
-
-    if count > 0:
-        # cursor.close()
-        # connection.close()
-        raise HTTPException(status_code=400, detail="_id already exists and cannot be added")
-
-    # Insert data into the database
-    insert_query = """
-    INSERT INTO dbo.dbo.BOM$(BOM_id, part_id, child_id, child_qty, child_leadtime, BOM_last_updated)
-    VALUES (?, ?, ?, ?, ?, ?)
-    """
-    cursor.execute(insert_query, (
-        bom.BOM_id,
-        bom.part_id,
-        bom.child_id,
-        bom.child_qty,
-        bom.child_leadtime,
-        bom.BOM_last_updated
-    ))
-    
-    connection.commit()
-
-    response = {
-        "message": "BOM created successfully",
-        "data": bom
+    error_messages = {
+        "connection_unavailable": "Database connection is not available",
+        "cursor_uninitialized": "Database cursor is not initialized",
+        "order_id_exists": "bom_id already exists and cannot be added",
+        "integrity_error": "Database integrity error: Check constraints and foreign keys.",
+        "database_error": "Database error occurred.",
+        "unexpected_error": "An unexpected error occurred."
     }
-    return response
+    
+    try:
+        # Check if the database connection is established
+        if connection is None:
+            raise HTTPException(status_code=503, detail=error_messages["connection_unavailable"])
+
+        # Check if the cursor is initialized
+        if cursor is None:
+            raise HTTPException(status_code=503, detail=error_messages["cursor_uninitialized"])
+        
+        # Generate the bom ID
+        BOM_id = f"WC{str(bom_counter).zfill(3)}"
+        bom.BOM_id = BOM_id
+        bom_counter += 1
+
+        # Check if BOM_id already exists
+        check_query = "SELECT COUNT(*) FROM dbo.BOM$ WHERE BOM_id = ?"
+        cursor.execute(check_query, (bom.BOM_id,))
+        count = cursor.fetchone()[0]
+
+        if count > 0:
+            # cursor.close()
+            # connection.close()
+            raise HTTPException(status_code=400, detail="_id already exists and cannot be added")
+
+        # Insert data into the database
+        insert_query = """
+        INSERT INTO dbo.dbo.BOM$(BOM_id, part_id, child_id, child_qty, child_leadtime, BOM_last_updated)
+        VALUES (?, ?, ?, ?, ?, ?)
+        """
+        cursor.execute(insert_query, (
+            bom.BOM_id,
+            bom.part_id,
+            bom.child_id,
+            bom.child_qty,
+            bom.child_leadtime,
+            bom.BOM_last_updated
+        ))
+        
+        connection.commit()
+
+        response = {
+            "message": "BOM created successfully",
+            "data": bom
+        }
+        return response
+    
+    except pyodbc.IntegrityError:
+        raise HTTPException(status_code=400, detail=error_messages["integrity_error"])
+    except pyodbc.DatabaseError:
+        raise HTTPException(status_code=500, detail=error_messages["database_error"])
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"{error_messages['unexpected_error']}: {str(e)}")
 
 # @app.delete("/BOM/{bom_id}")
 # async def delete_bom(bom: BOM):
@@ -221,33 +252,10 @@ async def delete_bom(BOM_id: str):
         raise HTTPException(status_code=500, detail=f"{error_messages['unexpected_error']}: {str(e)}")
 
 @app.put("/BOM/{BOM_id}")
-async def update_bom(BOM_id: str, bom: BOM):
-    # # Generate the new BOM_id with a prime symbol
-    # new_BOM_id = BOM_id + "'"
+async def update_bom(BOM_id: str, update_request: UpdateBOMRequest = Body(...)):
 
-    # check_query = "SELECT COUNT(*) FROM dbo.BOM$ WHERE BOM_id = ?"
-    # cursor.execute(check_query, (new_BOM_id,))
-    # count = cursor.fetchone()[0]
-
-    # if count > 0:
-    #     raise HTTPException(status_code=400, detail=f"BOM_id {new_BOM_id} already exists")
-    
-    # # Update bom object with new BOM_id
-    # bom.BOM_id = new_BOM_id
-    
-    # update_query = """
-    # UPDATE dbo.BOM$
-    # SET part_id = ?, child_id = ?, child_qty = ?, child_leadtime = ?, BOM_last_updated = ?
-    # WHERE BOM_id = ?
-    # """
-    # cursor.execute(update_query, (
-    #     bom.part_id,
-    #     bom.child_id,
-    #     bom.child_qty,
-    #     bom.child_leadtime,
-    #     bom.BOM_last_updated,
-    #     BOM_id
-    # ))
+    bom = update_request.bom
+    routing = update_request.routing[0]
 
     # Fetch the last BOM_id and increment it
     last_id_query = "SELECT TOP 1 BOM_id FROM dbo.BOM$ ORDER BY CAST(SUBSTRING(BOM_id, 2, LEN(BOM_id)-1) AS INT) DESC"
@@ -263,7 +271,14 @@ async def update_bom(BOM_id: str, bom: BOM):
         prefix, number = last_id[0], int(last_id[1:])
         new_BOM_id = f"{prefix}{str(number + 1).zfill(3)}"
 
-        bom.BOM_id = new_BOM_id
+    update_status_query = """
+    UPDATE dbo.BOM$
+    SET status = 'inactive'
+    WHERE BOM_id = ? 
+    """
+    cursor.execute(update_status_query, (BOM_id,))
+
+    bom.BOM_id = new_BOM_id
 
     insert_query = """
     INSERT INTO dbo.BOM$ (BOM_id, part_id, child_id, child_qty, child_leadtime, BOM_last_updated)
@@ -275,22 +290,81 @@ async def update_bom(BOM_id: str, bom: BOM):
         bom.child_id,
         bom.child_qty,
         bom.child_leadtime,
-        bom.BOM_last_updated
+        bom.BOM_last_updated,
+        'active'
     ))
     
     if cursor.rowcount == 0:
         raise HTTPException(status_code=404, detail=f"BOM_id {BOM_id} not found")
     
     connection.commit()
+
+    last_routing_id_query = "SELECT TOP 1 routing_id FROM dbo.Routings$ ORDER BY CAST(SUBSTRING(routing_id, 2, LEN(routing_id)-1) AS INT) DESC"
+    cursor.execute(last_routing_id_query)
+    last_routing_id_row = cursor.fetchone()
+
+    if not last_routing_id_row:
+        new_routing_id = "R001"
+    else:
+        last_routing_id = last_routing_id_row[0]
+        prefix, number = last_routing_id[0], int(last_routing_id[1:])
+        new_routing_id = f"{prefix}{str(number + 1).zfill(3)}"
+
+    # fetch_routing_query = "SELECT * FROM dbo.Routings$ WHERE BOM_id = ?"
+    # cursor.execute(fetch_routing_query, (BOM_id,))
+    # routing_row = cursor.fetchone()
+
+    # if not routing_row:
+    #     raise HTTPException(status_code=404, detail=f"Routing not found for BOM_id {BOM_id}")
+
+    # Assuming routing_row contains necessary fields for the new Routing
+    # (existing_routing_id, operations_sequence, workcentre_id, process_description, setup_time, runtime, routings_last_update, _) = routing_row
+
+    # update_routing_status_query = """
+    # UPDATE dbo.Routings$
+    # SET status = 'inactive'
+    # WHERE routing_id = ? 
+    # """
+    # cursor.execute(update_routing_status_query, (routing.routing_id,))
+
+    insert_routing_query = """
+    INSERT INTO dbo.Routings$ (routing_id, BOM_id, operations_sequence, workcentre_id, process_description, setup_time, runtime, routings_last_update, status)
+    VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
+    """
+    cursor.execute(insert_routing_query, (
+        new_routing_id,
+        bom.BOM_id,
+        routing.operations_sequence,
+        routing.workcentre_id,
+        routing.process_description,
+        routing.setup_time,
+        routing.runtime,
+        routing.routings_last_update,
+        'active'
+    ))
+
+    connection.commit()
     response = {
-        "message": "BOM updated successfully with new BOM_id",
-        "data": {
+        "message": "BOM and Routing updated successfully with new BOM_id and routing_id",
+        "BOM_data": {
             "BOM_id": bom.BOM_id,
             "part_id": bom.part_id,
             "child_id": bom.child_id,
             "child_qty": bom.child_qty,
             "child_leadtime": bom.child_leadtime,
-            "BOM_last_updated": bom.BOM_last_updated, 
+            "BOM_last_updated": bom.BOM_last_updated,
+            "status": 'active'
+        },
+        "Routing_data": {
+            "routing_id": new_routing_id,
+            "BOM_id": bom.BOM_id,
+            "operations_sequence": routing.operations_sequence,
+            "workcentre_id": routing.workcentre_id,
+            "process_description": routing.process_description,
+            "setup_time": routing.setup_time, 
+            "runtime": routing.runtime,
+            "routings_last_update": routing.routings_last_update,
+            "status": 'active'
         }
     }
     return response
@@ -305,46 +379,71 @@ async def get_routings():
 async def create_routing(routing: Routing):
 
     global routing_counter
+
+    error_messages = {
+        "connection_unavailable": "Database connection is not available",
+        "cursor_uninitialized": "Database cursor is not initialized",
+        "order_id_exists": "routing_id already exists and cannot be added",
+        "integrity_error": "Database integrity error: Check constraints and foreign keys.",
+        "database_error": "Database error occurred.",
+        "unexpected_error": "An unexpected error occurred."
+    }
     
-    # Generate the Part ID
-    routing_id = f"WC{str(routing_counter).zfill(3)}"
-    routing.routing_id = routing_id
-    routing_counter += 1
+    try:
+        # Check if the database connection is established
+        if connection is None:
+            raise HTTPException(status_code=503, detail=error_messages["connection_unavailable"])
+
+        # Check if the cursor is initialized
+        if cursor is None:
+            raise HTTPException(status_code=503, detail=error_messages["cursor_uninitialized"])
+        
+        # Generate the Part ID
+        routing_id = f"WC{str(routing_counter).zfill(3)}"
+        routing.routing_id = routing_id
+        routing_counter += 1
 
     # Check if routing_id already exists
-    check_query = "SELECT COUNT(*) FROM dbo.Routings$ WHERE routing_id = ?"
-    cursor.execute(check_query, (routing.routing_id,))
-    count = cursor.fetchone()[0]
+        check_query = "SELECT COUNT(*) FROM dbo.Routings$ WHERE routing_id = ?"
+        cursor.execute(check_query, (routing.routing_id,))
+        count = cursor.fetchone()[0]
 
-    if count > 0:
+        if count > 0:
         # cursor.close()
         # connection.close()
-        raise HTTPException(status_code=400, detail="routing_id already exists and cannot be added")
-
-    # Insert data into the database
-    insert_query = """
-    INSERT INTO dbo.Routings$(routing_id, BOM_id, operations_sequence, workcentre_id, process_description, setup_time, runtime, routings_last_update)
-    VALUES (?, ?, ?, ?, ?, ?, ?, ?)
-    """
-    cursor.execute(insert_query, (
-        routing.routing_id,
-        routing.BOM_id,
-        routing.operations_sequence,
-        routing.workcentre_id,
-        routing.process_description,
-        routing.setup_time,
-        routing.runtime,
-        routing.routings_last_update
-    ))
+            raise HTTPException(status_code=400, detail="routing_id already exists and cannot be added")
+        
+        # Insert data into the database
+        insert_query = """
+        INSERT INTO dbo.Routings$(routing_id, BOM_id, operations_sequence, workcentre_id, process_description, setup_time, runtime, routings_last_update)
+        VALUES (?, ?, ?, ?, ?, ?, ?, ?)
+        """
+        cursor.execute(insert_query, (
+            routing.routing_id,
+            routing.BOM_id,
+            routing.operations_sequence,
+            routing.workcentre_id,
+            routing.process_description,
+            routing.setup_time,
+            routing.runtime,
+            routing.routings_last_update
+        ))
     
-    connection.commit()
+        connection.commit()
 
-    response = {
-        "message": "Routing created successfully",
-        "data": routing
-    }
-    return response
-
+        response = {
+            "message": "Routing created successfully",
+            "data": routing
+        }
+        return response
+    
+    except pyodbc.IntegrityError:
+        raise HTTPException(status_code=400, detail=error_messages["integrity_error"])
+    except pyodbc.DatabaseError:
+        raise HTTPException(status_code=500, detail=error_messages["database_error"])
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"{error_messages['unexpected_error']}: {str(e)}")
+    
 @app.put("/routings/{routing_id}")
 async def update_routing(routing_id: str, routing: Routing):
     # # Generate the new BOM_id with a prime symbol
@@ -389,7 +488,15 @@ async def update_routing(routing_id: str, routing: Routing):
         prefix, number = last_id[0], int(last_id[1:])
         new_routing_id = f"{prefix}{str(number + 1).zfill(3)}"
 
-        routing.routing_id = new_routing_id
+    update_status_query = """
+    UPDATE dbo.Routings$
+    SET status = 'inactive'
+    WHERE routing_id = ? 
+    """
+
+    cursor.execute(update_status_query, (routing_id,))
+
+    routing.routing_id = new_routing_id
 
     insert_query = """
     INSERT INTO dbo.Routings$ (routing_id, BOM_id, operations_sequence, workcentre_id, process_description, setup_time, runtime, routings_last_update)
@@ -403,7 +510,8 @@ async def update_routing(routing_id: str, routing: Routing):
         routing.process_description,
         routing.setup_time,
         routing.runtime,
-        routing.routings_last_update
+        routing.routings_last_update,
+        'active'
     ))
 
     if cursor.rowcount == 0:
@@ -420,7 +528,8 @@ async def update_routing(routing_id: str, routing: Routing):
             "process_description": routing.process_description,
             "setup_time": routing.setup_time, 
             "runtime": routing.setup_time,
-            "routings_last_update": routing.routings_last_update
+            "routings_last_update": routing.routings_last_update,
+            "status": 'active'
         }
     }
     return response
@@ -509,45 +618,70 @@ async def get_part_master_records():
 async def create_part(part: Part):
 
     global part_counter
-    
-    # Generate the Part ID
-    part_id = f"WC{str(part_counter).zfill(3)}"
-    part.part_id = part_id
-    part_counter += 1
-    
-    check_query = "SELECT COUNT(*) FROM dbo.Part_Master_Records$ WHERE part_id = ?"
-    cursor.execute(check_query, (part.part_id,))
-    count = cursor.fetchone()[0]
 
-    if count > 0:
+    error_messages = {
+        "connection_unavailable": "Database connection is not available",
+        "cursor_uninitialized": "Database cursor is not initialized",
+        "order_id_exists": "part_id already exists and cannot be added",
+        "integrity_error": "Database integrity error: Check constraints and foreign keys.",
+        "database_error": "Database error occurred.",
+        "unexpected_error": "An unexpected error occurred."
+    }
+    
+    try:
+        # Check if the database connection is established
+        if connection is None:
+            raise HTTPException(status_code=503, detail=error_messages["connection_unavailable"])
+
+        # Check if the cursor is initialized
+        if cursor is None:
+            raise HTTPException(status_code=503, detail=error_messages["cursor_uninitialized"])
+        
+        # Generate the Part ID
+        part_id = f"WC{str(part_counter).zfill(3)}"
+        part.part_id = part_id
+        part_counter += 1
+        
+        check_query = "SELECT COUNT(*) FROM dbo.Part_Master_Records$ WHERE part_id = ?"
+        cursor.execute(check_query, (part.part_id,))
+        count = cursor.fetchone()[0]
+
+        if count > 0:
         # cursor.close()
         # connection.close()
-        raise HTTPException(status_code=400, detail="part_id already exists and cannot be added")
+            raise HTTPException(status_code=400, detail="part_id already exists and cannot be added")
 
     # Insert data into the database
-    insert_query = """
-    INSERT INTO dbo.Part_Master_Records$(part_id, part_name, inventory, POM, UOM, part_description, unit_cost, lead_time, part_last_updated)
-    VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
-    """
-    cursor.execute(insert_query, (
-        part.part_id,
-        part.part_name,
-        part.inventory,
-        part.POM,
-        part.UOM,
-        part.part_description,
-        part.unit_cost,
-        part.lead_time,
-        part.part_last_updated
-    ))
+        insert_query = """
+        INSERT INTO dbo.Part_Master_Records$(part_id, part_name, inventory, POM, UOM, part_description, unit_cost, lead_time, part_last_updated)
+        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
+        """
+        cursor.execute(insert_query, (
+            part.part_id,
+            part.part_name,
+            part.inventory,
+            part.POM,
+            part.UOM,
+            part.part_description,
+            part.unit_cost,
+            part.lead_time,
+            part.part_last_updated
+        ))
     
-    connection.commit()
+        connection.commit()
 
-    response = {
-        "message": "Part created successfully",
-        "data": part
-    }
-    return response
+        response = {
+            "message": "Part created successfully",
+            "data": part
+        }
+        return response
+    
+    except pyodbc.IntegrityError:
+        raise HTTPException(status_code=400, detail=error_messages["integrity_error"])
+    except pyodbc.DatabaseError:
+        raise HTTPException(status_code=500, detail=error_messages["database_error"])
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"{error_messages['unexpected_error']}: {str(e)}")
 
 @app.put("/partmasterrecords/{part_id}")
 async def update_part(part_id: str, part: Part):
@@ -697,47 +831,72 @@ async def get_orders():
 
 @app.post("/orders")
 async def create_order(order: Order):
-
     global order_counter
+
+    error_messages = {
+        "connection_unavailable": "Database connection is not available",
+        "cursor_uninitialized": "Database cursor is not initialized",
+        "order_id_exists": "order_id already exists and cannot be added",
+        "integrity_error": "Database integrity error: Check constraints and foreign keys.",
+        "database_error": "Database error occurred.",
+        "unexpected_error": "An unexpected error occurred."
+    }
+    
+    try:
+        # Check if the database connection is established
+        if connection is None:
+            raise HTTPException(status_code=503, detail=error_messages["connection_unavailable"])
+
+        # Check if the cursor is initialized
+        if cursor is None:
+            raise HTTPException(status_code=503, detail=error_messages["cursor_uninitialized"])
     
     # Generate the Workcentre ID
-    order_id = f"WC{str(order_counter).zfill(3)}"
-    order.order_id = order_id
-    order_counter += 1
+        order_id = f"WC{str(order_counter).zfill(3)}"
+        order.order_id = order_id
+        order_counter += 1
 
-    check_query = "SELECT COUNT(*) FROM dbo.Orders$ WHERE order_id = ?"
-    cursor.execute(check_query, (order.order_id,))
-    count = cursor.fetchone()[0]
+        check_query = "SELECT COUNT(*) FROM dbo.Orders$ WHERE order_id = ?"
+        cursor.execute(check_query, (order.order_id,))
+        count = cursor.fetchone()[0]
 
-    if count > 0:
+        if count > 0:
         # cursor.close()
         # connection.close()
-        raise HTTPException(status_code=400, detail="order_id already exists and cannot be added")
+            raise HTTPException(status_code=400, detail="order_id already exists and cannot be added")
     
     # Insert data into the database
-    insert_query = """
-    INSERT INTO dbo.dbo.Orders$(order_id, part_id, part_qty, order_date, due_date, order_last_updated)
-    VALUES (?, ?, ?, ?, ?, ?)
-    """
-    cursor.execute(insert_query, (
-        order.order_id,
-        order.part_id,
-        order.part_qty,
-        order.order_date,
-        order.due_date,
-        order.order_last_updated
-    ))
+        insert_query = """
+        INSERT INTO dbo.dbo.Orders$(order_id, part_id, part_qty, order_date, due_date, order_last_updated)
+        VALUES (?, ?, ?, ?, ?, ?)
+        """
+        cursor.execute(insert_query, (
+            order.order_id,
+            order.part_id,
+            order.part_qty,
+            order.order_date,
+            order.due_date,
+            order.order_last_updated
+        ))
     
-    connection.commit()
+        connection.commit()
 
-    response = {
-        "message": "Order created successfully",
-        "data": order
-    }
-    return response
+        response = {
+            "message": "Order created successfully",
+            "data": order
+        }
+        return response
 
-@app.put("/orders/{order_id}")
-async def update_order(order_id: str, order: Order):
+    except pyodbc.IntegrityError:
+        raise HTTPException(status_code=400, detail=error_messages["integrity_error"])
+    except pyodbc.DatabaseError:
+        raise HTTPException(status_code=500, detail=error_messages["database_error"])
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"{error_messages['unexpected_error']}: {str(e)}")
+
+
+# @app.put("/orders/{order_id}")
+# async def update_order(order_id: str, order: Order):
     # Generate the new BOM_id with a prime symbol
     # new_order_id = order_id + "'"
 
@@ -764,49 +923,49 @@ async def update_order(order_id: str, order: Order):
     #     order.order_last_updated,
     #     order.order_id
     # ))
-    last_id_query = "SELECT TOP 1 order_id FROM dbo.Orders$ ORDER BY CAST(SUBSTRING(order_id, 2, LEN(order_id)-1) AS INT) DESC"
-    cursor.execute(last_id_query)
-    last_id_row = cursor.fetchone()
+    # last_id_query = "SELECT TOP 1 order_id FROM dbo.Orders$ ORDER BY CAST(SUBSTRING(order_id, 2, LEN(order_id)-1) AS INT) DESC"
+    # cursor.execute(last_id_query)
+    # last_id_row = cursor.fetchone()
 
-    if not last_id_row:
-        # If no existing BOMs, start with a base ID, e.g., "B001"
-        new_order_id = "O0001"
-    else:
-        last_id = last_id_row[0]
-        # Assuming the format "B###", extract the numeric part, increment, and reformat
-        prefix, number = last_id[0], int(last_id[1:])
-        new_order_id = f"{prefix}{str(number + 1).zfill(4)}"
+    # if not last_id_row:
+    #     # If no existing BOMs, start with a base ID, e.g., "B001"
+    #     new_order_id = "O0001"
+    # else:
+    #     last_id = last_id_row[0]
+    #     # Assuming the format "B###", extract the numeric part, increment, and reformat
+    #     prefix, number = last_id[0], int(last_id[1:])
+    #     new_order_id = f"{prefix}{str(number + 1).zfill(4)}"
 
-        order.order_id = new_order_id
+    #     order.order_id = new_order_id
 
-    insert_query = """
-    INSERT INTO dbo.Orders$ (order_id, part_id, part_qty, order_date, due_date, order_last_updated)
-    VALUES (?, ?, ?, ?, ?, ?)
-    """
-    cursor.execute(insert_query, (
-        order.order_id,
-        order.part_id,
-        order.part_qty,
-        order.order_date,
-        order.due_date,
-        order.order_last_updated
-    ))
-    if cursor.rowcount == 0:
-        raise HTTPException(status_code=404, detail=f"order_id {order_id} not found")
+    # insert_query = """
+    # INSERT INTO dbo.Orders$ (order_id, part_id, part_qty, order_date, due_date, order_last_updated)
+    # VALUES (?, ?, ?, ?, ?, ?)
+    # """
+    # cursor.execute(insert_query, (
+    #     order.order_id,
+    #     order.part_id,
+    #     order.part_qty,
+    #     order.order_date,
+    #     order.due_date,
+    #     order.order_last_updated
+    # ))
+    # if cursor.rowcount == 0:
+    #     raise HTTPException(status_code=404, detail=f"order_id {order_id} not found")
     
-    connection.commit()
-    response = {
-        "message": "Orders updated successfully with new order_id",
-        "data": {
-            "order_id": order.order_id,
-            "part_id": order.part_id,
-            "part_qty": order.part_qty,
-            "order_date": order.order_date,
-            "due_date": order.due_date,
-            "order_last_updated": order.order_last_updated
-        }
-    }
-    return response
+    # connection.commit()
+    # response = {
+    #     "message": "Orders updated successfully with new order_id",
+    #     "data": {
+    #         "order_id": order.order_id,
+    #         "part_id": order.part_id,
+    #         "part_qty": order.part_qty,
+    #         "order_date": order.order_date,
+    #         "due_date": order.due_date,
+    #         "order_last_updated": order.order_last_updated
+    #     }
+    # }
+    # return response
 
 @app.delete("/orders/{order_id}")
 async def delete_order(order_id: str):
@@ -904,42 +1063,73 @@ async def get_work_centre():
 async def create_workcentre(workcentre: WorkCentre):
     
     global workcentre_counter
-    
-    # Generate the Workcentre ID
-    workcentre_id = f"WC{str(workcentre_counter).zfill(3)}"
-    workcentre.workcentre_id = workcentre_id
-    workcentre_counter += 1
-    
-    check_query = "SELECT COUNT(*) FROM dbo.Workcentre$ WHERE workcentre_id = ?"
-    cursor.execute(check_query, (workcentre.workcentre_id,))
-    count = cursor.fetchone()[0]
 
-    if count > 0:
+    error_messages = {
+        "connection_unavailable": "Database connection is not available",
+        "cursor_uninitialized": "Database cursor is not initialized",
+        "order_id_exists": "workcentre_id already exists and cannot be added",
+        "integrity_error": "Database integrity error: Check constraints and foreign keys.",
+        "database_error": "Database error occurred.",
+        "unexpected_error": "An unexpected error occurred."
+    }
+    
+    try:
+        # Check if the database connection is established
+        if connection is None:
+            raise HTTPException(status_code=503, detail=error_messages["connection_unavailable"])
+
+        # Check if the cursor is initialized
+        if cursor is None:
+            raise HTTPException(status_code=503, detail=error_messages["cursor_uninitialized"])
+        
+        # Generate the Workcentre ID
+        workcentre_id = f"WC{str(workcentre_counter).zfill(3)}"
+        workcentre.workcentre_id = workcentre_id
+        workcentre_counter += 1
+    
+        check_query = "SELECT COUNT(*) FROM dbo.Workcentre$ WHERE workcentre_id = ?"
+        cursor.execute(check_query, (workcentre.workcentre_id,))
+        count = cursor.fetchone()[0]
+
+        if count > 0:
         # cursor.close()
         # connection.close()
-        raise HTTPException(status_code=400, detail="workcentre_id already exists and cannot be added")
+            raise HTTPException(status_code=400, detail="workcentre_id already exists and cannot be added")
     
-    insert_query = """
-    INSERT INTO dbo.Workcentre$(workcentre_id, workcentre_name, workcentre_description, capacity, capacity_unit, cost_rate_h,workcentre_last_updated)
-    VALUES (?, ?, ?, ?, ?, ?, ?)
-    """
-    cursor.execute(insert_query, (
-        workcentre.workcentre_id,
-        workcentre.workcentre_name, 
-        workcentre.workcentre_description,
-        workcentre.capacity,
-        workcentre.capacity_unit,
-        workcentre.cost_rate_h,
-        workcentre.workcentre_last_updated
-    ))
+    # Insert data into the database
+        insert_query = """
+        INSERT INTO dbo.Workcentre$(workcentre_id, workcentre_name, workcentre_description, capacity, capacity_unit, cost_rate_h,workcentre_last_updated)
+        VALUES (?, ?, ?, ?, ?, ?, ?)
+        """
+        cursor.execute(insert_query, (
+            workcentre.workcentre_id,
+            workcentre.workcentre_name, 
+            workcentre.workcentre_description,
+            workcentre.capacity,
+            workcentre.capacity_unit,
+            workcentre.cost_rate_h,
+            workcentre.workcentre_last_updated
+        ))
     
-    connection.commit()
+        connection.commit()
 
-    response = {
-        "message": "WorkCentre created successfully",
-        "data": workcentre
-    }
-    return response
+        response = {
+            "message": "WorkCentre created successfully",
+            "data": workcentre
+        }
+        return response
+
+    except pyodbc.IntegrityError:
+        raise HTTPException(status_code=400, detail=error_messages["integrity_error"])
+    except pyodbc.DatabaseError:
+        raise HTTPException(status_code=500, detail=error_messages["database_error"])
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"{error_messages['unexpected_error']}: {str(e)}")
+
+    
+    
+    
+    
 
 @app.put("/workcentre/{workcentre_id}")
 async def update_workcentre(workcentre_id: str, workcentre: WorkCentre):
@@ -980,7 +1170,7 @@ async def update_workcentre(workcentre_id: str, workcentre: WorkCentre):
     else:
         last_id = last_id_row[0]
         # Assuming the format "B###", extract the numeric part, increment, and reformat
-        prefix, number = last_id[0], int(last_id[1:])
+        prefix, number = last_id[:2], int(last_id[2:])
         new_workcentre_id = f"{prefix}{str(number + 1).zfill(3)}"
 
         workcentre.workcentre_id = new_workcentre_id
@@ -1128,4 +1318,3 @@ async def update_part_id(part_update: PartIDUpdate):
     except Exception as e:
         connection.rollback()
         raise HTTPException(status_code=500, detail=str(e))
-    
