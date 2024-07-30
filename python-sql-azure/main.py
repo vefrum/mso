@@ -116,20 +116,20 @@ async def create_bom(bom: BOM):
     error_messages = {
         "connection_unavailable": "Database connection is not available",
         "cursor_uninitialized": "Database cursor is not initialized",
-        "order_id_exists": "bom_id already exists and cannot be added",
+        "workcentre_id_exists": "BOM_id already exists and cannot be added",
         "integrity_error": "Database integrity error: Check constraints and foreign keys.",
         "database_error": "Database error occurred.",
         "unexpected_error": "An unexpected error occurred."
     }
-    
+
     try:
         # Check if the database connection is established
         if connection is None:
-            raise HTTPException(status_code=503, detail=error_messages["connection_unavailable"])
+            return {"error": error_messages["connection_unavailable"]}
 
         # Check if the cursor is initialized
         if cursor is None:
-            raise HTTPException(status_code=503, detail=error_messages["cursor_uninitialized"])
+            return {"error": error_messages["cursor_uninitialized"]}
         
         # Generate the bom ID
         BOM_id = f"WC{str(bom_counter).zfill(3)}"
@@ -144,8 +144,8 @@ async def create_bom(bom: BOM):
         if count > 0:
             # cursor.close()
             # connection.close()
-            raise HTTPException(status_code=400, detail="_id already exists and cannot be added")
-
+            raise HTTPException(status_code=400, detail="BOM_id already exists and cannot be added")
+        
         # Insert data into the database
         insert_query = """
         INSERT INTO dbo.dbo.BOM$(BOM_id, part_id, child_id, child_qty, child_leadtime, BOM_last_updated)
@@ -166,14 +166,14 @@ async def create_bom(bom: BOM):
             "message": "BOM created successfully",
             "data": bom
         }
-        return response
-    
+        return response    
+
     except pyodbc.IntegrityError:
-        raise HTTPException(status_code=400, detail=error_messages["integrity_error"])
+        return {"error": error_messages["integrity_error"]}
     except pyodbc.DatabaseError:
-        raise HTTPException(status_code=500, detail=error_messages["database_error"])
+        return {"error": error_messages["database_error"]}
     except Exception as e:
-        raise HTTPException(status_code=500, detail=f"{error_messages['unexpected_error']}: {str(e)}")
+        return {"error": f"{error_messages['unexpected_error']}: {str(e)}"}
 
 # @app.delete("/BOM/{bom_id}")
 # async def delete_bom(bom: BOM):
@@ -383,22 +383,22 @@ async def create_routing(routing: Routing):
     error_messages = {
         "connection_unavailable": "Database connection is not available",
         "cursor_uninitialized": "Database cursor is not initialized",
-        "order_id_exists": "routing_id already exists and cannot be added",
+        "workcentre_id_exists": "routing_id already exists and cannot be added",
         "integrity_error": "Database integrity error: Check constraints and foreign keys.",
         "database_error": "Database error occurred.",
         "unexpected_error": "An unexpected error occurred."
     }
-    
+
     try:
         # Check if the database connection is established
         if connection is None:
-            raise HTTPException(status_code=503, detail=error_messages["connection_unavailable"])
+            return {"error": error_messages["connection_unavailable"]}
 
         # Check if the cursor is initialized
         if cursor is None:
-            raise HTTPException(status_code=503, detail=error_messages["cursor_uninitialized"])
+            return {"error": error_messages["cursor_uninitialized"]}
         
-        # Generate the Part ID
+         # Generate the Part ID
         routing_id = f"WC{str(routing_counter).zfill(3)}"
         routing.routing_id = routing_id
         routing_counter += 1
@@ -435,14 +435,14 @@ async def create_routing(routing: Routing):
             "message": "Routing created successfully",
             "data": routing
         }
-        return response
-    
+        return response      
+
     except pyodbc.IntegrityError:
-        raise HTTPException(status_code=400, detail=error_messages["integrity_error"])
+        return {"error": error_messages["integrity_error"]}
     except pyodbc.DatabaseError:
-        raise HTTPException(status_code=500, detail=error_messages["database_error"])
+        return {"error": error_messages["database_error"]}
     except Exception as e:
-        raise HTTPException(status_code=500, detail=f"{error_messages['unexpected_error']}: {str(e)}")
+        return {"error": f"{error_messages['unexpected_error']}: {str(e)}"}
     
 @app.put("/routings/{routing_id}")
 async def update_routing(routing_id: str, routing: Routing):
@@ -622,20 +622,20 @@ async def create_part(part: Part):
     error_messages = {
         "connection_unavailable": "Database connection is not available",
         "cursor_uninitialized": "Database cursor is not initialized",
-        "order_id_exists": "part_id already exists and cannot be added",
+        "workcentre_id_exists": "part_id already exists and cannot be added",
         "integrity_error": "Database integrity error: Check constraints and foreign keys.",
         "database_error": "Database error occurred.",
         "unexpected_error": "An unexpected error occurred."
     }
-    
+
     try:
         # Check if the database connection is established
         if connection is None:
-            raise HTTPException(status_code=503, detail=error_messages["connection_unavailable"])
+            return {"error": error_messages["connection_unavailable"]}
 
         # Check if the cursor is initialized
         if cursor is None:
-            raise HTTPException(status_code=503, detail=error_messages["cursor_uninitialized"])
+            return {"error": error_messages["cursor_uninitialized"]}
         
         # Generate the Part ID
         part_id = f"WC{str(part_counter).zfill(3)}"
@@ -650,8 +650,7 @@ async def create_part(part: Part):
         # cursor.close()
         # connection.close()
             raise HTTPException(status_code=400, detail="part_id already exists and cannot be added")
-
-    # Insert data into the database
+        
         insert_query = """
         INSERT INTO dbo.Part_Master_Records$(part_id, part_name, inventory, POM, UOM, part_description, unit_cost, lead_time, part_last_updated)
         VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
@@ -675,13 +674,14 @@ async def create_part(part: Part):
             "data": part
         }
         return response
-    
+
     except pyodbc.IntegrityError:
-        raise HTTPException(status_code=400, detail=error_messages["integrity_error"])
+        return {"error": error_messages["integrity_error"]}
     except pyodbc.DatabaseError:
-        raise HTTPException(status_code=500, detail=error_messages["database_error"])
+        return {"error": error_messages["database_error"]}
     except Exception as e:
-        raise HTTPException(status_code=500, detail=f"{error_messages['unexpected_error']}: {str(e)}")
+        return {"error": f"{error_messages['unexpected_error']}: {str(e)}"}
+    
 
 @app.put("/partmasterrecords/{part_id}")
 async def update_part(part_id: str, part: Part):
@@ -832,30 +832,28 @@ async def get_orders():
 @app.post("/orders")
 async def create_order(order: Order):
     global order_counter
-
     error_messages = {
         "connection_unavailable": "Database connection is not available",
         "cursor_uninitialized": "Database cursor is not initialized",
-        "order_id_exists": "order_id already exists and cannot be added",
+        "workcentre_id_exists": "order_id already exists and cannot be added",
         "integrity_error": "Database integrity error: Check constraints and foreign keys.",
         "database_error": "Database error occurred.",
         "unexpected_error": "An unexpected error occurred."
     }
-    
+
     try:
         # Check if the database connection is established
         if connection is None:
-            raise HTTPException(status_code=503, detail=error_messages["connection_unavailable"])
+            return {"error": error_messages["connection_unavailable"]}
 
         # Check if the cursor is initialized
         if cursor is None:
-            raise HTTPException(status_code=503, detail=error_messages["cursor_uninitialized"])
-    
-    # Generate the Workcentre ID
+            return {"error": error_messages["cursor_uninitialized"]}
+        
         order_id = f"WC{str(order_counter).zfill(3)}"
         order.order_id = order_id
         order_counter += 1
-
+    
         check_query = "SELECT COUNT(*) FROM dbo.Orders$ WHERE order_id = ?"
         cursor.execute(check_query, (order.order_id,))
         count = cursor.fetchone()[0]
@@ -878,7 +876,6 @@ async def create_order(order: Order):
             order.due_date,
             order.order_last_updated
         ))
-    
         connection.commit()
 
         response = {
@@ -888,12 +885,11 @@ async def create_order(order: Order):
         return response
 
     except pyodbc.IntegrityError:
-        raise HTTPException(status_code=400, detail=error_messages["integrity_error"])
+        return {"error": error_messages["integrity_error"]}
     except pyodbc.DatabaseError:
-        raise HTTPException(status_code=500, detail=error_messages["database_error"])
+        return {"error": error_messages["database_error"]}
     except Exception as e:
-        raise HTTPException(status_code=500, detail=f"{error_messages['unexpected_error']}: {str(e)}")
-
+        return {"error": f"{error_messages['unexpected_error']}: {str(e)}"}
 
 # @app.put("/orders/{order_id}")
 # async def update_order(order_id: str, order: Order):
@@ -1063,26 +1059,24 @@ async def get_work_centre():
 async def create_workcentre(workcentre: WorkCentre):
     
     global workcentre_counter
-
     error_messages = {
         "connection_unavailable": "Database connection is not available",
         "cursor_uninitialized": "Database cursor is not initialized",
-        "order_id_exists": "workcentre_id already exists and cannot be added",
+        "workcentre_id_exists": "workcentre_id already exists and cannot be added",
         "integrity_error": "Database integrity error: Check constraints and foreign keys.",
         "database_error": "Database error occurred.",
         "unexpected_error": "An unexpected error occurred."
     }
-    
+
     try:
         # Check if the database connection is established
         if connection is None:
-            raise HTTPException(status_code=503, detail=error_messages["connection_unavailable"])
+            return {"error": error_messages["connection_unavailable"]}
 
         # Check if the cursor is initialized
         if cursor is None:
-            raise HTTPException(status_code=503, detail=error_messages["cursor_uninitialized"])
+            return {"error": error_messages["cursor_uninitialized"]}
         
-        # Generate the Workcentre ID
         workcentre_id = f"WC{str(workcentre_counter).zfill(3)}"
         workcentre.workcentre_id = workcentre_id
         workcentre_counter += 1
@@ -1120,16 +1114,49 @@ async def create_workcentre(workcentre: WorkCentre):
         return response
 
     except pyodbc.IntegrityError:
-        raise HTTPException(status_code=400, detail=error_messages["integrity_error"])
+        return {"error": error_messages["integrity_error"]}
     except pyodbc.DatabaseError:
-        raise HTTPException(status_code=500, detail=error_messages["database_error"])
+        return {"error": error_messages["database_error"]}
     except Exception as e:
-        raise HTTPException(status_code=500, detail=f"{error_messages['unexpected_error']}: {str(e)}")
+        return {"error": f"{error_messages['unexpected_error']}: {str(e)}"}
 
-    
-    
-    
-    
+        # Generate the Workcentre ID
+        # workcentre_id = f"WC{str(workcentre_counter).zfill(3)}"
+        # workcentre_dict = workcentre.dict()
+        # workcentre_dict['workcentre_id'] = workcentre_id
+        # workcentre_counter += 1
+
+        # check_query = "SELECT COUNT(*) FROM dbo.Workcentre$ WHERE workcentre_id = ?"
+        # cursor.execute(check_query, (workcentre_dict['workcentre_id'],))
+        # count = cursor.fetchone()[0]
+
+        # if count > 0:
+        #     return {"error": error_messages["workcentre_id_exists"]}
+
+        # # Insert data into the database
+        # insert_query = """
+        # INSERT INTO dbo.Workcentre$(workcentre_id, workcentre_name, workcentre_description, capacity, capacity_unit, cost_rate_h, workcentre_last_updated)
+        # VALUES (?, ?, ?, ?, ?, ?, ?)
+        # """
+        # cursor.execute(insert_query, (
+        #     workcentre_dict['workcentre_id'],
+        #     workcentre_dict['workcentre_name'],
+        #     workcentre_dict['workcentre_description'],
+        #     workcentre_dict['capacity'],
+        #     workcentre_dict['capacity_unit'],
+        #     workcentre_dict['cost_rate_h'],
+        #     workcentre_dict['workcentre_last_updated']
+        # ))
+
+        # connection.commit()
+
+        # response = {
+        #     "message": "WorkCentre created successfully",
+        #     "data": workcentre_dict
+        # }
+        # return response
+        # Generate the Workcentre ID
+        
 
 @app.put("/workcentre/{workcentre_id}")
 async def update_workcentre(workcentre_id: str, workcentre: WorkCentre):
