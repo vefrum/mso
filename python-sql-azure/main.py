@@ -1077,8 +1077,7 @@ async def create_workcentre(workcentre: WorkCentre):
         if cursor is None:
             return {"error": error_messages["cursor_uninitialized"]}
         
-
-        query = "SELECT workcentre_id FROM dbo.Workcentre$ ORDER BY workcentre_id DESC LIMIT 1"
+        query = "SELECT TOP 1 workcentre_id FROM dbo.Workcentre$ ORDER BY workcentre_id DESC"
         cursor.execute(query)
         result = cursor.fetchone()
 
@@ -1093,7 +1092,6 @@ async def create_workcentre(workcentre: WorkCentre):
         workcentre_counter += 1
         workcentre_id = f"WC{str(workcentre_counter).zfill(3)}"
         workcentre.workcentre_id = workcentre_id
-        # workcentre_counter += 1
        
     
         check_query = "SELECT COUNT(*) FROM dbo.Workcentre$ WHERE workcentre_id = ?"
