@@ -869,7 +869,7 @@ async def create_order(order: Order):
         VALUES (?, ?, ?, ?, ?, ?)
         """
         cursor.execute(insert_query, (
-            order_id,
+            order.order_id,
             order.part_id,
             order.part_qty,
             order.order_date,
@@ -1080,6 +1080,7 @@ async def create_workcentre(workcentre: WorkCentre):
         workcentre_id = f"WC{str(workcentre_counter).zfill(3)}"
         workcentre.workcentre_id = workcentre_id
         workcentre_counter += 1
+       
     
         check_query = "SELECT COUNT(*) FROM dbo.Workcentre$ WHERE workcentre_id = ?"
         cursor.execute(check_query, (workcentre.workcentre_id,))
@@ -1096,8 +1097,7 @@ async def create_workcentre(workcentre: WorkCentre):
         VALUES (?, ?, ?, ?, ?, ?, ?)
         """
         cursor.execute(insert_query, (
-            #workcentre.workcentre_id,
-            workcentre_id,
+            workcentre.workcentre_id,
             workcentre.workcentre_name, 
             workcentre.workcentre_description,
             workcentre.capacity,
