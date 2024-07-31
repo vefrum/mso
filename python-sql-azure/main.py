@@ -869,7 +869,7 @@ async def create_order(order: Order):
         VALUES (?, ?, ?, ?, ?, ?)
         """
         cursor.execute(insert_query, (
-            order.order_id,
+            order_id,
             order.part_id,
             order.part_qty,
             order.order_date,
