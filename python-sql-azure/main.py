@@ -850,22 +850,34 @@ async def create_order(order: Order):
         if cursor is None:
             return {"error": error_messages["cursor_uninitialized"]}
         
+        # Fetch the latest order_id from the database
+        query = "SELECT TOP 1 order_id FROM dbo.Orders$ ORDER BY order_id DESC"
+        cursor.execute(query)
+        result = cursor.fetchone()
+
+        if result:
+            latest_order_id = result[0]  # e.g., "WC1000"
+            # Extract the integer part of the order_id
+            order_counter = int(latest_order_id[2:])  # Ignore the "WC" prefix
+        else:
+            order_counter = 0  # Default to 0 if no records are found
+
+        # Increment the counter for the new order_id
+        order_counter += 1
         order_id = f"WC{str(order_counter).zfill(3)}"
         order.order_id = order_id
-        order_counter += 1
-    
+
+        # Check if the order_id already exists
         check_query = "SELECT COUNT(*) FROM dbo.Orders$ WHERE order_id = ?"
         cursor.execute(check_query, (order.order_id,))
         count = cursor.fetchone()[0]
 
         if count > 0:
-        # cursor.close()
-        # connection.close()
             raise HTTPException(status_code=400, detail="order_id already exists and cannot be added")
     
-    # Insert data into the database
+        # Insert data into the database
         insert_query = """
-        INSERT INTO dbo.dbo.Orders$(order_id, part_id, part_qty, order_date, due_date, order_last_updated)
+        INSERT INTO dbo.Orders$ (order_id, part_id, part_qty, order_date, due_date, order_last_updated)
         VALUES (?, ?, ?, ?, ?, ?)
         """
         cursor.execute(insert_query, (
@@ -886,10 +898,11 @@ async def create_order(order: Order):
 
     except pyodbc.IntegrityError:
         return {"error": error_messages["integrity_error"]}
-    except pyodbc.DatabaseError:
-        return {"error": error_messages["database_error"]}
+    except pyodbc.DatabaseError as e:
+        return {"error": f"{error_messages['database_error']}: {str(e)}"}
     except Exception as e:
         return {"error": f"{error_messages['unexpected_error']}: {str(e)}"}
+
 
 # @app.put("/orders/{order_id}")
 # async def update_order(order_id: str, order: Order):
