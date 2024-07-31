@@ -1127,7 +1127,7 @@ async def create_workcentre(workcentre: WorkCentre):
         return response
 
     except pyodbc.IntegrityError:
-        return {"error": error_messages["integrity_error"]}
+        return {"error": error_messages["integrity_error","id":workcentre.workcentre_id]}
     except pyodbc.DatabaseError:
         return {"error": error_messages["database_error"]}
     except Exception as e:
