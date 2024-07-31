@@ -1096,7 +1096,8 @@ async def create_workcentre(workcentre: WorkCentre):
         VALUES (?, ?, ?, ?, ?, ?, ?)
         """
         cursor.execute(insert_query, (
-            workcentre.workcentre_id,
+            #workcentre.workcentre_id,
+            workcentre_id,
             workcentre.workcentre_name, 
             workcentre.workcentre_description,
             workcentre.capacity,
