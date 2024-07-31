@@ -17,7 +17,7 @@ from typing import List
 workcentre_counter = 5
 bom_counter = 470
 order_counter = 1000
-part_counter = 145
+part_counter = 145  
 routing_counter = 913
 
 class WorkCentre(BaseModel):
@@ -1091,8 +1091,8 @@ async def create_workcentre(workcentre: WorkCentre):
 
         # Increment the counter for the new workcentre_id
         workcentre_counter += 1
-        # workcentre_id = f"WC{str(workcentre_counter).zfill(3)}"
-        # workcentre.workcentre_id = workcentre_id
+        workcentre_id = f"WC{str(workcentre_counter).zfill(3)}"
+        workcentre.workcentre_id = workcentre_id
         # workcentre_counter += 1
        
     
