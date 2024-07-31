@@ -1077,21 +1077,21 @@ async def create_workcentre(workcentre: WorkCentre):
         if cursor is None:
             return {"error": error_messages["cursor_uninitialized"]}
         
-        # query = "SELECT TOP 1 workcentre_id FROM dbo.Workcentre$ ORDER BY workcentre_id DESC"
-        # cursor.execute(query)
-        # result = cursor.fetchone()
+        query = "SELECT TOP 1 workcentre_id FROM dbo.Workcentre$ ORDER BY workcentre_id DESC"
+        cursor.execute(query)
+        result = cursor.fetchone()
 
-        # if result:
-        #     latest_workcentre_id = result[0]  # e.g., "WC005"
-        #     # Extract the integer part of the workcentre_id
-        #     workcentre_counter = int(latest_workcentre_id[2:])  # Ignore the "WC" prefix
-        # else:
-        #     workcentre_counter = 0  # Default to 0 if no records are found
+        if result:
+            latest_workcentre_id = result[0]  # e.g., "WC005"
+            # Extract the integer part of the workcentre_id
+            workcentre_counter = int(latest_workcentre_id[2:])  # Ignore the "WC" prefix
+        else:
+            workcentre_counter = 0  # Default to 0 if no records are found
 
-        # # Increment the counter for the new workcentre_id
-        # workcentre_counter += 1
-        # workcentre_id = f"WC{str(workcentre_counter).zfill(3)}"
-        # workcentre.workcentre_id = workcentre_id
+        # Increment the counter for the new workcentre_id
+        workcentre_counter += 1
+        workcentre_id = f"WC{str(workcentre_counter).zfill(3)}"
+        workcentre.workcentre_id = workcentre_id
        
     
         check_query = "SELECT COUNT(*) FROM dbo.Workcentre$ WHERE workcentre_id = ?"
