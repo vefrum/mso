@@ -496,7 +496,7 @@ async def update_routing(routing_id: str, routing: Routing):
 
     insert_query = """
     INSERT INTO dbo.Routings$ (routing_id, BOM_id, operations_sequence, workcentre_id, process_description, setup_time, runtime, routings_last_update,status)
-    VALUES (?, ?, ?, ?, ?, ?, ?, ?)
+    VALUES (?, ?, ?, ?, ?, ?, ?, ?,?)
     """
     cursor.execute(insert_query, (
         routing.routing_id,
