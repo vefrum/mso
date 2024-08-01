@@ -292,8 +292,8 @@ async def update_bom(BOM_id: str, update_request: UpdateBOMRequest = Body(...)):
     bom.BOM_id = new_BOM_id
 
     insert_query = """
-    INSERT INTO dbo.BOM$ (BOM_id, part_id, child_id, child_qty, child_leadtime, BOM_last_updated)
-    VALUES (?, ?, ?, ?, ?, ?)
+    INSERT INTO dbo.BOM$ (BOM_id, part_id, child_id, child_qty, child_leadtime, BOM_last_updated,status)
+    VALUES (?, ?, ?, ?, ?, ?,?)
     """
     cursor.execute(insert_query, (
         bom.BOM_id,
