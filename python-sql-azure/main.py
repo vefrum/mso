@@ -54,6 +54,7 @@ class Routing(BaseModel):
     setup_time: int
     runtime: int
     routings_last_update: datetime
+    status: str 
 
 class Part(BaseModel):
     part_id: str = None
