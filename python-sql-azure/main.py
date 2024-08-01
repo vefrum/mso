@@ -1150,16 +1150,16 @@ async def update_workcentre(workcentre_id: str, workcentre: WorkCentre):
     #     workcentre.last_updated_date,
     #     workcentre.workcentre_id
     # ))
-    last_id_query = "SELECT TOP 1 workcentre_id FROM dbo.Workcentre$ ORDER BY CAST(SUBSTRING(workcentre_id, 2, LEN(workcentre_id)-1) AS INT) DESC"
+    last_id_query = "SELECT TOP 1 workcentre_id FROM dbo.Workcentre$ ORDER BY CAST(SUBSTRING(workcentre_id, 3, LEN(workcentre_id)-2) AS INT) DESC"
     cursor.execute(last_id_query)
     last_id_row = cursor.fetchone()
 
     if not last_id_row:
-        # If no existing BOMs, start with a base ID, e.g., "B001"
+        # If no existing workcentres, start with a base ID, e.g., "WC001"
         new_workcentre_id = "WC001"
     else:
         last_id = last_id_row[0]
-        # Assuming the format "B###", extract the numeric part, increment, and reformat
+        # Assuming the format "WC###", extract the numeric part, increment, and reformat
         prefix, number = last_id[:2], int(last_id[2:])
         new_workcentre_id = f"{prefix}{str(number + 1).zfill(3)}"
 
