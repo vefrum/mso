@@ -1049,6 +1049,7 @@ async def create_workcentre(workcentre: WorkCentre):
         workcentre_counter += 1
         workcentre_id = f"WC{str(workcentre_counter).zfill(3)}"
         workcentre.workcentre_id = workcentre_id
+        workcentre.status = "active"
        
     
         check_query = "SELECT COUNT(*) FROM dbo.Workcentre$ WHERE workcentre_id = ?"
@@ -1062,8 +1063,8 @@ async def create_workcentre(workcentre: WorkCentre):
     
     # Insert data into the database
         insert_query = """
-        INSERT INTO dbo.Workcentre$(workcentre_id, workcentre_name, workcentre_description, capacity, capacity_unit, cost_rate_h,workcentre_last_updated)
-        VALUES (?, ?, ?, ?, ?, ?, ?)
+        INSERT INTO dbo.Workcentre$(workcentre_id, workcentre_name, workcentre_description, capacity, capacity_unit, cost_rate_h,workcentre_last_updated, status)
+        VALUES (?, ?, ?, ?, ?, ?, ?, ?)
         """
         cursor.execute(insert_query, (
             workcentre.workcentre_id,
@@ -1072,7 +1073,9 @@ async def create_workcentre(workcentre: WorkCentre):
             workcentre.capacity,
             workcentre.capacity_unit,
             workcentre.cost_rate_h,
-            workcentre.workcentre_last_updated
+            workcentre.workcentre_last_updated,
+            workcentre.status
+
         ))
     
         connection.commit()
