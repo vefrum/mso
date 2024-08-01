@@ -523,7 +523,7 @@ async def update_routing(routing_id: str, routing: Routing):
             "workcentre_id": routing.workcentre_id,
             "process_description": routing.process_description,
             "setup_time": routing.setup_time, 
-            "runtime": routing.setup_time,
+            "runtime": routing.runtime,
             "routings_last_update": routing.routings_last_update,
             "status": 'active'
         }
