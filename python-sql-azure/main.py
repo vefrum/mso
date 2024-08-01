@@ -663,7 +663,7 @@ async def create_part(part: Part):
         
         # Insert data into the database
         insert_query = """
-        INSERT INTO dbo.Part_Master_Records$ (part_id, part_name, inventory, POM, UOM, part_description, unit_cost, lead_time, part_last_updated)
+        INSERT INTO dbo.Part_Master_Records$ (part_id, part_name, inventory, POM, UOM, part_description, unit_cost, lead_time, part_last_updated,status)
         VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
         """
         cursor.execute(insert_query, (
@@ -675,7 +675,8 @@ async def create_part(part: Part):
             part.part_description,
             part.unit_cost,
             part.lead_time,
-            part.part_last_updated
+            part.part_last_updated,
+            "active"
         ))
     
         connection.commit()
