@@ -54,7 +54,7 @@ class Routing(BaseModel):
     setup_time: int
     runtime: int
     routings_last_update: datetime
-    status: str 
+    status: str = None 
 
 class Part(BaseModel):
     part_id: str = None
@@ -468,34 +468,7 @@ async def create_routing(routing: Routing):
     
 @app.put("/routings/{routing_id}")
 async def update_routing(routing_id: str, routing: Routing):
-    # # Generate the new BOM_id with a prime symbol
-    # new_routing_id = routing_id + "'"
-
-    # check_query = "SELECT COUNT(*) FROM dbo.Routings$ WHERE routing_id = ?"
-    # cursor.execute(check_query, (new_routing_id,))
-    # count = cursor.fetchone()[0]
-
-    # if count > 0:
-    #     raise HTTPException(status_code=400, detail=f"BOM_id {new_routing_id} already exists")
-    
-    # # Update bom object with new BOM_id
-    # routing.routing_id = new_routing_id
-
-    # update_query = """
-    # UPDATE dbo.Routings$
-    # SET BOM_id = ?, operations_sequence = ?, workcentre_id = ?, process_description = ?, setup_time = ?, runtime = ?, routings_last_update = ?
-    # WHERE routing_id = ?
-    # """
-    # cursor.execute(update_query, (
-    #     routing.BOM_id,
-    #     routing.operations_sequence,
-    #     routing.workcentre_id,
-    #     routing.process_description,
-    #     routing.setup_time,
-    #     routing.runtime,
-    #     routing.routings_last_update,
-    #     routing.routing_id
-    # ))
+  
 
     last_id_query = "SELECT TOP 1 routing_id FROM dbo.Routings$ ORDER BY CAST(SUBSTRING(routing_id, 2, LEN(routing_id)-1) AS INT) DESC"
     cursor.execute(last_id_query)
