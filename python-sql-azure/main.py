@@ -45,6 +45,7 @@ class BOM(BaseModel):
     child_qty: float
     child_leadtime: float
     BOM_last_updated: datetime
+    status: str = None
 
 class Routing(BaseModel):
     routing_id: str = None 
@@ -67,6 +68,7 @@ class Part(BaseModel):
     unit_cost: float
     lead_time: int
     part_last_updated: datetime
+    status: str = None
 
 class PartIDUpdate(BaseModel):
     old_part_id: str
@@ -695,25 +697,39 @@ async def create_part(part: Part):
 
 @app.put("/partmasterrecords/{part_id}")
 async def update_part(part_id: str, part: Part):
-    # # Generate the new BOM_id with a prime symbol
-    # new_part_id = part_id + "'"
 
-    # check_query = "SELECT COUNT(*) FROM dbo.Routings$ WHERE part_id = ?"
-    # cursor.execute(check_query, (new_part_id,))
-    # count = cursor.fetchone()[0]
+    last_id_query = "SELECT TOP 1 part_id FROM dbo.Part_Master_Records$ ORDER BY CAST(SUBSTRING(part_id, 2, LEN(part_id)-1) AS INT) DESC"
+    cursor.execute(last_id_query)
+    last_id_row = cursor.fetchone()
 
-    # if count > 0:
-    #     raise HTTPException(status_code=400, detail=f"BOM_id {new_part_id} already exists")
-    
-    # # Update bom object with new BOM_id
-    # part.part_id = new_part_id
+    if not last_id_row:
+        # If no existing parts, start with a base ID, e.g., "P001"
+        new_part_id = "P001"
+    else:
+        last_id = last_id_row[0]
+        # Assuming the format "P###", extract the numeric part, increment, and reformat
+        prefix, number = last_id[0], int(last_id[1:])
+        new_part_id = f"{prefix}{str(number + 1).zfill(3)}"
 
-    update_query = """
+    # Set the old part record to inactive (if applicable)
+    update_status_query = """
     UPDATE dbo.Part_Master_Records$
-    SET part_name = ?, inventory = ?, POM = ?, UOM = ?, part_description = ?, unit_cost = ?, lead_time = ?, part_last_updated = ?
+    SET status = 'inactive'
     WHERE part_id = ?
     """
-    cursor.execute(update_query, (
+    cursor.execute(update_status_query, (part_id,))
+
+    # Set new part_id and status
+    part.part_id = new_part_id
+    part.status = "active"
+
+    # Insert new part record with updated details
+    insert_query = """
+    INSERT INTO dbo.Part_Master_Records$ (part_id, part_name, inventory, POM, UOM, part_description, unit_cost, lead_time, part_last_updated, status)
+    VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+    """
+    cursor.execute(insert_query, (
+        part.part_id,
         part.part_name,
         part.inventory,
         part.POM,
@@ -722,26 +738,12 @@ async def update_part(part_id: str, part: Part):
         part.unit_cost,
         part.lead_time,
         part.part_last_updated,
-        part.part_id
+        part.status
     ))
-    # insert_query = """
-    # INSERT INTO dbo.Part_Master_Records$ (part_id, part_name, inventory, POM, UOM, part_description, unit_cost, lead_time, part_last_updated)
-    # VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
-    # """
-    # cursor.execute(insert_query, (
-    #     part.part_id,
-    #     part.part_name,
-    #     part.inventory,
-    #     part.POM,
-    #     part.UOM,
-    #     part.part_description,
-    #     part.unit_cost,
-    #     part.lead_time,
-    #     part.part_last_updated
-    # ))
+
     if cursor.rowcount == 0:
         raise HTTPException(status_code=404, detail=f"part_id {part_id} not found")
-    
+
     connection.commit()
     response = {
         "message": "Part Master Records updated successfully with new part_id",
@@ -751,13 +753,15 @@ async def update_part(part_id: str, part: Part):
             "inventory": part.inventory,
             "POM": part.POM,
             "UOM": part.UOM,
-            "part_description": part.part_description, 
+            "part_description": part.part_description,
             "unit_cost": part.unit_cost,
             "lead_time": part.lead_time,
-            "part_last_updated": part.part_last_updated
+            "part_last_updated": part.part_last_updated,
+            "status": part.status
         }
     }
     return response
+
 
 @app.delete("/partmasterrecords/{part_id}")
 async def delete_part(part_id: str):
