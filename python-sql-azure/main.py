@@ -913,78 +913,6 @@ async def create_order(order: Order):
         return {"error": f"{error_messages['unexpected_error']}: {str(e)}"}
 
 
-# @app.put("/orders/{order_id}")
-# async def update_order(order_id: str, order: Order):
-    # Generate the new BOM_id with a prime symbol
-    # new_order_id = order_id + "'"
-
-    # check_query = "SELECT COUNT(*) FROM dbo.Orders$ WHERE order_id = ?"
-    # cursor.execute(check_query, (new_order_id,))
-    # count = cursor.fetchone()[0]
-
-    # if count > 0:
-    #     raise HTTPException(status_code=400, detail=f"order_id {new_order_id} already exists")
-    
-    # # Update bom object with new BOM_id
-    # order.order_id = new_order_id
-
-    # update_query = """
-    # UPDATE dbo.Orders$
-    # SET part_id = ?, part_qty = ?, order_date = ?, due_date = ?, order_last_updated = ?
-    # WHERE order_id = ?
-    # """
-    # cursor.execute(update_query, (
-    #     order.part_id,
-    #     order.part_qty,
-    #     order.order_date,
-    #     order.due_date,
-    #     order.order_last_updated,
-    #     order.order_id
-    # ))
-    # last_id_query = "SELECT TOP 1 order_id FROM dbo.Orders$ ORDER BY CAST(SUBSTRING(order_id, 2, LEN(order_id)-1) AS INT) DESC"
-    # cursor.execute(last_id_query)
-    # last_id_row = cursor.fetchone()
-
-    # if not last_id_row:
-    #     # If no existing BOMs, start with a base ID, e.g., "B001"
-    #     new_order_id = "O0001"
-    # else:
-    #     last_id = last_id_row[0]
-    #     # Assuming the format "B###", extract the numeric part, increment, and reformat
-    #     prefix, number = last_id[0], int(last_id[1:])
-    #     new_order_id = f"{prefix}{str(number + 1).zfill(4)}"
-
-    #     order.order_id = new_order_id
-
-    # insert_query = """
-    # INSERT INTO dbo.Orders$ (order_id, part_id, part_qty, order_date, due_date, order_last_updated)
-    # VALUES (?, ?, ?, ?, ?, ?)
-    # """
-    # cursor.execute(insert_query, (
-    #     order.order_id,
-    #     order.part_id,
-    #     order.part_qty,
-    #     order.order_date,
-    #     order.due_date,
-    #     order.order_last_updated
-    # ))
-    # if cursor.rowcount == 0:
-    #     raise HTTPException(status_code=404, detail=f"order_id {order_id} not found")
-    
-    # connection.commit()
-    # response = {
-    #     "message": "Orders updated successfully with new order_id",
-    #     "data": {
-    #         "order_id": order.order_id,
-    #         "part_id": order.part_id,
-    #         "part_qty": order.part_qty,
-    #         "order_date": order.order_date,
-    #         "due_date": order.due_date,
-    #         "order_last_updated": order.order_last_updated
-    #     }
-    # }
-    # return response
-
 @app.delete("/orders/{order_id}")
 async def delete_order(order_id: str):
     error_messages = {
@@ -1039,7 +967,7 @@ async def delete_order(order_id: str):
 
         # If no exceptions, return success response
         response = {
-            "message": error_messages["unexpected_error"],
+            "message": "Order successfully deleted",
             "order_id": order_id
         }
         return response
