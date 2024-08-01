@@ -38,7 +38,7 @@ class Order(BaseModel):
     order_last_updated: datetime
 
 class BOM(BaseModel):
-    BOM_id: str
+    BOM_id: str = None
     part_id: str
     child_id: str
     child_qty: float
@@ -130,11 +130,23 @@ async def create_bom(bom: BOM):
         # Check if the cursor is initialized
         if cursor is None:
             return {"error": error_messages["cursor_uninitialized"]}
-        
-        # Generate the bom ID
-        BOM_id = f"WC{str(bom_counter).zfill(3)}"
-        bom.BOM_id = BOM_id
+
+        # Fetch the latest BOM_id from the database
+        query = "SELECT TOP 1 BOM_id FROM dbo.BOM$ ORDER BY BOM_id DESC"
+        cursor.execute(query)
+        result = cursor.fetchone()
+
+        if result:
+            latest_bom_id = result[0]  # e.g., "B470"
+            # Extract the integer part of the BOM_id
+            bom_counter = int(latest_bom_id[1:])  # Ignore the "B" prefix
+        else:
+            bom_counter = 0  # Default to 0 if no records are found
+
+        # Increment the counter for the new BOM_id
         bom_counter += 1
+        BOM_id = f"B{str(bom_counter).zfill(3)}"
+        bom.BOM_id = BOM_id
 
         # Check if BOM_id already exists
         check_query = "SELECT COUNT(*) FROM dbo.BOM$ WHERE BOM_id = ?"
@@ -142,13 +154,11 @@ async def create_bom(bom: BOM):
         count = cursor.fetchone()[0]
 
         if count > 0:
-            # cursor.close()
-            # connection.close()
             raise HTTPException(status_code=400, detail="BOM_id already exists and cannot be added")
         
         # Insert data into the database
         insert_query = """
-        INSERT INTO dbo.dbo.BOM$(BOM_id, part_id, child_id, child_qty, child_leadtime, BOM_last_updated)
+        INSERT INTO dbo.BOM$ (BOM_id, part_id, child_id, child_qty, child_leadtime, BOM_last_updated)
         VALUES (?, ?, ?, ?, ?, ?)
         """
         cursor.execute(insert_query, (
@@ -170,10 +180,11 @@ async def create_bom(bom: BOM):
 
     except pyodbc.IntegrityError:
         return {"error": error_messages["integrity_error"]}
-    except pyodbc.DatabaseError:
-        return {"error": error_messages["database_error"]}
+    except pyodbc.DatabaseError as e:
+        return {"error": f"{error_messages['database_error']}: {str(e)}"}
     except Exception as e:
         return {"error": f"{error_messages['unexpected_error']}: {str(e)}"}
+
 
 # @app.delete("/BOM/{bom_id}")
 # async def delete_bom(bom: BOM):
