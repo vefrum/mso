@@ -56,7 +56,7 @@ class Routing(BaseModel):
     routings_last_update: datetime
 
 class Part(BaseModel):
-    part_id: str
+    part_id: str = None
     part_name: str
     inventory: int
     POM: str
@@ -636,23 +636,35 @@ async def create_part(part: Part):
         # Check if the cursor is initialized
         if cursor is None:
             return {"error": error_messages["cursor_uninitialized"]}
-        
-        # Generate the Part ID
-        part_id = f"WC{str(part_counter).zfill(3)}"
-        part.part_id = part_id
+
+        # Fetch the latest part_id from the database
+        query = "SELECT TOP 1 part_id FROM dbo.Part_Master_Records$ ORDER BY part_id DESC"
+        cursor.execute(query)
+        result = cursor.fetchone()
+
+        if result:
+            latest_part_id = result[0]  # e.g., "WC145"
+            # Extract the integer part of the part_id
+            part_counter = int(latest_part_id[1:])  # Ignore the "WC" prefix
+        else:
+            part_counter = 0  # Default to 0 if no records are found
+
+        # Increment the counter for the new part_id
         part_counter += 1
+        part_id = f"P{str(part_counter).zfill(3)}"
+        part.part_id = part_id
         
+        # Check if the part_id already exists
         check_query = "SELECT COUNT(*) FROM dbo.Part_Master_Records$ WHERE part_id = ?"
         cursor.execute(check_query, (part.part_id,))
         count = cursor.fetchone()[0]
 
         if count > 0:
-        # cursor.close()
-        # connection.close()
             raise HTTPException(status_code=400, detail="part_id already exists and cannot be added")
         
+        # Insert data into the database
         insert_query = """
-        INSERT INTO dbo.Part_Master_Records$(part_id, part_name, inventory, POM, UOM, part_description, unit_cost, lead_time, part_last_updated)
+        INSERT INTO dbo.Part_Master_Records$ (part_id, part_name, inventory, POM, UOM, part_description, unit_cost, lead_time, part_last_updated)
         VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
         """
         cursor.execute(insert_query, (
@@ -677,10 +689,11 @@ async def create_part(part: Part):
 
     except pyodbc.IntegrityError:
         return {"error": error_messages["integrity_error"]}
-    except pyodbc.DatabaseError:
-        return {"error": error_messages["database_error"]}
+    except pyodbc.DatabaseError as e:
+        return {"error": f"{error_messages['database_error']}: {str(e)}"}
     except Exception as e:
         return {"error": f"{error_messages['unexpected_error']}: {str(e)}"}
+
     
 
 @app.put("/partmasterrecords/{part_id}")
