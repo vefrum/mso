@@ -858,7 +858,7 @@ async def create_order(order: Order):
         if result:
             latest_order_id = result[0]  # e.g., "WC1000"
             # Extract the integer part of the order_id
-            order_counter = int(latest_order_id[2:])  # Ignore the "WC" prefix
+            order_counter = int(latest_order_id[1:])  # Ignore the "WC" prefix
         else:
             order_counter = 0  # Default to 0 if no records are found
 
