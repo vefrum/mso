@@ -28,6 +28,7 @@ class WorkCentre(BaseModel):
     capacity: int
     workcentre_last_updated: datetime
     workcentre_id: str = None
+    status: str = None
     
 class Order(BaseModel):
     order_id: str = None
@@ -1123,33 +1124,7 @@ async def create_workcentre(workcentre: WorkCentre):
 
 @app.put("/workcentre/{workcentre_id}")
 async def update_workcentre(workcentre_id: str, workcentre: WorkCentre):
-    # Generate the new BOM_id with a prime symbol
-    # new_workcentre_id = workcentre_id + "'"
 
-    # check_query = "SELECT COUNT(*) FROM dbo.Workcentre$ WHERE workcentre_id = ?"
-    # cursor.execute(check_query, (new_workcentre_id,))
-    # count = cursor.fetchone()[0]
-
-    # if count > 0:
-    #     raise HTTPException(status_code=400, detail=f"BOM_id {new_workcentre_id} already exists")
-    
-    # # Update bom object with new BOM_id
-    # workcentre.workcentre_id = new_workcentre_id
-
-    # update_query = """
-    # UPDATE dbo.Workcentre$
-    # SET workcentre_name = ?, workcentre_description = ?, capacity = ?, capacity_unit = ?, cost_rate_h = ?, workcentre_last_updated = ?
-    # WHERE workcentre_id = ?
-    # """
-    # cursor.execute(update_query, (
-    #     workcentre.workcentre_name,
-    #     workcentre.workcentre_description,
-    #     workcentre.capacity,
-    #     workcentre.capacity_unit,
-    #     workcentre.cost_rate_h,
-    #     workcentre.last_updated_date,
-    #     workcentre.workcentre_id
-    # ))
     last_id_query = "SELECT TOP 1 workcentre_id FROM dbo.Workcentre$ ORDER BY CAST(SUBSTRING(workcentre_id, 3, LEN(workcentre_id)-2) AS INT) DESC"
     cursor.execute(last_id_query)
     last_id_row = cursor.fetchone()
@@ -1165,9 +1140,20 @@ async def update_workcentre(workcentre_id: str, workcentre: WorkCentre):
 
         workcentre.workcentre_id = new_workcentre_id
 
+    update_status_query = """
+    UPDATE dbo.Workcentre$
+    SET status = 'inactive'
+    WHERE workcentre_id = ? 
+    """
+
+    cursor.execute(update_status_query, (workcentre_id,))
+
+    workcentre.workcentre_id = new_workcentre_id
+    workcentre.status = "active"
+
     insert_query = """
-    INSERT INTO dbo.Workcentre$ (workcentre_id, workcentre_name, workcentre_description, capacity, capacity_unit, cost_rate_h, workcentre_last_updated)
-    VALUES (?, ?, ?, ?, ?, ?, ?)
+    INSERT INTO dbo.Workcentre$ (workcentre_id, workcentre_name, workcentre_description, capacity, capacity_unit, cost_rate_h, workcentre_last_updated, status)
+    VALUES (?, ?, ?, ?, ?, ?, ?,?)
     """
     cursor.execute(insert_query, (
         workcentre.workcentre_id,
@@ -1176,7 +1162,8 @@ async def update_workcentre(workcentre_id: str, workcentre: WorkCentre):
         workcentre.capacity,
         workcentre.capacity_unit,
         workcentre.cost_rate_h,
-        workcentre.workcentre_last_updated
+        workcentre.workcentre_last_updated,
+        workcentre.status
     ))
     if cursor.rowcount == 0:
         raise HTTPException(status_code=404, detail=f"workcentre_id {workcentre_id} not found")
@@ -1192,19 +1179,12 @@ async def update_workcentre(workcentre_id: str, workcentre: WorkCentre):
             "capacity": workcentre.capacity,
             "capacity_unit": workcentre.capacity_unit,
             "cost_rate_h": workcentre.cost_rate_h,
-            "workcentre_last_updated": workcentre.workcentre_last_updated
+            "workcentre_last_updated": workcentre.workcentre_last_updated,
+            "status": workcentre.status
         }
     }
     return response
 
-    # "data": workcentre.dict()
-
-    # connection.commit()
-    # response = {
-    #     "message": "Workcentre updated successfully",
-    #     "data": workcentre
-    # }
-    # return response
     
 @app.delete("/workcentre/{workcentre_id}")
 async def delete_workcentre(workcentre_id: str):
