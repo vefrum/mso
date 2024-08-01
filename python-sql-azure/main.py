@@ -46,7 +46,7 @@ class BOM(BaseModel):
     BOM_last_updated: datetime
 
 class Routing(BaseModel):
-    routing_id: str
+    routing_id: str = None 
     BOM_id: str
     operations_sequence: int
     workcentre_id: str
@@ -385,7 +385,6 @@ async def get_routings():
     query = "SELECT * FROM dbo.Routings$" 
     return execute_query(query) 
 
-
 @app.post("/routings")
 async def create_routing(routing: Routing):
 
@@ -408,25 +407,35 @@ async def create_routing(routing: Routing):
         # Check if the cursor is initialized
         if cursor is None:
             return {"error": error_messages["cursor_uninitialized"]}
-        
-         # Generate the Part ID
-        routing_id = f"WC{str(routing_counter).zfill(3)}"
-        routing.routing_id = routing_id
-        routing_counter += 1
 
-    # Check if routing_id already exists
+        # Fetch the latest routing_id from the database
+        query = "SELECT TOP 1 routing_id FROM dbo.Routings$ ORDER BY routing_id DESC"
+        cursor.execute(query)
+        result = cursor.fetchone()
+
+        if result:
+            latest_routing_id = result[0]  # e.g., "R913"
+            # Extract the integer part of the routing_id
+            routing_counter = int(latest_routing_id[1:])  # Ignore the "R" prefix
+        else:
+            routing_counter = 0  # Default to 0 if no records are found
+
+        # Increment the counter for the new routing_id
+        routing_counter += 1
+        routing_id = f"R{str(routing_counter).zfill(3)}"
+        routing.routing_id = routing_id
+
+        # Check if routing_id already exists
         check_query = "SELECT COUNT(*) FROM dbo.Routings$ WHERE routing_id = ?"
         cursor.execute(check_query, (routing.routing_id,))
         count = cursor.fetchone()[0]
 
         if count > 0:
-        # cursor.close()
-        # connection.close()
             raise HTTPException(status_code=400, detail="routing_id already exists and cannot be added")
         
         # Insert data into the database
         insert_query = """
-        INSERT INTO dbo.Routings$(routing_id, BOM_id, operations_sequence, workcentre_id, process_description, setup_time, runtime, routings_last_update)
+        INSERT INTO dbo.Routings$ (routing_id, BOM_id, operations_sequence, workcentre_id, process_description, setup_time, runtime, routings_last_update)
         VALUES (?, ?, ?, ?, ?, ?, ?, ?)
         """
         cursor.execute(insert_query, (
@@ -450,10 +459,11 @@ async def create_routing(routing: Routing):
 
     except pyodbc.IntegrityError:
         return {"error": error_messages["integrity_error"]}
-    except pyodbc.DatabaseError:
-        return {"error": error_messages["database_error"]}
+    except pyodbc.DatabaseError as e:
+        return {"error": f"{error_messages['database_error']}: {str(e)}"}
     except Exception as e:
         return {"error": f"{error_messages['unexpected_error']}: {str(e)}"}
+
     
 @app.put("/routings/{routing_id}")
 async def update_routing(routing_id: str, routing: Routing):
