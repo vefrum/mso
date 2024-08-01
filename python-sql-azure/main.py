@@ -864,7 +864,7 @@ async def create_order(order: Order):
 
         # Increment the counter for the new order_id
         order_counter += 1
-        order_id = f"WC{str(order_counter).zfill(3)}"
+        order_id = f"O{str(order_counter).zfill(3)}"
         order.order_id = order_id
 
         # Check if the order_id already exists
