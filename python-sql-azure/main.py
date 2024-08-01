@@ -652,6 +652,7 @@ async def create_part(part: Part):
         part_counter += 1
         part_id = f"P{str(part_counter).zfill(3)}"
         part.part_id = part_id
+        part.status = "active"
         
         # Check if the part_id already exists
         check_query = "SELECT COUNT(*) FROM dbo.Part_Master_Records$ WHERE part_id = ?"
@@ -676,7 +677,7 @@ async def create_part(part: Part):
             part.unit_cost,
             part.lead_time,
             part.part_last_updated,
-            "active"
+            part.status
         ))
     
         connection.commit()
