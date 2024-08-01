@@ -1150,7 +1150,7 @@ async def update_workcentre(workcentre_id: str, workcentre: WorkCentre):
     #     workcentre.last_updated_date,
     #     workcentre.workcentre_id
     # ))
-    last_id_query = "SELECT TOP 1 order_id FROM dbo.Workcentre$ ORDER BY CAST(SUBSTRING(workcentre_id, 2, LEN(workcentre_id)-1) AS INT) DESC"
+    last_id_query = "SELECT TOP 1 workcentre_id FROM dbo.Workcentre$ ORDER BY CAST(SUBSTRING(workcentre_id, 2, LEN(workcentre_id)-1) AS INT) DESC"
     cursor.execute(last_id_query)
     last_id_row = cursor.fetchone()
 
