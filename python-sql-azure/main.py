@@ -492,9 +492,10 @@ async def update_routing(routing_id: str, routing: Routing):
     cursor.execute(update_status_query, (routing_id,))
 
     routing.routing_id = new_routing_id
+    routing.status = "active"
 
     insert_query = """
-    INSERT INTO dbo.Routings$ (routing_id, BOM_id, operations_sequence, workcentre_id, process_description, setup_time, runtime, routings_last_update)
+    INSERT INTO dbo.Routings$ (routing_id, BOM_id, operations_sequence, workcentre_id, process_description, setup_time, runtime, routings_last_update,status)
     VALUES (?, ?, ?, ?, ?, ?, ?, ?)
     """
     cursor.execute(insert_query, (
@@ -506,7 +507,7 @@ async def update_routing(routing_id: str, routing: Routing):
         routing.setup_time,
         routing.runtime,
         routing.routings_last_update,
-        'active'
+        routing.status
     ))
 
     if cursor.rowcount == 0:
