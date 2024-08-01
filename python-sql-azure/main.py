@@ -30,7 +30,7 @@ class WorkCentre(BaseModel):
     workcentre_id: str = None
     
 class Order(BaseModel):
-    order_id: str
+    order_id: str = None
     part_id: str
     part_qty: int
     order_date: date
