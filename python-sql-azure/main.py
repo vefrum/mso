@@ -428,6 +428,7 @@ async def create_routing(routing: Routing):
         routing_counter += 1
         routing_id = f"R{str(routing_counter).zfill(3)}"
         routing.routing_id = routing_id
+        routing.status = "active"
 
         # Check if routing_id already exists
         check_query = "SELECT COUNT(*) FROM dbo.Routings$ WHERE routing_id = ?"
@@ -439,8 +440,8 @@ async def create_routing(routing: Routing):
         
         # Insert data into the database
         insert_query = """
-        INSERT INTO dbo.Routings$ (routing_id, BOM_id, operations_sequence, workcentre_id, process_description, setup_time, runtime, routings_last_update)
-        VALUES (?, ?, ?, ?, ?, ?, ?, ?)
+        INSERT INTO dbo.Routings$ (routing_id, BOM_id, operations_sequence, workcentre_id, process_description, setup_time, runtime, routings_last_update,status)
+        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
         """
         cursor.execute(insert_query, (
             routing.routing_id,
@@ -450,7 +451,8 @@ async def create_routing(routing: Routing):
             routing.process_description,
             routing.setup_time,
             routing.runtime,
-            routing.routings_last_update
+            routing.routings_last_update,
+            routing.status
         ))
     
         connection.commit()
