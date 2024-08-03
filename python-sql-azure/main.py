@@ -297,6 +297,7 @@ async def update_bom(BOM_id: str, update_request: UpdateBOMRequest = Body(...)):
     cursor.execute(update_status_query, (BOM_id,))
 
     bom.BOM_id = new_BOM_id
+    bom.status = "active"
 
     insert_query = """
     INSERT INTO dbo.BOM$ (BOM_id, part_id, child_id, child_qty, child_leadtime, BOM_last_updated,status)
@@ -309,7 +310,7 @@ async def update_bom(BOM_id: str, update_request: UpdateBOMRequest = Body(...)):
         bom.child_qty,
         bom.child_leadtime,
         bom.BOM_last_updated,
-        'active'
+        bom.status
     ))
     
     if cursor.rowcount == 0:
