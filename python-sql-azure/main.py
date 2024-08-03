@@ -163,8 +163,8 @@ async def create_bom(bom: BOM):
         
         # Insert data into the database
         insert_query = """
-        INSERT INTO dbo.BOM$ (BOM_id, part_id, child_id, child_qty, child_leadtime, BOM_last_updated)
-        VALUES (?, ?, ?, ?, ?, ?)
+        INSERT INTO dbo.BOM$ (BOM_id, part_id, child_id, child_qty, child_leadtime, BOM_last_updated, status)
+        VALUES (?, ?, ?, ?, ?, ?, ?)
         """
         cursor.execute(insert_query, (
             bom.BOM_id,
@@ -172,7 +172,8 @@ async def create_bom(bom: BOM):
             bom.child_id,
             bom.child_qty,
             bom.child_leadtime,
-            bom.BOM_last_updated
+            bom.BOM_last_updated,
+            bom.status
         ))
         
         connection.commit()
