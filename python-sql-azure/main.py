@@ -152,6 +152,7 @@ async def create_bom(bom: BOM):
         bom_counter += 1
         BOM_id = f"B{str(bom_counter).zfill(3)}"
         bom.BOM_id = BOM_id
+        bom.status ="active"
 
         # Check if BOM_id already exists
         check_query = "SELECT COUNT(*) FROM dbo.BOM$ WHERE BOM_id = ?"
