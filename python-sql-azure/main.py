@@ -37,6 +37,7 @@ class Order(BaseModel):
     order_date: date
     due_date: date
     order_last_updated: datetime
+    status: str = None
 
 class BOM(BaseModel):
     BOM_id: str = None
@@ -530,7 +531,7 @@ async def update_routing(routing_id: str, routing: Routing):
             "setup_time": routing.setup_time, 
             "runtime": routing.runtime,
             "routings_last_update": routing.routings_last_update,
-            "status": 'active'
+            "status": routing.status
         }
     }
     return response
@@ -876,7 +877,7 @@ async def create_order(order: Order):
         if result:
             latest_order_id = result[0]  # e.g., "WC1000"
             # Extract the integer part of the order_id
-            order_counter = int(latest_order_id[1:])  # Ignore the "WC" prefix
+            order_counter = int(latest_order_id[1:])  # Ignore the "O" prefix
         else:
             order_counter = 0  # Default to 0 if no records are found
 
@@ -884,6 +885,7 @@ async def create_order(order: Order):
         order_counter += 1
         order_id = f"O{str(order_counter).zfill(3)}"
         order.order_id = order_id
+        order.status ="active"
 
         # Check if the order_id already exists
         check_query = "SELECT COUNT(*) FROM dbo.Orders$ WHERE order_id = ?"
@@ -895,8 +897,8 @@ async def create_order(order: Order):
     
         # Insert data into the database
         insert_query = """
-        INSERT INTO dbo.Orders$ (order_id, part_id, part_qty, order_date, due_date, order_last_updated)
-        VALUES (?, ?, ?, ?, ?, ?)
+        INSERT INTO dbo.Orders$ (order_id, part_id, part_qty, order_date, due_date, order_last_updated,status)
+        VALUES (?, ?, ?, ?, ?, ?, ?)
         """
         cursor.execute(insert_query, (
             order.order_id,
@@ -904,7 +906,8 @@ async def create_order(order: Order):
             order.part_qty,
             order.order_date,
             order.due_date,
-            order.order_last_updated
+            order.order_last_updated,
+            order.status 
         ))
         connection.commit()
 
