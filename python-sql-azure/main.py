@@ -237,17 +237,6 @@ async def create_bom(bom: BOM):
         query = "SELECT TOP 1 routing_id FROM dbo.Routings$ ORDER BY routing_id DESC"
         cursor.execute(query)
         result = cursor.fetchone()
-        
-        # if result:
-        #     latest_routing_id = result[0]  # e.g., "R470"
-        #     # Extract the integer part of the routing_id
-        #     routing_counter = int(latest_routing_id[1:])  # Ignore the "R" prefix
-        # else:
-        #     routing_counter = 0  # Default to 0 if no records are found
-
-        # # Increment the counter for the new routing_id
-        # routing_counter += 1
-        # routing_id = f"R{str(routing_counter).zfill(3)}"
 
         # Insert data into the Routing table
         insert_routing_query = """
@@ -347,7 +336,7 @@ async def update_bom(bom: BOM, routing: Routing):
         child_in_part_count = cursor.fetchone()[0]
 
         if child_in_part_count > 0:
-            raise HTTPException(status_code=400, detail="Child_id exists as a part_id, unable to complete this action")
+            return HTTPException(status_code=400, detail="Child_id exists as a part_id, unable to complete this action")
         
         last_id_query = "SELECT TOP 1 BOM_id FROM dbo.BOM$ ORDER BY CAST(SUBSTRING(BOM_id, 2, LEN(BOM_id)-1) AS INT) DESC"
         cursor.execute(last_id_query)
@@ -400,59 +389,84 @@ async def update_bom(bom: BOM, routing: Routing):
             prefix, number = last_routing_id[0], int(last_routing_id[1:])
             new_routing_id = f"{prefix}{str(number + 1).zfill(3)}"
 
+        previous_bom_query = """
+        SELECT TOP 1 BOM_id 
+        FROM dbo.BOM$ 
+        WHERE BOM_id <> ? 
+        ORDER BY BOM_last_updated DESC
+        """
+        cursor.execute(previous_bom_query, (bom.BOM_id,))
+        previous_bom_result = cursor.fetchone()
+
+        if previous_bom_result:
+            previous_bom_id = previous_bom_result[0]
+
+            workcentre_query = """
+            SELECT TOP 1 workcentre_id 
+            FROM dbo.Routings$ 
+            WHERE BOM_id = ? 
+            ORDER BY routing_id DESC
+            """
+            cursor.execute(workcentre_query, (previous_bom_id,))
+            workcentre_result = cursor.fetchone()
+
+            if workcentre_result:
+                workcentre_id = workcentre_result[0]
+            else:
+                workcentre_id = "WC001"  # Default to WC001 if not found
+        else:
+            workcentre_id = "WC001"
+
         # Insert the new Routing entry
         insert_routing_query = """
         INSERT INTO dbo.Routings$ (routing_id, BOM_id, operations_sequence, workcentre_id, process_description, setup_time, runtime, routings_last_update, status)
         VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
         """
-        # cursor.execute(insert_routing_query, (
-        #     new_routing_id,
-        #     bom.BOM_id,
-        #     bom.operations_sequence,
-        #     bom.workcentre_id,
-        #     bom.process_description,
-        #     bom.setup_time,
-        #     bom.runtime,
-        #     bom.BOM_last_updated,
-        #     'active'
-        # ))
+    
         cursor.execute(insert_routing_query, (
             new_routing_id,
             bom.BOM_id,
-            routing.operations_sequence,
-            routing.workcentre_id,
-            routing.process_description,
-            routing.setup_time,
-            routing.runtime,
+            1, #operations sequence = 1
+            workcentre_id,
+            bom.process_description,
+            bom.setup_time,
+            bom.runtime,
             bom.BOM_last_updated,
             'active'
         ))
 
-        connection.commit()
         response = {
-            "message": "BOM and Routing updated successfully with new BOM_id and routing_id",
-            "BOM_data": {
-                "BOM_id": bom.BOM_id,
-                "part_id": bom.part_id,
-                "child_id": bom.child_id,
-                "child_qty": bom.child_qty,
-                "child_leadtime": bom.child_leadtime,
-                "BOM_last_updated": bom.BOM_last_updated,
-                "status": 'active'
-            },
-            "Routing_data": {
-                "routing_id": new_routing_id,
-                "BOM_id": bom.BOM_id,
-                "operations_sequence": routing.operations_sequence,
-                "workcentre_id": routing.workcentre_id,
-                "process_description": routing.process_description,
-                "setup_time": routing.setup_time,
-                "runtime": routing.runtime,
-                "routings_last_update": bom.BOM_last_updated,
-                "status": 'active'
+            "message": "BOM and Routing created successfully",
+            "data": {
+                "BOM": bom,
+                "Routing": routing
             }
         }
         return response
+        # response = {
+        #     "message": "BOM and Routing updated successfully with new BOM_id and routing_id",
+        #     "BOM_data": {
+        #         "BOM_id": bom.BOM_id,
+        #         "part_id": bom.part_id,
+        #         "child_id": bom.child_id,
+        #         "child_qty": bom.child_qty,
+        #         "child_leadtime": bom.child_leadtime,
+        #         "BOM_last_updated": bom.BOM_last_updated,
+        #         "status": 'active'
+        #     },
+        #     "Routing_data": {
+        #         "routing_id": new_routing_id,
+        #         "BOM_id": bom.BOM_id,
+        #         "operations_sequence": routing.operations_sequence,
+        #         "workcentre_id": routing.workcentre_id,
+        #         "process_description": routing.process_description,
+        #         "setup_time": routing.setup_time,
+        #         "runtime": routing.runtime,
+        #         "routings_last_update": bom.BOM_last_updated,
+        #         "status": 'active'
+        #     }
+        # }
+        # return response
     
     except HTTPException as e:
         connection.rollback()
