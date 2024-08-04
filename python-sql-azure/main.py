@@ -327,7 +327,7 @@ async def delete_bom(BOM_id: str):
 # @app.put("/BOM/{BOM_id}")
 # async def update_bom(BOM_id: str, update_request: UpdateBOMRequest = Body(...)):
 @app.put("/BOM/{BOM_id}")
-async def update_bom(bom: BOM, routing: Routing):
+async def update_bom(bom: BOM):
 
     try:
         # Check if the child_id exists in the part_id column
@@ -450,12 +450,9 @@ async def update_bom(bom: BOM, routing: Routing):
 
         response = {
             "message": "BOM and Routing created successfully",
-            "data": {
-                "BOM": bom,
-                "Routing": routing
-            }
+            "data": bom
         }
-        return response
+        return response 
         # response = {
         #     "message": "BOM and Routing updated successfully with new BOM_id and routing_id",
         #     "BOM_data": {
