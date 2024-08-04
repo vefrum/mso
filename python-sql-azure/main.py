@@ -58,9 +58,9 @@ class Routing(BaseModel):
     BOM_id: str
     operations_sequence: int
     workcentre_id: str
-    process_description: str
-    setup_time: int
-    runtime: int
+    process_description: Optional[str] = None
+    setup_time: Optional[int] = None
+    runtime: Optional[int] = None
     routings_last_update: datetime
     status: str = None 
 
