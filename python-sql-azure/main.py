@@ -52,7 +52,7 @@ class BOM(BaseModel):
     inventory: Optional[int] = None
     process_description: Optional[str] = None
     setup_time: Optional[int] = None
-    runtime: Optiona[int] = None
+    runtime: Optional[int] = None
     routing_id: str 
     operations_sequence: int # follow previous BOM
     workcentre_id: str # follow previous BOM
