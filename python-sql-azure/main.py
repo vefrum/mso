@@ -326,7 +326,7 @@ async def delete_bom(BOM_id: str):
 
 # @app.put("/BOM/{BOM_id}")
 # async def update_bom(BOM_id: str, update_request: UpdateBOMRequest = Body(...)):
-@app.put("/BOM")
+@app.put("/BOM/{BOM_id}")
 async def update_bom(bom: BOM, routing: Routing):
 
     try:
