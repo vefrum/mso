@@ -193,6 +193,9 @@ async def create_bom(bom: BOM):
 
         if part_count == 0:
             return HTTPException(status_code=400, detail="Referenced part_id does not exist")
+        
+        bom.POM = 'In-House'
+        bom.UOM = 'pcs'
 
         insert_parts_query = """
         INSERT INTO dbo.Part_Master_Records$ (part_id, part_name, inventory, POM, UOM, part_description, unit_cost, lead_time, part_last_updated, status)
