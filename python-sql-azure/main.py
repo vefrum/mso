@@ -46,10 +46,6 @@ class BOM(BaseModel):
     child_leadtime: float
     BOM_last_updated: datetime
     status: str = None
-    part_name: Optional[str] = None
-    part_description: Optional[str] = None
-    unit_cost: Optional[float] = None
-    inventory: Optional[int] = None
     process_description: Optional[str] = None
     setup_time: Optional[int] = None
     runtime: Optional[int] = None
@@ -57,7 +53,6 @@ class BOM(BaseModel):
     operations_sequence: int # follow previous BOM
     workcentre_id: str # follow previous BOM
     
-
 class Routing(BaseModel):
     routing_id: str = None 
     BOM_id: str
@@ -124,7 +119,8 @@ async def get_bom():
     return execute_query(query) 
 
 @app.post("/BOM")
-async def create_bom(bom: BOM, part: Part):
+async def create_bom(bom: BOM):
+#async def create_bom(bom: BOM, part: Part):
 
     global bom_counter
 
@@ -187,54 +183,71 @@ async def create_bom(bom: BOM, part: Part):
             bom.status
         ))
 
-        check_part_id_query = "SELECT COUNT(*) FROM dbo.Part_Master_Records$ WHERE part_id = ?"
-        cursor.execute(check_part_id_query, (bom.child_id,))
-        part_count = cursor.fetchone()[0]
-
-        if part_count == 0:
-            return HTTPException(status_code=400, detail="Referenced part_id does not exist")
-        
-        bom.POM = 'In-House'
-        bom.UOM = 'pcs'
-        part.part_id = bom.child_id
-
-        insert_parts_query = """
-        INSERT INTO dbo.Part_Master_Records$ (part_id, part_name, inventory, POM, UOM, part_description, unit_cost, lead_time, part_last_updated, status)
-        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+        previous_bom_query = """
+        SELECT TOP 1 BOM_id 
+        FROM dbo.BOM$ 
+        WHERE BOM_id <> ? 
+        ORDER BY BOM_last_updated DESC
         """
-        cursor.execute(insert_parts_query, (
-            bom.child_id,  # Assuming child_id is used as part_id in Parts table
-            bom.part_name,
-            bom.inventory,
-            "In-House",
-            "pcs",
-            bom.part_description,
-            bom.unit_cost,
-            bom.child_leadtime,
-            bom.BOM_last_updated,
-            "active"
-        ))
 
-        original_bom_query = "SELECT TOP 1 workcentre_id FROM dbo.Routings$ WHERE BOM_id = ? ORDER BY routing_id DESC"
-        cursor.execute(original_bom_query, (bom.BOM_id,))
-        workcentre_result = cursor.fetchone()
-        workcentre_id = workcentre_result[0] if workcentre_result else "WC001"  # Default to WC001 if not found
+        cursor.execute(previous_bom_query, (bom.BOM_id,))
+        previous_bom_result = cursor.fetchone()
+
+        if previous_bom_result:
+            previous_bom_id = previous_bom_result[0]
+
+            workcentre_query = """
+            SELECT TOP 1 workcentre_id 
+            FROM dbo.Routings$ 
+            WHERE BOM_id = ? 
+            ORDER BY routing_id DESC
+            """
+            cursor.execute(workcentre_query, (previous_bom_id,))
+            workcentre_result = cursor.fetchone()
+
+            if workcentre_result:
+                workcentre_id = workcentre_result[0]
+            else:
+                workcentre_id = "WC001"  # Default to WC001 if not found
+        else:
+            workcentre_id = "WC001"
+
+        query = "SELECT TOP 1 routing_id FROM dbo.Routings$ ORDER BY routing_id DESC"
+        cursor.execute(query)
+        result = cursor.fetchone()
+
+        if result:
+            latest_routing_id = result[0]  # e.g., "R470"
+            routing_counter = int(latest_routing_id[1:])  # Extract integer part, ignore "R" prefix
+        else:
+            routing_counter = 0  # Default to 0 if no records are found
+
+        routing_counter += 1
+        routing_id = f"R{str(routing_counter).zfill(3)}"
+
+        # cursor.execute(previous_bom_query, (bom.BOM_id,))
+        # previous_bom_result = cursor.fetchone()
+
+        # original_bom_query = "SELECT TOP 1 workcentre_id FROM dbo.Routings$ WHERE BOM_id = ? ORDER BY routing_id DESC"
+        # cursor.execute(original_bom_query, (bom.BOM_id,))
+        # workcentre_result = cursor.fetchone()
+        # workcentre_id = workcentre_result[0] if workcentre_result else "WC001"  # Default to WC001 if not found
 
         # Generate a new routing_id
         query = "SELECT TOP 1 routing_id FROM dbo.Routings$ ORDER BY routing_id DESC"
         cursor.execute(query)
         result = cursor.fetchone()
         
-        if result:
-            latest_routing_id = result[0]  # e.g., "R470"
-            # Extract the integer part of the routing_id
-            routing_counter = int(latest_routing_id[1:])  # Ignore the "R" prefix
-        else:
-            routing_counter = 0  # Default to 0 if no records are found
+        # if result:
+        #     latest_routing_id = result[0]  # e.g., "R470"
+        #     # Extract the integer part of the routing_id
+        #     routing_counter = int(latest_routing_id[1:])  # Ignore the "R" prefix
+        # else:
+        #     routing_counter = 0  # Default to 0 if no records are found
 
-        # Increment the counter for the new routing_id
-        routing_counter += 1
-        routing_id = f"R{str(routing_counter).zfill(3)}"
+        # # Increment the counter for the new routing_id
+        # routing_counter += 1
+        # routing_id = f"R{str(routing_counter).zfill(3)}"
 
         # Insert data into the Routing table
         insert_routing_query = """
@@ -256,7 +269,7 @@ async def create_bom(bom: BOM, part: Part):
         connection.commit()
 
         response = {
-            "message": "BOM, Part and Routing created successfully",
+            "message": "BOM and Routing created successfully",
             "data": bom
         }
         return response    
