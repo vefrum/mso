@@ -10,8 +10,7 @@ import requests
 from io import StringIO
 from pydantic import BaseModel
 from datetime import date, datetime
-from typing import List
-
+from typing import List, Optional
 
 # Global counter for Workcentre ID (this part need to change to get the highest workcentre ID then +1 to it)
 workcentre_counter = 5
@@ -47,16 +46,17 @@ class BOM(BaseModel):
     child_leadtime: float
     BOM_last_updated: datetime
     status: str = None
-    part_name: str 
-    part_description: str
-    unit_cost: float
-    inventory: int
+    part_name: Optional[str] = None
+    part_description: Optional[str] = None
+    unit_cost: Optional[float] = None
+    inventory: Optional[int] = None
     process_description: str
     setup_time: int
     runtime: int
     routing_id: str 
     operations_sequence: int
     workcentre_id: str
+    
 
 class Routing(BaseModel):
     routing_id: str = None 
@@ -188,7 +188,7 @@ async def create_bom(bom: BOM):
         ))
 
         insert_parts_query = """
-        INSERT INTO dbo.Parts$ (part_id, part_name, inventory, POM, UOM, part_description, unit_cost, lead_time, part_last_updated, status)
+        INSERT INTO dbo.Part_Master_Records$ (part_id, part_name, inventory, POM, UOM, part_description, unit_cost, lead_time, part_last_updated, status)
         VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
         """
         cursor.execute(insert_parts_query, (
