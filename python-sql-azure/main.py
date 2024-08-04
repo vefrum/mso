@@ -378,16 +378,16 @@ async def update_bom(bom: BOM, routing: Routing):
             return HTTPException(status_code=404, detail=f"BOM_id {bom.BOM_id} not found")
         
         # Fetch the latest routing_id and increment it for new routing entry
-        last_routing_id_query = "SELECT TOP 1 routing_id FROM dbo.Routings$ ORDER BY CAST(SUBSTRING(routing_id, 2, LEN(routing_id)-1) AS INT) DESC"
-        cursor.execute(last_routing_id_query)
-        last_routing_id_row = cursor.fetchone()
+        # last_routing_id_query = "SELECT TOP 1 routing_id FROM dbo.Routings$ ORDER BY CAST(SUBSTRING(routing_id, 2, LEN(routing_id)-1) AS INT) DESC"
+        # cursor.execute(last_routing_id_query)
+        # last_routing_id_row = cursor.fetchone()
 
-        if not last_routing_id_row:
-            new_routing_id = "R001"
-        else:
-            last_routing_id = last_routing_id_row[0]
-            prefix, number = last_routing_id[0], int(last_routing_id[1:])
-            new_routing_id = f"{prefix}{str(number + 1).zfill(3)}"
+        # if not last_routing_id_row:
+        #     new_routing_id = "R001"
+        # else:
+        #     last_routing_id = last_routing_id_row[0]
+        #     prefix, number = last_routing_id[0], int(last_routing_id[1:])
+        #     new_routing_id = f"{prefix}{str(number + 1).zfill(3)}"
 
         previous_bom_query = """
         SELECT TOP 1 BOM_id 
@@ -416,6 +416,19 @@ async def update_bom(bom: BOM, routing: Routing):
                 workcentre_id = "WC001"  # Default to WC001 if not found
         else:
             workcentre_id = "WC001"
+
+        query = "SELECT TOP 1 routing_id FROM dbo.Routings$ ORDER BY routing_id DESC"
+        cursor.execute(query)
+        result = cursor.fetchone()
+
+        if result:
+            latest_routing_id = result[0]  # e.g., "R470"
+            routing_counter = int(latest_routing_id[1:])  # Extract integer part, ignore "R" prefix
+        else:
+            routing_counter = 0  # Default to 0 if no records are found
+
+        routing_counter += 1
+        new_routing_id = f"R{str(routing_counter).zfill(3)}"
 
         # Insert the new Routing entry
         insert_routing_query = """
