@@ -124,7 +124,7 @@ async def get_bom():
     return execute_query(query) 
 
 @app.post("/BOM")
-async def create_bom(bom: BOM):
+async def create_bom(bom: BOM, part: Part):
 
     global bom_counter
 
@@ -196,6 +196,7 @@ async def create_bom(bom: BOM):
         
         bom.POM = 'In-House'
         bom.UOM = 'pcs'
+        part.part_id = bom.child_id
 
         insert_parts_query = """
         INSERT INTO dbo.Part_Master_Records$ (part_id, part_name, inventory, POM, UOM, part_description, unit_cost, lead_time, part_last_updated, status)
@@ -324,7 +325,7 @@ async def delete_bom(BOM_id: str):
 # @app.put("/BOM/{BOM_id}")
 # async def update_bom(BOM_id: str, update_request: UpdateBOMRequest = Body(...)):
 @app.put("/BOM")
-async def update_bom(bom: BOM):
+async def update_bom(bom: BOM, routing: Routing):
 
     try:
         # Check if the child_id exists in the part_id column
@@ -372,7 +373,7 @@ async def update_bom(bom: BOM):
         ))
 
         if cursor.rowcount == 0:
-            raise HTTPException(status_code=404, detail=f"BOM_id {bom.BOM_id} not found")
+            return HTTPException(status_code=404, detail=f"BOM_id {bom.BOM_id} not found")
         
         # Fetch the latest routing_id and increment it for new routing entry
         last_routing_id_query = "SELECT TOP 1 routing_id FROM dbo.Routings$ ORDER BY CAST(SUBSTRING(routing_id, 2, LEN(routing_id)-1) AS INT) DESC"
@@ -391,14 +392,25 @@ async def update_bom(bom: BOM):
         INSERT INTO dbo.Routings$ (routing_id, BOM_id, operations_sequence, workcentre_id, process_description, setup_time, runtime, routings_last_update, status)
         VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
         """
+        # cursor.execute(insert_routing_query, (
+        #     new_routing_id,
+        #     bom.BOM_id,
+        #     bom.operations_sequence,
+        #     bom.workcentre_id,
+        #     bom.process_description,
+        #     bom.setup_time,
+        #     bom.runtime,
+        #     bom.BOM_last_updated,
+        #     'active'
+        # ))
         cursor.execute(insert_routing_query, (
             new_routing_id,
             bom.BOM_id,
-            bom.operations_sequence,
-            bom.workcentre_id,
-            bom.process_description,
-            bom.setup_time,
-            bom.runtime,
+            routing.operations_sequence,
+            routing.workcentre_id,
+            routing.process_description,
+            routing.setup_time,
+            routing.runtime,
             bom.BOM_last_updated,
             'active'
         ))
@@ -418,11 +430,11 @@ async def update_bom(bom: BOM):
             "Routing_data": {
                 "routing_id": new_routing_id,
                 "BOM_id": bom.BOM_id,
-                "operations_sequence": bom.operations_sequence,
-                "workcentre_id": bom.workcentre_id,
-                "process_description": bom.process_description,
-                "setup_time": bom.setup_time,
-                "runtime": bom.runtime,
+                "operations_sequence": routing.operations_sequence,
+                "workcentre_id": routing.workcentre_id,
+                "process_description": routing.process_description,
+                "setup_time": routing.setup_time,
+                "runtime": routing.runtime,
                 "routings_last_update": bom.BOM_last_updated,
                 "status": 'active'
             }
