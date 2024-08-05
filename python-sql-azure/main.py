@@ -210,10 +210,10 @@ async def create_bom(bom: BOM):
         previous_bom_query = """
         SELECT BOM_id 
         FROM dbo.BOM$ 
-        WHERE part_id = ? AND BOM_id <> ? AND status = 'active'
+        WHERE part_id = ? AND status = 'active'
         ORDER BY BOM_last_updated DESC
         """
-        cursor.execute(previous_bom_query, (bom.part_id, bom.BOM_id))
+        cursor.execute(previous_bom_query, (bom.part_id,))
         previous_bom_result = cursor.fetchone()
 
         if previous_bom_result:
@@ -226,8 +226,7 @@ async def create_bom(bom: BOM):
             WHERE BOM_id = ? AND status = 'active'
             """
             cursor.execute(update_bom_status_query, (previous_bom_id,))
-
-            # Fetch the corresponding workcentre_id for the previous BOM
+        
             workcentre_query = """
             SELECT TOP 1 routing_id, workcentre_id 
             FROM dbo.Routings$ 
