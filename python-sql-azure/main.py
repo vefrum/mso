@@ -751,6 +751,13 @@ async def update_bom(bom: BOM):
             "Routing_id": new_routing_id
         }
         return response 
+    
+    except HTTPException as e:
+        connection.rollback()
+        return {"error": str(e)}
+    except Exception as e:
+        connection.rollback()
+        return {"error": f"An unexpected error occurred: {str(e)}"}
 
 @app.post("/routings")
 async def create_routing(routing: Routing):
