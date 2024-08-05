@@ -377,16 +377,16 @@ async def delete_bom(BOM_id: str):
 async def update_bom(bom: BOM):
 
     try:
-        # Check if the part_id and child_id combination already exists under any BOM_id
-        check_bom_query = """
-        SELECT BOM_id FROM dbo.BOM$
-        WHERE part_id = ? AND child_id = ? 
-        """
-        cursor.execute(check_bom_query, (bom.part_id, bom.child_id))
-        existing_bom = cursor.fetchone()
+        # # Check if the part_id and child_id combination already exists under any BOM_id
+        # check_bom_query = """
+        # SELECT BOM_id FROM dbo.BOM$
+        # WHERE part_id = ? AND child_id = ? 
+        # """
+        # cursor.execute(check_bom_query, (bom.part_id, bom.child_id))
+        # existing_bom = cursor.fetchone()
 
-        if existing_bom:
-            return HTTPException(status_code=400, detail="part_id and child_id already belong to the same BOM_id and cannot be added.")
+        # if existing_bom:
+        #     return HTTPException(status_code=400, detail="part_id and child_id already belong to the same BOM_id and cannot be added.")
 
         # Fetch all BOM entries from the database
         cursor.execute("SELECT part_id, child_id FROM dbo.BOM$")
@@ -525,9 +525,8 @@ async def update_bom(bom: BOM):
         connection.commit()
 
         response = {
-            "message": "BOM and Routing created successfully",
+            "message": "BOM created successfully",
             "BOM_data": bom,
-            "Routing_id": new_routing_id
         }
         return response 
     
