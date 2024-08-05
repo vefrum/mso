@@ -682,35 +682,20 @@ async def update_bom(bom: BOM):
         combined_query = """
         UPDATE dbo.Routings$
         SET status = 'NA'
-        WHERE routing_id IN (
-            SELECT TOP 1 routing_id 
-            FROM dbo.Routings$
-            WHERE BOM_id = ?
-            ORDER BY routing_id DESC
-        )
         OUTPUT 
             INSERTED.routing_id, 
             INSERTED.operations_sequence, 
             INSERTED.workcentre_id, 
             INSERTED.process_description, 
             INSERTED.setup_time, 
-            INSERTED.runtime;
+            INSERTED.runtime
+        WHERE routing_id IN (
+            SELECT TOP 1 routing_id 
+            FROM dbo.Routings$
+            WHERE BOM_id = ?
+            ORDER BY routing_id DESC
+        )
         """
-        # OUTPUT 
-        #     INSERTED.routing_id, 
-        #     INSERTED.operations_sequence, 
-        #     INSERTED.workcentre_id, 
-        #     INSERTED.process_description, 
-        #     INSERTED.setup_time, 
-        #     INSERTED.runtime
-        # WHERE routing_id IN (
-        #     SELECT TOP 1 routing_id 
-        #     FROM dbo.Routings$
-        #     WHERE BOM_id = ?
-        #     ORDER BY routing_id DESC
-        # );
-        # """
-
         cursor.execute(combined_query, (bom.BOM_id,))
         latest_routing_details = cursor.fetchone()
 
