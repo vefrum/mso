@@ -208,9 +208,9 @@ async def create_bom(bom: BOM):
             return HTTPException(status_code=400, detail="BOM_id already exists and cannot be added")
         
         previous_bom_query = """
-        SELECT TOP 1 BOM_id 
+        SELECT BOM_id 
         FROM dbo.BOM$ 
-        WHERE BOM_id <> ? 
+        WHERE part_id = ? AND BOM_id <> ? AND status = 'active'
         ORDER BY BOM_last_updated DESC
         """
         cursor.execute(previous_bom_query, (bom.BOM_id,))
