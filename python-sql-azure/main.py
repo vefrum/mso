@@ -330,13 +330,25 @@ async def delete_bom(BOM_id: str):
 async def update_bom(bom: BOM):
 
     try:
-        # Check if the child_id exists in the part_id column
-        child_in_part_query = "SELECT COUNT(*) FROM dbo.BOM$ WHERE part_id = ?"
-        cursor.execute(child_in_part_query, (bom.child_id,))
-        child_in_part_count = cursor.fetchone()[0]
+        circular_dependency_query = """
+        WITH RECURSIVE CTE AS (
+            SELECT part_id, child_id
+            FROM dbo.BOM$
+            WHERE part_id = ?
 
-        if child_in_part_count > 0:
-            return HTTPException(status_code=400, detail="Child_id exists as a part_id, unable to complete this action")
+            UNION ALL
+
+            SELECT b.part_id, b.child_id
+            FROM dbo.BOM$ b
+            INNER JOIN CTE c ON b.part_id = c.child_id
+        )
+        SELECT 1 FROM CTE WHERE child_id = ?
+        """
+        cursor.execute(circular_dependency_query, (bom.child_id, bom.part_id))
+        circular_dependency = cursor.fetchone()
+
+        if circular_dependency:
+            return HTTPException(status_code=400, detail="Action cannot be completed: this item can't exist as both a parent and a child.")
         
         last_id_query = "SELECT TOP 1 BOM_id FROM dbo.BOM$ ORDER BY CAST(SUBSTRING(BOM_id, 2, LEN(BOM_id)-1) AS INT) DESC"
         cursor.execute(last_id_query)
@@ -403,11 +415,11 @@ async def update_bom(bom: BOM):
         WHERE routing_id IN (
             SELECT TOP 1 routing_id 
             FROM dbo.Routings$
-            WHERE BOM_id = ? AND status = 'active'
+            WHERE BOM_id = ?
             ORDER BY routing_id DESC
         );
         """
-
+        
         cursor.execute(combined_query, (bom.BOM_id,))
         latest_routing_details = cursor.fetchone()
 
