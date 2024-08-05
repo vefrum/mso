@@ -593,41 +593,19 @@ async def delete_bom(BOM_id: str):
 
 @app.put("/BOM/{BOM_id}")
 async def update_bom(bom: BOM):
+
     try:
-        # Fetch all BOM entries from the database
-        cursor.execute("SELECT part_id, child_id FROM dbo.BOM$")
-        all_bom_entries = cursor.fetchall()
-        
-        # Create a dictionary to map part_id to its children
-        bom_dict = {}
-        for part_id, child_id in all_bom_entries:
-            if part_id in bom_dict:
-                bom_dict[part_id].append(child_id)
-            else:
-                bom_dict[part_id] = [child_id]
+        # Check if the child_id exists in the part_id column
+        child_in_part_query = "SELECT COUNT(*) FROM dbo.BOM$ WHERE part_id = ?"
+        print(child_in_part_query)  # Debugging
+        cursor.execute(child_in_part_query, (bom.child_id,))
+        child_in_part_count = cursor.fetchone()[0]
 
-        # Function to check for circular dependency using DFS
-        def has_circular_dependency(new_child_id, old_part_id, visited=None):
-            if visited is None:
-                visited = set()
-            if new_child_id in visited:
-                return False
-            visited.add(new_child_id)
-            children = bom_dict.get(new_child_id, [])
-            for child in children:
-                if child == old_part_id:
-                    return True
-                if has_circular_dependency(child, old_part_id, visited):
-                    return True
-            visited.remove(new_child_id)
-            return False
-
-        # Check for circular dependency
-        if has_circular_dependency(bom.child_id, bom.part_id):
-            return HTTPException(status_code=400, detail="Action cannot be completed: this item can't exist as both a parent and a child.")
-
+        if child_in_part_count > 0:
+            return HTTPException(status_code=400, detail="Child_id exists as a part_id, unable to complete this action")
         
         last_id_query = "SELECT TOP 1 BOM_id FROM dbo.BOM$ ORDER BY CAST(SUBSTRING(BOM_id, 2, LEN(BOM_id)-1) AS INT) DESC"
+        print(last_id_query)  # Debugging
         cursor.execute(last_id_query)
         last_id_row = cursor.fetchone()
 
@@ -643,6 +621,7 @@ async def update_bom(bom: BOM):
         SET status = 'NA'
         WHERE BOM_id = ? AND status = 'active'
         """
+        print(update_status_query)  # Debugging
         cursor.execute(update_status_query, (bom.BOM_id,))
 
         # Insert the new BOM entry with updated child_id or other changes
@@ -653,6 +632,7 @@ async def update_bom(bom: BOM):
         INSERT INTO dbo.BOM$ (BOM_id, part_id, child_id, child_qty, child_leadtime, BOM_last_updated, status)
         VALUES (?, ?, ?, ?, ?, ?, ?)
         """
+        print(insert_query)  # Debugging
         cursor.execute(insert_query, (
             bom.BOM_id,
             bom.part_id,
@@ -667,6 +647,7 @@ async def update_bom(bom: BOM):
             return HTTPException(status_code=404, detail=f"BOM_id {bom.BOM_id} not found")
         
         query = "SELECT TOP 1 routing_id FROM dbo.Routings$ ORDER BY routing_id DESC"
+        print(query)  # Debugging
         cursor.execute(query)
         result = cursor.fetchone()
 
@@ -692,19 +673,19 @@ async def update_bom(bom: BOM):
         WHERE routing_id IN (
             SELECT TOP 1 routing_id 
             FROM dbo.Routings$
-            WHERE BOM_id = ?
+            WHERE BOM_id = ? AND status = 'active'
             ORDER BY routing_id DESC
         );
         """
-
+        print(combined_query)  # Debugging
         cursor.execute(combined_query, (bom.BOM_id,))
         latest_routing_details = cursor.fetchone()
 
         if latest_routing_details:
-    # Extracting the details from the combined result
+            # Extracting the details from the combined result
             original_routing_id, operations_sequence, workcentre_id, process_description, setup_time, runtime = latest_routing_details
         else:
-    # Fallback to default values if no routing details are found
+            # Fallback to default values if no routing details are found
             original_routing_id = None
             operations_sequence = 1
             workcentre_id = "WC001"
@@ -716,11 +697,11 @@ async def update_bom(bom: BOM):
         INSERT INTO dbo.Routings$ (routing_id, BOM_id, operations_sequence, workcentre_id, process_description, setup_time, runtime, routings_last_update, status)
         VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
         """
-    
+        print(insert_routing_query)  # Debugging
         cursor.execute(insert_routing_query, (
             new_routing_id,
             bom.BOM_id,
-            operations_sequence, #operations sequence = 1
+            operations_sequence,  # operations sequence = 1
             workcentre_id,
             process_description,
             setup_time,
