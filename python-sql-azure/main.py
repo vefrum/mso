@@ -49,9 +49,9 @@ class BOM(BaseModel):
     process_description: Optional[str] = None
     setup_time: Optional[int] = None
     runtime: Optional[int] = None
-    routing_id: str 
-    operations_sequence: int # follow previous BOM
-    workcentre_id: str # follow previous BOM
+    routing_id: Optional[str] = None 
+    operations_sequence: Optional[int] = None # follow previous BOM
+    workcentre_id: Optional[str] = None # follow previous BOM
     
 class Routing(BaseModel):
     routing_id: str = None 
@@ -424,6 +424,39 @@ async def update_bom(bom: BOM):
             setup_time = 0
             runtime = 0
 
+        insert_routing_query = """
+        INSERT INTO dbo.Routings$ (routing_id, BOM_id, operations_sequence, workcentre_id, process_description, setup_time, runtime, routings_last_update, status)
+        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
+        """
+    
+        cursor.execute(insert_routing_query, (
+            new_routing_id,
+            bom.BOM_id,
+            operations_sequence, #operations sequence = 1
+            workcentre_id,
+            process_description,
+            setup_time,
+            runtime,
+            bom.BOM_last_updated,
+            'active'
+        ))
+
+        connection.commit()
+
+        response = {
+            "message": "BOM and Routing created successfully",
+            "BOM_data": bom,
+            "Routing_id": new_routing_id
+        }
+        return response 
+    
+    except HTTPException as e:
+        connection.rollback()
+        return {"error": str(e)}
+    except Exception as e:
+        connection.rollback()
+        return {"error": f"An unexpected error occurred: {str(e)}"}
+
         # original_routing_details_query = """
         # SELECT TOP 1 routing_id, operations_sequence, workcentre_id, process_description, setup_time, runtime 
         # FROM dbo.Routings$
@@ -501,37 +534,8 @@ async def update_bom(bom: BOM):
 
         # Insert the new Routing entry (remove this?)
         # insert_routing_query = """
-        # INSERT INTO dbo.Routings$ (routing_id, BOM_id, operations_sequence, workcentre_id, process_description, setup_time, runtime, routings_last_update, status)
-        # VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
-        # """
-    
-        # cursor.execute(insert_routing_query, (
-        #     new_routing_id,
-        #     bom.BOM_id,
-        #     operations_sequence, #operations sequence = 1
-        #     workcentre_id,
-        #     process_description,
-        #     setup_time,
-        #     runtime,
-        #     bom.BOM_last_updated,
-        #     'active'
-        # ))
 
-        connection.commit()
-
-        response = {
-            "message": "BOM and Routing created successfully",
-            "BOM_data": bom,
-            "Routing_id": new_routing_id
-        }
-        return response 
-    
-    except HTTPException as e:
-        connection.rollback()
-        return {"error": str(e)}
-    except Exception as e:
-        connection.rollback()
-        return {"error": f"An unexpected error occurred: {str(e)}"}
+        ###########################################
     
         # response = {
         #     "message": "BOM and Routing updated successfully with new BOM_id and routing_id",
@@ -558,8 +562,6 @@ async def update_bom(bom: BOM):
         # }
         # return response
     
-    
- 
 @app.get("/routings") 
 async def get_routings(): 
     query = "SELECT * FROM dbo.Routings$" 
