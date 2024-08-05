@@ -262,36 +262,36 @@ async def create_bom(bom: BOM):
             bom.BOM_last_updated,
             bom.status
         ))
-        # Generate a new routing_id
-        query = "SELECT TOP 1 routing_id FROM dbo.Routings$ ORDER BY routing_id DESC"
-        cursor.execute(query)
-        result = cursor.fetchone()
+        # # Generate a new routing_id
+        # query = "SELECT TOP 1 routing_id FROM dbo.Routings$ ORDER BY routing_id DESC"
+        # cursor.execute(query)
+        # result = cursor.fetchone()
 
-        if result:
-            latest_routing_id = result[0]
-            routing_counter = int(latest_routing_id[1:])
-        else:
-            routing_counter = 0
+        # if result:
+        #     latest_routing_id = result[0]
+        #     routing_counter = int(latest_routing_id[1:])
+        # else:
+        #     routing_counter = 0
 
-        routing_counter += 1
-        routing_id = f"R{str(routing_counter).zfill(3)}"
+        # routing_counter += 1
+        # routing_id = f"R{str(routing_counter).zfill(3)}"
 
-        # Insert data into the Routing table
-        insert_routing_query = """
-        INSERT INTO dbo.Routings$ (routing_id, BOM_id, operations_sequence, workcentre_id, process_description, setup_time, runtime, routings_last_update, status)
-        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
-        """
-        cursor.execute(insert_routing_query, (
-            routing_id,
-            bom.BOM_id,
-            1,  # Assuming operations_sequence starts at 1 for the new entry
-            bom.workcentre_id,  # Retrieved or default workcentre_id
-            bom.process_description,  # Replace with actual process description or parameter
-            bom.setup_time,  # Setup time, adjust as necessary
-            bom.runtime,  # Runtime, adjust as necessary
-            current_datetime,
-            "active"
-        ))
+        # # Insert data into the Routing table
+        # insert_routing_query = """
+        # INSERT INTO dbo.Routings$ (routing_id, BOM_id, operations_sequence, workcentre_id, process_description, setup_time, runtime, routings_last_update, status)
+        # VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
+        # """
+        # cursor.execute(insert_routing_query, (
+        #     routing_id,
+        #     bom.BOM_id,
+        #     1,  # Assuming operations_sequence starts at 1 for the new entry
+        #     bom.workcentre_id,  # Retrieved or default workcentre_id
+        #     bom.process_description,  # Replace with actual process description or parameter
+        #     bom.setup_time,  # Setup time, adjust as necessary
+        #     bom.runtime,  # Runtime, adjust as necessary
+        #     current_datetime,
+        #     "active"
+        # ))
 
         connection.commit()
 
@@ -302,7 +302,7 @@ async def create_bom(bom: BOM):
         return response    
 
     except pyodbc.IntegrityError:
-        return {"error": f"{error_messages['integrity_error']}: {str(e)}"}
+        return {"error": f"{error_messages['integrity_error']}
     except pyodbc.DatabaseError as e:
         return {"error": f"{error_messages['database_error']}: {str(e)}"}
     except Exception as e:
