@@ -33,8 +33,8 @@ class Order(BaseModel):
     order_id: str = None
     part_id: str
     part_qty: int
-    order_date: date
-    due_date: date
+    order_date: datetime
+    due_date: datetime
     order_last_updated: datetime
     status: str = None
 
