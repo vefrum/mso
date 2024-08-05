@@ -171,7 +171,7 @@ async def create_bom(bom: BOM):
         if has_circular_dependency(bom.child_id, bom.part_id):
             return HTTPException(status_code=400, detail="Action cannot be completed: this item can't exist as both a parent and a child.")
         
-        check_parts_query = "SELECT COUNT(*) FROM dbo.Part_Master_Records WHERE part_id = ? OR part_id = ?"
+        check_parts_query = "SELECT COUNT(*) FROM dbo.Part_Master_Records$ WHERE part_id = ? OR part_id = ?"
         cursor.execute(check_parts_query, (bom.part_id, bom.child_id))
         count = cursor.fetchone()[0]
 
@@ -820,55 +820,40 @@ async def create_part(part: Part):
 @app.put("/partmasterrecords/{part_id}")
 async def update_part(part_id: str, part: Part):
 
-    last_id_query = "SELECT TOP 1 part_id FROM dbo.Part_Master_Records$ ORDER BY CAST(SUBSTRING(part_id, 2, LEN(part_id)-1) AS INT) DESC"
-    cursor.execute(last_id_query)
-    last_id_row = cursor.fetchone()
+    # Fetch the existing part details
+    existing_part_query = "SELECT part_name FROM dbo.Part_Master_Records$ WHERE part_id = ?"
+    cursor.execute(existing_part_query, (part_id,))
+    existing_part = cursor.fetchone()
 
-    if not last_id_row:
-        # If no existing parts, start with a base ID, e.g., "P001"
-        new_part_id = "P001"
-    else:
-        last_id = last_id_row[0]
-        # Assuming the format "P###", extract the numeric part, increment, and reformat
-        prefix, number = last_id[0], int(last_id[1:])
-        new_part_id = f"{prefix}{str(number + 1).zfill(3)}"
+    if not existing_part:
+        raise HTTPException(status_code=404, detail=f"part_id {part_id} not found")
+    
+    # Check if part_name or part_id is being changed
+    if part_id != part.part_id or existing_part[0] != part.part_name:
+        raise HTTPException(status_code=400, detail="part_id and/or part_name cannot be changed")
+    
+    current_time = datetime.now()
 
-    # Set the old part record to inactive (if applicable)
-    update_status_query = """
+    update_query = """
     UPDATE dbo.Part_Master_Records$
-    SET status = 'inactive'
+    SET inventory = ?, POM = ?, UOM = ?, part_description = ?, unit_cost = ?, lead_time = ?, part_last_updated = ?, status = ?
     WHERE part_id = ?
     """
-    cursor.execute(update_status_query, (part_id,))
-
-    # Set new part_id and status
-    part.part_id = new_part_id
-    part.status = "active"
-
-    # Insert new part record with updated details
-    insert_query = """
-    INSERT INTO dbo.Part_Master_Records$ (part_id, part_name, inventory, POM, UOM, part_description, unit_cost, lead_time, part_last_updated, status)
-    VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
-    """
-    cursor.execute(insert_query, (
-        part.part_id,
-        part.part_name,
+    cursor.execute(update_query, (
         part.inventory,
         part.POM,
         part.UOM,
         part.part_description,
         part.unit_cost,
         part.lead_time,
-        part.part_last_updated,
-        part.status
+        current_time,  # Set part_last_updated to the current time
+        "Active",
+        part_id
     ))
-
-    if cursor.rowcount == 0:
-        raise HTTPException(status_code=404, detail=f"part_id {part_id} not found")
 
     connection.commit()
     response = {
-        "message": "Part Master Records updated successfully with new part_id",
+        "message": "Part Master Records updated successfully",
         "data": {
             "part_id": part.part_id,
             "part_name": part.part_name,
@@ -878,12 +863,11 @@ async def update_part(part_id: str, part: Part):
             "part_description": part.part_description,
             "unit_cost": part.unit_cost,
             "lead_time": part.lead_time,
-            "part_last_updated": part.part_last_updated,
-            "status": part.status
+            "part_last_updated": current_time,
+            "status": "Active"
         }
     }
     return response
-
 
 @app.delete("/partmasterrecords/{part_id}")
 async def delete_part(part_id: str):
