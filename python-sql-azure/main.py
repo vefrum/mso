@@ -39,7 +39,7 @@ class Order(BaseModel):
     status: str = None
 
 class BOM(BaseModel):
-    BOM_id: str = None
+    BOM_id: Optional[str] = None
     part_id: str
     child_id: str
     child_qty: float
