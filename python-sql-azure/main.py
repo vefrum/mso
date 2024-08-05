@@ -305,12 +305,13 @@ async def create_bom(bom: BOM):
         }
         return response    
 
-    except pyodbc.IntegrityError:
-        return {"error": error_messages["integrity_error"]}
+    except pyodbc.IntegrityError as e:
+        return {"error": f"{error_messages['integrity_error']}: {str(e)}"}
     except pyodbc.DatabaseError as e:
         return {"error": f"{error_messages['database_error']}: {str(e)}"}
     except Exception as e:
         return {"error": f"{error_messages['unexpected_error']}: {str(e)}"}
+
 
 @app.delete("/bom/{BOM_id}")
 async def delete_bom(BOM_id: str):
