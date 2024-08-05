@@ -302,7 +302,7 @@ async def create_bom(bom: BOM):
         return response    
 
     except pyodbc.IntegrityError:
-        return {"error": f"{error_messages['integrity_error']}
+        return {"error": error_messages["integrity_error"]}
     except pyodbc.DatabaseError as e:
         return {"error": f"{error_messages['database_error']}: {str(e)}"}
     except Exception as e:
