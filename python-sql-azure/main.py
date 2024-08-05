@@ -478,12 +478,22 @@ async def update_bom(bom: BOM):
             'active'
         ))
 
+        connection.commit()
+
         response = {
             "message": "BOM and Routing created successfully",
             "BOM_data": bom,
             "Routing_id": new_routing_id
         }
         return response 
+    
+    except HTTPException as e:
+        connection.rollback()
+        return {"error": str(e)}
+    except Exception as e:
+        connection.rollback()
+        return {"error": f"An unexpected error occurred: {str(e)}"}
+    
         # response = {
         #     "message": "BOM and Routing updated successfully with new BOM_id and routing_id",
         #     "BOM_data": {
@@ -509,12 +519,7 @@ async def update_bom(bom: BOM):
         # }
         # return response
     
-    except HTTPException as e:
-        connection.rollback()
-        return {"error": str(e)}
-    except Exception as e:
-        connection.rollback()
-        return {"error": f"An unexpected error occurred: {str(e)}"}
+    
  
 @app.get("/routings") 
 async def get_routings(): 
