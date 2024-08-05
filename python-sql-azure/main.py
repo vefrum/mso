@@ -76,13 +76,13 @@ class Part(BaseModel):
     part_last_updated: datetime
     status: str = None
 
-class PartIDUpdate(BaseModel):
-    old_part_id: str
-    new_part_id: str
+# class PartIDUpdate(BaseModel):
+#     old_part_id: str
+#     new_part_id: str
 
-class UpdateBOMRequest(BaseModel):
-    bom: BOM
-    routing: List[Routing]
+# class UpdateBOMRequest(BaseModel):
+#     bom: BOM
+#     routing: List[Routing]
  
 load_dotenv() 
 connection_string = os.getenv("AZURE_SQL_CONNECTIONSTRING") 
@@ -391,24 +391,23 @@ async def update_bom(bom: BOM):
         new_routing_id = f"R{str(routing_counter).zfill(3)}"
 
         combined_query = """
-            WITH LatestRouting AS (
-                SELECT TOP 1 routing_id, operations_sequence, workcentre_id, process_description, setup_time, runtime
-                FROM dbo.Routings$
-                WHERE BOM_id = ?
-                ORDER BY routing_id DESC
-            )
-            UPDATE dbo.Routings$
-                SET status = 'NA'
-                WHERE routing_id = (SELECT routing_id FROM LatestRouting)
-                OUTPUT 
-                    INSERTED.routing_id, 
-                    INSERTED.operations_sequence, 
-                    INSERTED.workcentre_id, 
-                    INSERTED.process_description, 
-                    INSERTED.setup_time, 
-                    INSERTED.runtime;
+        UPDATE dbo.Routings$
+        SET status = 'NA'
+        OUTPUT 
+            INSERTED.routing_id, 
+            INSERTED.operations_sequence, 
+            INSERTED.workcentre_id, 
+            INSERTED.process_description, 
+            INSERTED.setup_time, 
+            INSERTED.runtime
+        WHERE routing_id IN (
+            SELECT TOP 1 routing_id 
+            FROM dbo.Routings$
+            WHERE BOM_id = ?
+            ORDER BY routing_id DESC
+        );
         """
-        
+
         cursor.execute(combined_query, (bom.BOM_id,))
         latest_routing_details = cursor.fetchone()
 
@@ -456,111 +455,6 @@ async def update_bom(bom: BOM):
     except Exception as e:
         connection.rollback()
         return {"error": f"An unexpected error occurred: {str(e)}"}
-
-        # original_routing_details_query = """
-        # SELECT TOP 1 routing_id, operations_sequence, workcentre_id, process_description, setup_time, runtime 
-        # FROM dbo.Routings$
-        # WHERE BOM_id = ?
-        # ORDER BY routing_id DESC
-        # """
-        # update_original_routing_status_query = """
-        #     UPDATE dbo.Routings$
-        #     SET status = 'NA'
-        #     WHERE routing_id = ?
-        #     """
-        # cursor.execute(original_routing_details_query, (bom.BOM_id,))
-        # original_routing_details = cursor.fetchone()
-
-        # if original_routing_details:
-        #     original_routing_id, operations_sequence, workcentre_id, process_description, setup_time, runtime = original_routing_details
-        # else:
-        #     # Fallback to default values if no routing details are found for the original BOM_id
-        #     original_routing_id = None 
-        #     operations_sequence = 1
-        #     workcentre_id = "WC001"
-        #     process_description = "Default Process Description"
-        #     setup_time = 0
-        #     runtime = 0
-
-        # if original_routing_id:
-        #     update_original_routing_status_query = """
-        #     UPDATE dbo.Routings$
-        #     SET status = 'NA'
-        #     WHERE routing_id = ?
-        #     """
-        #     cursor.execute(update_original_routing_status_query, (bom.BOM_id,))
-
-        # Fetch the latest routing_id and increment it for new routing entry
-        # last_routing_id_query = "SELECT TOP 1 routing_id FROM dbo.Routings$ ORDER BY CAST(SUBSTRING(routing_id, 2, LEN(routing_id)-1) AS INT) DESC"
-        # cursor.execute(last_routing_id_query)
-        # last_routing_id_row = cursor.fetchone()
-
-        # if not last_routing_id_row:
-        #     new_routing_id = "R001"
-        # else:
-        #     last_routing_id = last_routing_id_row[0]
-        #     prefix, number = last_routing_id[0], int(last_routing_id[1:])
-        #     new_routing_id = f"{prefix}{str(number + 1).zfill(3)}"
-############################################ 
-        #########
-        #     workcentre_query = """
-        #     SELECT TOP 1 workcentre_id 
-        #     FROM dbo.Routings$ 
-        #     WHERE BOM_id = ? 
-        #     ORDER BY routing_id DESC
-        #     """
-        #     cursor.execute(workcentre_query, (previous_bom_id,))
-        #     workcentre_result = cursor.fetchone()
-
-        #     if workcentre_result:
-        #         workcentre_id = workcentre_result[0]
-        #     else:
-        #         workcentre_id = "WC001"  # Default to WC001 if not found
-        # else:
-        #     workcentre_id = "WC001"
-
-        # query = "SELECT TOP 1 routing_id FROM dbo.Routings$ ORDER BY routing_id DESC"
-        # cursor.execute(query)
-        # result = cursor.fetchone()
-
-        # if result:
-        #     latest_routing_id = result[0]  # e.g., "R470"
-        #     routing_counter = int(latest_routing_id[1:])  # Extract integer part, ignore "R" prefix
-        # else:
-        #     routing_counter = 0  # Default to 0 if no records are found
-
-        # routing_counter += 1
-        # new_routing_id = f"R{str(routing_counter).zfill(3)}"
-
-        # Insert the new Routing entry (remove this?)
-        # insert_routing_query = """
-
-        ###########################################
-    
-        # response = {
-        #     "message": "BOM and Routing updated successfully with new BOM_id and routing_id",
-        #     "BOM_data": {
-        #         "BOM_id": bom.BOM_id,
-        #         "part_id": bom.part_id,
-        #         "child_id": bom.child_id,
-        #         "child_qty": bom.child_qty,
-        #         "child_leadtime": bom.child_leadtime,
-        #         "BOM_last_updated": bom.BOM_last_updated,
-        #         "status": 'active'
-        #     },
-        #     "Routing_data": {
-        #         "routing_id": new_routing_id,
-        #         "BOM_id": bom.BOM_id,
-        #         "operations_sequence": routing.operations_sequence,
-        #         "workcentre_id": routing.workcentre_id,
-        #         "process_description": routing.process_description,
-        #         "setup_time": routing.setup_time,
-        #         "runtime": routing.runtime,
-        #         "routings_last_update": bom.BOM_last_updated,
-        #         "status": 'active'
-        #     }
-        # }
-        # return response
     
 @app.get("/routings") 
 async def get_routings(): 
@@ -775,18 +669,6 @@ async def delete_routing(routing_id: str):
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"{error_messages['unexpected_error']}: {str(e)}")
 
-    # delete_query = "DELETE FROM dbo.Routings$ WHERE routing_id = ?"
-    # cursor.execute(delete_query, routing_id)
-    # if cursor.rowcount == 0:
-    #     raise HTTPException(status_code=404, detail="Routing not found")
-    # connection.commit()
-
-    # response = {
-    #     "message": "Routing deleted successfully",
-    #     "routing_id": routing_id
-    # }
-    # return response
-
 @app.get("/partmasterrecords") 
 async def get_part_master_records(): 
     query = "SELECT * FROM dbo.Part_Master_Records$" 
@@ -997,18 +879,6 @@ async def delete_part(part_id: str):
         raise HTTPException(status_code=500, detail=error_messages["database_error"])
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"{error_messages['unexpected_error']}: {str(e)}")
-
-    # delete_query = "DELETE FROM dbo.Part_Master_Records$ WHERE part_id = ?"
-    # cursor.execute(delete_query, part_id)
-    # if cursor.rowcount == 0:
-    #     raise HTTPException(status_code=404, detail="Part not found")
-    # connection.commit()
-
-    # response = {
-    #     "message": "Part deleted successfully",
-    #     "part_id": part_id
-    # }
-    # return response
  
 @app.get("/orders") 
 async def get_orders(): 
@@ -1166,18 +1036,6 @@ async def delete_order(order_id: str):
         raise HTTPException(status_code=500, detail=error_messages["database_error"])
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"{error_messages['unexpected_error']}: {str(e)}")
-    
-    # delete_query = "DELETE FROM dbo.Orders$ WHERE order_id = ?"
-    # cursor.execute(delete_query, order_id)
-    # if cursor.rowcount == 0:
-    #     raise HTTPException(status_code=404, detail="Order not found")
-    # connection.commit()
-    
-    # response = {
-    #     "message": "Order deleted successfully",
-    #     "order_id": order_id
-    # }
-    # return response
  
 @app.get("/workcentre") 
 async def get_work_centre(): 
@@ -1256,7 +1114,6 @@ async def create_workcentre(workcentre: WorkCentre):
             workcentre.cost_rate_h,
             workcentre.workcentre_last_updated,
             workcentre.status
-
         ))
     
         connection.commit()
@@ -1273,44 +1130,6 @@ async def create_workcentre(workcentre: WorkCentre):
         return {"error": error_messages["database_error"]}
     except Exception as e:
         return {"error": f"{error_messages['unexpected_error']}: {str(e)}"}
-
-        # Generate the Workcentre ID
-        # workcentre_id = f"WC{str(workcentre_counter).zfill(3)}"
-        # workcentre_dict = workcentre.dict()
-        # workcentre_dict['workcentre_id'] = workcentre_id
-        # workcentre_counter += 1
-
-        # check_query = "SELECT COUNT(*) FROM dbo.Workcentre$ WHERE workcentre_id = ?"
-        # cursor.execute(check_query, (workcentre_dict['workcentre_id'],))
-        # count = cursor.fetchone()[0]
-
-        # if count > 0:
-        #     return {"error": error_messages["workcentre_id_exists"]}
-
-        # # Insert data into the database
-        # insert_query = """
-        # INSERT INTO dbo.Workcentre$(workcentre_id, workcentre_name, workcentre_description, capacity, capacity_unit, cost_rate_h, workcentre_last_updated)
-        # VALUES (?, ?, ?, ?, ?, ?, ?)
-        # """
-        # cursor.execute(insert_query, (
-        #     workcentre_dict['workcentre_id'],
-        #     workcentre_dict['workcentre_name'],
-        #     workcentre_dict['workcentre_description'],
-        #     workcentre_dict['capacity'],
-        #     workcentre_dict['capacity_unit'],
-        #     workcentre_dict['cost_rate_h'],
-        #     workcentre_dict['workcentre_last_updated']
-        # ))
-
-        # connection.commit()
-
-        # response = {
-        #     "message": "WorkCentre created successfully",
-        #     "data": workcentre_dict
-        # }
-        # return response
-        # Generate the Workcentre ID
-        
 
 @app.put("/workcentre/{workcentre_id}")
 async def update_workcentre(workcentre_id: str, workcentre: WorkCentre):
@@ -1375,7 +1194,6 @@ async def update_workcentre(workcentre_id: str, workcentre: WorkCentre):
     }
     return response
 
-    
 @app.delete("/workcentre/{workcentre_id}")
 async def delete_workcentre(workcentre_id: str):
     error_messages = {
@@ -1429,52 +1247,40 @@ async def delete_workcentre(workcentre_id: str):
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"{error_messages['unexpected_error']}: {str(e)}")
 
-    # delete_query = "DELETE FROM dbo.Workcentre$ WHERE workcentre_id = ?"
-    # cursor.execute(delete_query, workcentre_id)
-    # if cursor.rowcount == 0:
-    #     raise HTTPException(status_code=404, detail="WorkCentre not found")
-    # connection.commit()
-
-    # response = {
-    #     "message": "Workcentre deleted successfully",
-    #     "workcentre_id": workcentre_id
-    # }
-    # return response
-
 #####################################################################################################
 # updating part_id across tables
 
-@app.put("/partmasterrecords/update_part_id")
-async def update_part_id(part_update: PartIDUpdate):
-    old_part_id = part_update.old_part_id
-    new_part_id = part_update.new_part_id
+# @app.put("/partmasterrecords/update_part_id")
+# async def update_part_id(part_update: PartIDUpdate):
+#     old_part_id = part_update.old_part_id
+#     new_part_id = part_update.new_part_id
 
-    try:
-        # Update Part_Master_Records$
-        update_query = "UPDATE dbo.Part_Master_Records$ SET part_id = ? WHERE part_id = ?"
-        cursor.execute(update_query, new_part_id, old_part_id)
+#     try:
+#         # Update Part_Master_Records$
+#         update_query = "UPDATE dbo.Part_Master_Records$ SET part_id = ? WHERE part_id = ?"
+#         cursor.execute(update_query, new_part_id, old_part_id)
         
-        # Update BOM$
-        update_query = "UPDATE dbo.BOM$ SET part_id = ? WHERE part_id = ?"
-        cursor.execute(update_query, new_part_id, old_part_id)
+#         # Update BOM$
+#         update_query = "UPDATE dbo.BOM$ SET part_id = ? WHERE part_id = ?"
+#         cursor.execute(update_query, new_part_id, old_part_id)
         
-        # Update Routings$
-        update_query = "UPDATE dbo.Routings$ SET BOM_id = ? WHERE BOM_id = ?"
-        cursor.execute(update_query, new_part_id, old_part_id)
+#         # Update Routings$
+#         update_query = "UPDATE dbo.Routings$ SET BOM_id = ? WHERE BOM_id = ?"
+#         cursor.execute(update_query, new_part_id, old_part_id)
         
-        # Update Orders$
-        update_query = "UPDATE dbo.Orders$ SET part_id = ? WHERE part_id = ?"
-        cursor.execute(update_query, new_part_id, old_part_id)
+#         # Update Orders$
+#         update_query = "UPDATE dbo.Orders$ SET part_id = ? WHERE part_id = ?"
+#         cursor.execute(update_query, new_part_id, old_part_id)
 
-        connection.commit()
+#         connection.commit()
 
-        response = {
-            "message": "Part ID updated successfully across all relevant tables",
-            "old_part_id": old_part_id,
-            "new_part_id": new_part_id
-        }
-        return response
+#         response = {
+#             "message": "Part ID updated successfully across all relevant tables",
+#             "old_part_id": old_part_id,
+#             "new_part_id": new_part_id
+#         }
+#         return response
 
-    except Exception as e:
-        connection.rollback()
-        raise HTTPException(status_code=500, detail=str(e))
+#     except Exception as e:
+#         connection.rollback()
+#         raise HTTPException(status_code=500, detail=str(e))
