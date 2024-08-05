@@ -1235,7 +1235,7 @@ async def create_order(order: Order):
         order_counter += 1
         order_id = f"O{str(order_counter).zfill(3)}"
         order.order_id = order_id
-        order.status ="active"
+        order.status ="processing"
 
         # Check if the order_id already exists
         check_query = "SELECT COUNT(*) FROM dbo.Orders$ WHERE order_id = ?"
