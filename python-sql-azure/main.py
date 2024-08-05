@@ -190,6 +190,9 @@ async def create_bom(bom: BOM):
         bom.BOM_id = BOM_id
         bom.status ="active"
 
+        current_datetime = datetime.now()
+        bom.BOM_last_updated = current_datetime
+
         # Check if BOM_id already exists
         check_query = "SELECT COUNT(*) FROM dbo.BOM$ WHERE BOM_id = ?"
         cursor.execute(check_query, (bom.BOM_id,))
@@ -198,6 +201,52 @@ async def create_bom(bom: BOM):
         if count > 0:
             return HTTPException(status_code=400, detail="BOM_id already exists and cannot be added")
         
+        previous_bom_query = """
+        SELECT TOP 1 BOM_id 
+        FROM dbo.BOM$ 
+        WHERE BOM_id <> ? 
+        ORDER BY BOM_last_updated DESC
+        """
+        cursor.execute(previous_bom_query, (bom.BOM_id,))
+        previous_bom_result = cursor.fetchone()
+
+        if previous_bom_result:
+            previous_bom_id = previous_bom_result[0]
+
+            # Update the status of the original BOM_id to 'NA'
+            update_bom_status_query = """
+            UPDATE dbo.BOM$
+            SET status = 'NA'
+            WHERE BOM_id = ? AND status = 'active'
+            """
+            cursor.execute(update_bom_status_query, (previous_bom_id,))
+
+            # Fetch the corresponding workcentre_id for the previous BOM
+            workcentre_query = """
+            SELECT TOP 1 routing_id, workcentre_id 
+            FROM dbo.Routings$ 
+            WHERE BOM_id = ? 
+            ORDER BY routing_id DESC
+            """
+            cursor.execute(workcentre_query, (previous_bom_id,))
+            workcentre_result = cursor.fetchone()
+
+            if workcentre_result:
+                previous_routing_id = workcentre_result[0]
+                workcentre_id = workcentre_result[1]
+
+                # Update the status of the original routing_id to 'NA'
+                update_routing_status_query = """
+                UPDATE dbo.Routings$
+                SET status = 'NA'
+                WHERE routing_id = ? AND status = 'active'
+                """
+                cursor.execute(update_routing_status_query, (previous_routing_id,))
+            else:
+                workcentre_id = "WC001"  # Default to WC001 if not found
+        else:
+            workcentre_id = "WC001"
+
         # Insert data into the database
         insert_query = """
         INSERT INTO dbo.BOM$ (BOM_id, part_id, child_id, child_qty, child_leadtime, BOM_last_updated, status)
@@ -212,53 +261,19 @@ async def create_bom(bom: BOM):
             bom.BOM_last_updated,
             bom.status
         ))
-
-        previous_bom_query = """
-        SELECT TOP 1 BOM_id 
-        FROM dbo.BOM$ 
-        WHERE BOM_id <> ? 
-        ORDER BY BOM_last_updated DESC
-        """
-
-        cursor.execute(previous_bom_query, (bom.BOM_id,))
-        previous_bom_result = cursor.fetchone()
-
-        if previous_bom_result:
-            previous_bom_id = previous_bom_result[0]
-
-            workcentre_query = """
-            SELECT TOP 1 workcentre_id 
-            FROM dbo.Routings$ 
-            WHERE BOM_id = ? 
-            ORDER BY routing_id DESC
-            """
-            cursor.execute(workcentre_query, (previous_bom_id,))
-            workcentre_result = cursor.fetchone()
-
-            if workcentre_result:
-                workcentre_id = workcentre_result[0]
-            else:
-                workcentre_id = "WC001"  # Default to WC001 if not found
-        else:
-            workcentre_id = "WC001"
-
+        # Generate a new routing_id
         query = "SELECT TOP 1 routing_id FROM dbo.Routings$ ORDER BY routing_id DESC"
         cursor.execute(query)
         result = cursor.fetchone()
 
         if result:
-            latest_routing_id = result[0]  # e.g., "R470"
-            routing_counter = int(latest_routing_id[1:])  # Extract integer part, ignore "R" prefix
+            latest_routing_id = result[0]
+            routing_counter = int(latest_routing_id[1:])
         else:
-            routing_counter = 0  # Default to 0 if no records are found
+            routing_counter = 0
 
         routing_counter += 1
         routing_id = f"R{str(routing_counter).zfill(3)}"
-
-        # Generate a new routing_id
-        query = "SELECT TOP 1 routing_id FROM dbo.Routings$ ORDER BY routing_id DESC"
-        cursor.execute(query)
-        result = cursor.fetchone()
 
         # Insert data into the Routing table
         insert_routing_query = """
@@ -273,7 +288,7 @@ async def create_bom(bom: BOM):
             bom.process_description,  # Replace with actual process description or parameter
             bom.setup_time,  # Setup time, adjust as necessary
             bom.runtime,  # Runtime, adjust as necessary
-            bom.BOM_last_updated,
+            current_datetime,
             "active"
         ))
 
@@ -291,7 +306,6 @@ async def create_bom(bom: BOM):
         return {"error": f"{error_messages['database_error']}: {str(e)}"}
     except Exception as e:
         return {"error": f"{error_messages['unexpected_error']}: {str(e)}"}
-
 @app.delete("/bom/{BOM_id}")
 async def delete_bom(BOM_id: str):
 
