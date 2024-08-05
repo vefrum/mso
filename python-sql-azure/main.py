@@ -140,6 +140,16 @@ async def create_bom(bom: BOM):
         # Check if the cursor is initialized
         if cursor is None:
             return {"error": error_messages["cursor_uninitialized"]}
+
+        check_bom_query = """
+        SELECT BOM_id FROM dbo.BOM$
+        WHERE part_id = ? AND child_id = ?
+        """
+        cursor.execute(check_bom_query, (bom.part_id, bom.child_id))
+        existing_bom = cursor.fetchone()
+
+        if existing_bom:
+            return HTTPException(status_code=400, detail="part_id and child_id already belong to the same BOM_id and cannot be added.")
         
         cursor.execute("SELECT part_id, child_id FROM dbo.BOM$")
         all_bom_entries = cursor.fetchall()
