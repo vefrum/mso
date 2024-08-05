@@ -352,7 +352,7 @@ async def update_bom(bom: BOM):
         update_status_query = """
         UPDATE dbo.BOM$
         SET status = 'NA'
-        WHERE BOM_id = ? 
+        WHERE BOM_id = ? AND status = 'active'
         """
         cursor.execute(update_status_query, (bom.BOM_id,))
 
@@ -403,7 +403,7 @@ async def update_bom(bom: BOM):
         WHERE routing_id IN (
             SELECT TOP 1 routing_id 
             FROM dbo.Routings$
-            WHERE BOM_id = ?
+            WHERE BOM_id = ? AND status = 'active'
             ORDER BY routing_id DESC
         );
         """
