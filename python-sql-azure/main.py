@@ -377,6 +377,47 @@ async def update_bom(bom: BOM):
         if cursor.rowcount == 0:
             return HTTPException(status_code=404, detail=f"BOM_id {bom.BOM_id} not found")
         
+        query = "SELECT TOP 1 routing_id FROM dbo.Routings$ ORDER BY routing_id DESC"
+        cursor.execute(query)
+        result = cursor.fetchone()
+
+        if result:
+            latest_routing_id = result[0]  # e.g., "R470"
+            routing_counter = int(latest_routing_id[1:])  # Extract integer part, ignore "R" prefix
+        else:
+            routing_counter = 0
+
+        routing_counter += 1
+        new_routing_id = f"R{str(routing_counter).zfill(3)}"
+
+        original_routing_details_query = """
+        SELECT TOP 1 routing_id, operations_sequence, workcentre_id, process_description, setup_time, runtime 
+        FROM dbo.Routings$
+        WHERE BOM_id = ?
+        ORDER BY routing_id DESC
+        """
+        cursor.execute(original_routing_details_query, (bom.BOM_id,))
+        original_routing_details = cursor.fetchone()
+
+        if original_routing_details:
+            original_routing_id, operations_sequence, workcentre_id, process_description, setup_time, runtime = original_routing_details
+        else:
+            # Fallback to default values if no routing details are found for the original BOM_id
+            original_routing_id = None 
+            operations_sequence = 1
+            workcentre_id = "WC001"
+            process_description = "Default Process Description"
+            setup_time = 0
+            runtime = 0
+
+        if original_routing_id:
+            update_original_routing_status_query = """
+            UPDATE dbo.Routings$
+            SET status = 'NA'
+            WHERE routing_id = ?
+            """
+            cursor.execute(update_original_routing_status_query, (bom.BOM_id,))
+
         # Fetch the latest routing_id and increment it for new routing entry
         # last_routing_id_query = "SELECT TOP 1 routing_id FROM dbo.Routings$ ORDER BY CAST(SUBSTRING(routing_id, 2, LEN(routing_id)-1) AS INT) DESC"
         # cursor.execute(last_routing_id_query)
@@ -388,49 +429,38 @@ async def update_bom(bom: BOM):
         #     last_routing_id = last_routing_id_row[0]
         #     prefix, number = last_routing_id[0], int(last_routing_id[1:])
         #     new_routing_id = f"{prefix}{str(number + 1).zfill(3)}"
+############################################ 
+        #########
+        #     workcentre_query = """
+        #     SELECT TOP 1 workcentre_id 
+        #     FROM dbo.Routings$ 
+        #     WHERE BOM_id = ? 
+        #     ORDER BY routing_id DESC
+        #     """
+        #     cursor.execute(workcentre_query, (previous_bom_id,))
+        #     workcentre_result = cursor.fetchone()
 
-        previous_bom_query = """
-        SELECT TOP 1 BOM_id 
-        FROM dbo.BOM$ 
-        WHERE BOM_id <> ? 
-        ORDER BY BOM_last_updated DESC
-        """
-        cursor.execute(previous_bom_query, (bom.BOM_id,))
-        previous_bom_result = cursor.fetchone()
+        #     if workcentre_result:
+        #         workcentre_id = workcentre_result[0]
+        #     else:
+        #         workcentre_id = "WC001"  # Default to WC001 if not found
+        # else:
+        #     workcentre_id = "WC001"
 
-        if previous_bom_result:
-            previous_bom_id = previous_bom_result[0]
+        # query = "SELECT TOP 1 routing_id FROM dbo.Routings$ ORDER BY routing_id DESC"
+        # cursor.execute(query)
+        # result = cursor.fetchone()
 
-            workcentre_query = """
-            SELECT TOP 1 workcentre_id 
-            FROM dbo.Routings$ 
-            WHERE BOM_id = ? 
-            ORDER BY routing_id DESC
-            """
-            cursor.execute(workcentre_query, (previous_bom_id,))
-            workcentre_result = cursor.fetchone()
+        # if result:
+        #     latest_routing_id = result[0]  # e.g., "R470"
+        #     routing_counter = int(latest_routing_id[1:])  # Extract integer part, ignore "R" prefix
+        # else:
+        #     routing_counter = 0  # Default to 0 if no records are found
 
-            if workcentre_result:
-                workcentre_id = workcentre_result[0]
-            else:
-                workcentre_id = "WC001"  # Default to WC001 if not found
-        else:
-            workcentre_id = "WC001"
+        # routing_counter += 1
+        # new_routing_id = f"R{str(routing_counter).zfill(3)}"
 
-        query = "SELECT TOP 1 routing_id FROM dbo.Routings$ ORDER BY routing_id DESC"
-        cursor.execute(query)
-        result = cursor.fetchone()
-
-        if result:
-            latest_routing_id = result[0]  # e.g., "R470"
-            routing_counter = int(latest_routing_id[1:])  # Extract integer part, ignore "R" prefix
-        else:
-            routing_counter = 0  # Default to 0 if no records are found
-
-        routing_counter += 1
-        new_routing_id = f"R{str(routing_counter).zfill(3)}"
-
-        # Insert the new Routing entry
+        # Insert the new Routing entry (remove this?)
         insert_routing_query = """
         INSERT INTO dbo.Routings$ (routing_id, BOM_id, operations_sequence, workcentre_id, process_description, setup_time, runtime, routings_last_update, status)
         VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
@@ -439,18 +469,19 @@ async def update_bom(bom: BOM):
         cursor.execute(insert_routing_query, (
             new_routing_id,
             bom.BOM_id,
-            1, #operations sequence = 1
+            operations_sequence, #operations sequence = 1
             workcentre_id,
-            bom.process_description,
-            bom.setup_time,
-            bom.runtime,
+            process_description,
+            setup_time,
+            runtime,
             bom.BOM_last_updated,
             'active'
         ))
 
         response = {
             "message": "BOM and Routing created successfully",
-            "data": bom
+            "BOM_data": bom,
+            "Routing_id": new_routing_id
         }
         return response 
         # response = {
@@ -574,7 +605,6 @@ async def create_routing(routing: Routing):
     
 @app.put("/routings/{routing_id}")
 async def update_routing(routing_id: str, routing: Routing):
-  
 
     last_id_query = "SELECT TOP 1 routing_id FROM dbo.Routings$ ORDER BY CAST(SUBSTRING(routing_id, 2, LEN(routing_id)-1) AS INT) DESC"
     cursor.execute(last_id_query)
