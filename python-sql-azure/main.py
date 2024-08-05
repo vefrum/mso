@@ -120,7 +120,6 @@ async def get_bom():
 
 @app.post("/BOM")
 async def create_bom(bom: BOM):
-#async def create_bom(bom: BOM, part: Part):
 
     global bom_counter
 
@@ -171,6 +170,13 @@ async def create_bom(bom: BOM):
         # Check for circular dependency
         if has_circular_dependency(bom.child_id, bom.part_id):
             return HTTPException(status_code=400, detail="Action cannot be completed: this item can't exist as both a parent and a child.")
+        
+        check_parts_query = "SELECT COUNT(*) FROM dbo.Part_Master_Records WHERE part_id = ? OR part_id = ?"
+        cursor.execute(check_parts_query, (bom.part_id, bom.child_id))
+        count = cursor.fetchone()[0]
+
+        if count < 2:
+            return HTTPException(status_code=400, detail="part_id and/or child_id doesn't exist")
 
         # Fetch the latest BOM_id from the database
         query = "SELECT TOP 1 BOM_id FROM dbo.BOM$ ORDER BY BOM_id DESC"
@@ -306,6 +312,7 @@ async def create_bom(bom: BOM):
         return {"error": f"{error_messages['database_error']}: {str(e)}"}
     except Exception as e:
         return {"error": f"{error_messages['unexpected_error']}: {str(e)}"}
+
 @app.delete("/bom/{BOM_id}")
 async def delete_bom(BOM_id: str):
 
