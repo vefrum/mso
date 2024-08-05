@@ -941,6 +941,74 @@ async def delete_part(part_id: str):
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"{error_messages['unexpected_error']}: {str(e)}")
  
+
+@app.get("/orderdetailsfull/{order_id}")
+async def get_full_order_details(order_id: str):
+    try:
+        query = """
+        SELECT 
+            o.order_id, 
+            o.part_id, 
+            o.part_qty,
+            o.order_date, 
+            o.due_date, 
+            o.order_last_updated,
+            pmr.part_name, 
+            pmr.part_description,
+            pmr.inventory,
+            pmr.POM,
+            pmr.unit_cost,
+            pmr.lead_time,
+            b.BOM_id, 
+            b.part_id,
+            b.child_id,
+            b.child_qty,
+            b.child_leadtime,
+            b.BOM_last_updated,
+            r.routing_id, 
+            r.routings_last_update,
+            wc.workcentre_id, 
+            wc.workcentre_name, 
+            wc.workcentre_last_updated
+        FROM 
+            dbo.Orders$ o
+        JOIN 
+            dbo.Part_Master_Records$ pmr ON o.part_id = pmr.part_id
+        JOIN 
+            dbo.BOM$ b ON o.part_id = b.part_id
+        JOIN 
+            dbo.Routings$ r ON b.BOM_id = r.BOM_id
+        JOIN 
+            dbo.Workcentre$ wc ON r.workcentre_id = wc.workcentre_id
+        WHERE 
+            o.order_id = ?
+            AND b.BOM_last_updated = (
+                SELECT MAX(b2.BOM_last_updated)
+                FROM dbo.BOM$ b2
+                WHERE b2.part_id = o.part_id AND b2.BOM_last_updated <= o.order_date
+            )
+            AND r.routings_last_update = (
+                SELECT MAX(r2.routings_last_update)
+                FROM dbo.Routings$ r2
+                WHERE r2.BOM_id = b.BOM_id AND r2.routings_last_update <= o.order_date
+            )
+            AND wc.workcentre_last_updated = (
+                SELECT MAX(wc2.workcentre_last_updated)
+                FROM dbo.Workcentre$ wc2
+                WHERE wc2.workcentre_id = r.workcentre_id AND wc2.workcentre_last_updated <= o.order_date
+            )
+        """
+        cursor.execute(query, (order_id,))
+        result = cursor.fetchall()
+        if not result:
+            raise HTTPException(status_code=404, detail="Order not found")
+        return result
+    
+    except HTTPException as e:
+        return {"error": str(e)}
+    except Exception as e:
+        return {"error": f"An unexpected error occurred: {str(e)}"}
+
 @app.get("/orders") 
 async def get_orders(): 
     query = "SELECT * FROM dbo.Orders$" 
@@ -953,12 +1021,6 @@ async def get_orders():
     response = StreamingResponse(output, media_type="text/csv")
     response.headers["Content-Disposition"] = "attachment; filename=export_orders.csv"
     return response
-
-
-@app.get("/orderdetails") 
-async def get_order_details(order_id: str): 
-    query = "SELECT * FROM dbo.Orders$ WHERE order_id = ?"
-    return execute_query(query, (order_id,))
 
 
 @app.post("/orders")
