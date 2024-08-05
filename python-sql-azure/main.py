@@ -213,7 +213,7 @@ async def create_bom(bom: BOM):
         WHERE part_id = ? AND BOM_id <> ? AND status = 'active'
         ORDER BY BOM_last_updated DESC
         """
-        cursor.execute(previous_bom_query, (bom.BOM_id,))
+        cursor.execute(previous_bom_query, (bom.part_id, bom.BOM_id))
         previous_bom_result = cursor.fetchone()
 
         if previous_bom_result:
