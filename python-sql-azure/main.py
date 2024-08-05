@@ -789,7 +789,7 @@ async def create_part(part: Part):
         part_counter += 1
         part_id = f"P{str(part_counter).zfill(3)}"
         part.part_id = part_id
-        part.status = "active"
+        part.status = "Active"
         
         # Check if the part_id already exists
         check_query = "SELECT COUNT(*) FROM dbo.Part_Master_Records$ WHERE part_id = ?"
@@ -798,6 +798,8 @@ async def create_part(part: Part):
 
         if count > 0:
             raise HTTPException(status_code=400, detail="part_id already exists and cannot be added")
+        
+        current_time = datetime.now()
         
         # Insert data into the database
         insert_query = """
@@ -813,7 +815,7 @@ async def create_part(part: Part):
             part.part_description,
             part.unit_cost,
             part.lead_time,
-            part.part_last_updated,
+            current_time,
             part.status
         ))
     
@@ -831,8 +833,6 @@ async def create_part(part: Part):
         return {"error": f"{error_messages['database_error']}: {str(e)}"}
     except Exception as e:
         return {"error": f"{error_messages['unexpected_error']}: {str(e)}"}
-
-    
 
 @app.put("/partmasterrecords/{part_id}")
 async def update_part(part_id: str, part: Part):
