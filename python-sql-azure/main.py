@@ -467,7 +467,7 @@ async def update_bom(BOM_id: str, bom: BOM):
             bom.status
         ))
 
-        # if cursor.rowcount == 0:
+        # if cursor.rowcount > 0:
         #     return HTTPException(status_code=404, detail=f"BOM_id {bom.BOM_id} not found")
 
         if cursor.rowcount == 0:
