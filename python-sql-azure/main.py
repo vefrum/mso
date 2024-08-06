@@ -471,12 +471,12 @@ async def update_bom(bom: BOM):
         }
         return response 
     
-    except pyodbc.IntegrityError:
-        return {"error": error_messages["integrity_error"]}
-    except pyodbc.DatabaseError as e:
-        return {"error": f"{error_messages['database_error']}: {str(e)}"}
+    except HTTPException as e:
+        connection.rollback()
+        return {"error": str(e)}
     except Exception as e:
-        return {"error": f"{error_messages['unexpected_error']}: {str(e)}"}
+        connection.rollback()
+        return {"error": f"An unexpected error occurred: {str(e)}"}
 
 @app.get("/routings") 
 async def get_routings(): 
