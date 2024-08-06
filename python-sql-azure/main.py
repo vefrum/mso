@@ -408,9 +408,9 @@ async def update_bom(bom: BOM):
         if has_circular_dependency(bom.child_id, bom.part_id):
             return HTTPException(status_code=400, detail="Action cannot be completed: this item can't exist as both a parent and a child.")
 
-        # existing_bom_query = "SELECT status FROM dbo.BOM$ WHERE BOM_id = ?"
-        # cursor.execute(existing_bom_query, (bom.BOM_id,))
-        # existing_bom = cursor.fetchone()
+        existing_bom_query = "SELECT status FROM dbo.BOM$ WHERE BOM_id = ?"
+        cursor.execute(existing_bom_query, (bom.BOM_id,))
+        existing_bom = cursor.fetchone()
 
         # if existing_bom is None:
         #     return HTTPException(status_code=404, detail=f"BOM_id {bom.BOM_id} not found")
@@ -418,12 +418,14 @@ async def update_bom(bom: BOM):
         # if existing_bom[0] != 'active':
         #     return HTTPException(status_code=400, detail="The BOM entry is not active or already updated.")
         
-        update_status_query = """
-        UPDATE dbo.BOM$
-        SET status = 'NA'
-        WHERE BOM_id = ? 
-        """
-        cursor.execute(update_status_query, (bom.BOM_id,))
+        if existing_bom[0] == 'active':
+            update_status_query = """
+            UPDATE dbo.BOM$
+            SET status = 'NA'
+            WHERE BOM_id = ? AND status = 'active'
+            """
+            cursor.execute(update_status_query, (bom.BOM_id,))
+        
 
         # if cursor.rowcount == 0:
         #     return HTTPException(status_code=404, detail=f"Unable to update status for BOM_id {bom.BOM_id}")
