@@ -422,7 +422,7 @@ async def update_bom(bom: BOM):
             update_status_query = """
             UPDATE dbo.BOM$
             SET status = 'NA'
-            WHERE BOM_id = ? AND status = 'active'
+            WHERE BOM_id = ?
             """
             cursor.execute(update_status_query, (bom.BOM_id,))
         
