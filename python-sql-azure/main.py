@@ -377,18 +377,6 @@ async def delete_bom(BOM_id: str):
 async def update_bom(bom: BOM):
 
     try:
-        # # Check if the part_id and child_id combination already exists under any BOM_id
-        # check_bom_query = """
-        # SELECT BOM_id FROM dbo.BOM$
-        # WHERE part_id = ? AND child_id = ? 
-        # """
-        # cursor.execute(check_bom_query, (bom.part_id, bom.child_id))
-        # existing_bom = cursor.fetchone()
-
-        # if existing_bom:
-        #     return HTTPException(status_code=400, detail="part_id and child_id already belong to the same BOM_id and cannot be added.")
-
-        # Fetch all BOM entries from the database
         cursor.execute("SELECT part_id, child_id FROM dbo.BOM$")
         all_bom_entries = cursor.fetchall()
         
@@ -420,6 +408,26 @@ async def update_bom(bom: BOM):
         if has_circular_dependency(bom.child_id, bom.part_id):
             return HTTPException(status_code=400, detail="Action cannot be completed: this item can't exist as both a parent and a child.")
 
+        existing_bom_query = "SELECT status FROM dbo.BOM$ WHERE BOM_id = ?"
+        cursor.execute(existing_bom_query, (bom.BOM_id,))
+        existing_bom = cursor.fetchone()
+
+        if existing_bom is None:
+            raise HTTPException(status_code=404, detail=f"BOM_id {bom.BOM_id} not found")
+
+        if existing_bom[0] != 'active':
+            raise HTTPException(status_code=400, detail="The BOM entry is not active or already updated.")
+        
+        update_status_query = """
+        UPDATE dbo.BOM$
+        SET status = 'NA'
+        WHERE BOM_id = ? AND status = 'active'
+        """
+        cursor.execute(update_status_query, (bom.BOM_id,))
+
+        if cursor.rowcount == 0:
+            raise HTTPException(status_code=404, detail=f"Unable to update status for BOM_id {bom.BOM_id}")
+        
         last_id_query = "SELECT TOP 1 BOM_id FROM dbo.BOM$ ORDER BY CAST(SUBSTRING(BOM_id, 2, LEN(BOM_id)-1) AS INT) DESC"
         cursor.execute(last_id_query)
         last_id_row = cursor.fetchone()
@@ -430,13 +438,6 @@ async def update_bom(bom: BOM):
             last_id = last_id_row[0]
             prefix, number = last_id[0], int(last_id[1:])
             new_BOM_id = f"{prefix}{str(number + 1).zfill(3)}"
-
-        update_status_query = """
-        UPDATE dbo.BOM$
-        SET status = 'NA'
-        WHERE BOM_id = ? 
-        """
-        cursor.execute(update_status_query, (bom.BOM_id,))
 
         # Insert the new BOM entry with updated child_id or other changes
         bom.BOM_id = new_BOM_id
@@ -458,69 +459,6 @@ async def update_bom(bom: BOM):
 
         if cursor.rowcount == 0:
             return HTTPException(status_code=404, detail=f"BOM_id {bom.BOM_id} not found")
-        
-    #     query = "SELECT TOP 1 routing_id FROM dbo.Routings$ ORDER BY routing_id DESC"
-    #     cursor.execute(query)
-    #     result = cursor.fetchone()
-
-    #     if result:
-    #         latest_routing_id = result[0]  # e.g., "R470"
-    #         routing_counter = int(latest_routing_id[1:])  # Extract integer part, ignore "R" prefix
-    #     else:
-    #         routing_counter = 0
-
-    #     routing_counter += 1
-    #     new_routing_id = f"R{str(routing_counter).zfill(3)}"
-
-    #     combined_query = """
-    #     UPDATE dbo.Routings$
-    #     SET status = 'NA'
-    #     OUTPUT 
-    #         INSERTED.routing_id, 
-    #         INSERTED.operations_sequence, 
-    #         INSERTED.workcentre_id, 
-    #         INSERTED.process_description, 
-    #         INSERTED.setup_time, 
-    #         INSERTED.runtime
-    #     WHERE routing_id IN (
-    #         SELECT TOP 1 routing_id 
-    #         FROM dbo.Routings$
-    #         WHERE BOM_id = ?
-    #         ORDER BY routing_id DESC
-    #     )
-    #     """
-
-    #     cursor.execute(combined_query, (bom.BOM_id,))
-    #     latest_routing_details = cursor.fetchone()
-
-    #     if latest_routing_details:
-    # # Extracting the details from the combined result
-    #         latest_routing_id, operations_sequence, workcentre_id, process_description, setup_time, runtime = latest_routing_details
-    #     else:
-    # # Fallback to default values if no routing details are found
-    #         latest_routing_id = None
-    #         operations_sequence = 1
-    #         workcentre_id = "WC001"
-    #         process_description = "Default Process Description"
-    #         setup_time = 0
-    #         runtime = 0
-
-    #     insert_routing_query = """
-    #     INSERT INTO dbo.Routings$ (routing_id, BOM_id, operations_sequence, workcentre_id, process_description, setup_time, runtime, routings_last_update, status)
-    #     VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
-    #     """
-    
-    #     cursor.execute(insert_routing_query, (
-    #         new_routing_id,
-    #         bom.BOM_id,
-    #         operations_sequence, #operations sequence = 1
-    #         workcentre_id,
-    #         process_description,
-    #         setup_time,
-    #         runtime,
-    #         bom.BOM_last_updated,
-    #         'active'
-    #     ))
 
         connection.commit()
 
@@ -536,6 +474,11 @@ async def update_bom(bom: BOM):
     except Exception as e:
         connection.rollback()
         return {"error": f"An unexpected error occurred: {str(e)}"}
+
+@app.get("/routings") 
+async def get_routings(): 
+    query = "SELECT * FROM dbo.Routings$" 
+    return execute_query(query) 
 
 @app.post("/routings")
 async def create_routing(routing: Routing):
