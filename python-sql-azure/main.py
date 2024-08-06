@@ -374,7 +374,7 @@ async def delete_bom(BOM_id: str):
         raise HTTPException(status_code=500, detail=f"{error_messages['unexpected_error']}: {str(e)}")
 
 @app.put("/BOM/{BOM_id}")
-async def update_bom(bom: BOM):
+async def update_bom(BOM_id: str, bom: BOM):
 
     try:
         cursor.execute("SELECT part_id, child_id FROM dbo.BOM$")
@@ -418,12 +418,22 @@ async def update_bom(bom: BOM):
         # if existing_bom[0] != 'active':
         #     return HTTPException(status_code=400, detail="The BOM entry is not active or already updated.")
     
+        # update_status_query = """
+        # UPDATE dbo.BOM$
+        # SET status = 'NA'
+        # WHERE BOM_id = ?
+        # """
+        # cursor.execute(update_status_query, (bom.BOM_id,))
+
         update_status_query = """
         UPDATE dbo.BOM$
         SET status = 'NA'
-        WHERE BOM_id = ?
+        WHERE BOM_id = ? 
         """
-        cursor.execute(update_status_query, (bom.BOM_id,))
+        #cursor.execute(update_status_query, (bom.BOM_id,))
+        cursor.execute(update_status_query, (BOM_id,))
+        bom.BOM_id = new_BOM_id
+        bom.status = "active"
         
 
         # if cursor.rowcount == 0:
@@ -584,7 +594,7 @@ async def update_routing(routing_id: str, routing: Routing):
 
     update_status_query = """
     UPDATE dbo.Routings$
-    SET status = 'inactive'
+    SET status = 'NA'
     WHERE routing_id = ? 
     """
 
