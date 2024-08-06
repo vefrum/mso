@@ -1067,7 +1067,12 @@ async def create_order(order: Order):
         count = cursor.fetchone()[0]
 
         if count > 0:
-            raise HTTPException(status_code=400, detail="order_id already exists and cannot be added")
+            return HTTPException(status_code=400, detail="order_id already exists and cannot be added")
+
+        order_date = datetime.strptime(order.order_date, "%Y-%m-%d %H:%M:%S")
+        due_date = datetime.strptime(order.due_date, "%Y-%m-%d %H:%M:%S")
+        if order_date >= due_date:
+            return HTTPException(status_code=400, detail="order_date must be before due_date")
     
         # Insert data into the database
         insert_query = """
@@ -1097,7 +1102,6 @@ async def create_order(order: Order):
         return {"error": f"{error_messages['database_error']}: {str(e)}"}
     except Exception as e:
         return {"error": f"{error_messages['unexpected_error']}: {str(e)}"}
-
 
 @app.delete("/orders/{order_id}")
 async def delete_order(order_id: str):
