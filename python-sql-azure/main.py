@@ -432,8 +432,7 @@ async def update_bom(BOM_id: str, bom: BOM):
         """
         #cursor.execute(update_status_query, (bom.BOM_id,))
         cursor.execute(update_status_query, (BOM_id,))
-        bom.BOM_id = new_BOM_id
-        bom.status = "active"
+        
         
 
         # if cursor.rowcount == 0:
