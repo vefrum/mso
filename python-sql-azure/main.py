@@ -375,8 +375,8 @@ async def delete_bom(BOM_id: str):
 
 @app.put("/BOM/{BOM_id}")
 async def update_bom(BOM_id: str, bom: BOM):
-
     try:
+        # Fetch all existing BOM entries
         cursor.execute("SELECT part_id, child_id FROM dbo.BOM$")
         all_bom_entries = cursor.fetchall()
         
@@ -406,35 +406,31 @@ async def update_bom(BOM_id: str, bom: BOM):
 
         # Check for circular dependency
         if has_circular_dependency(bom.child_id, bom.part_id):
-            return HTTPException(status_code=400, detail="Action cannot be completed: this item can't exist as both a parent and a child.")
+            raise HTTPException(status_code=400, detail="Action cannot be completed: this item can't exist as both a parent and a child.")
 
-        # existing_bom_query = "SELECT status FROM dbo.BOM$ WHERE BOM_id = ?"
-        # cursor.execute(existing_bom_query, (bom.BOM_id,))
-        # existing_bom = cursor.fetchone()
+        # Check if the BOM_id exists and its status
+        existing_bom_query = "SELECT status FROM dbo.BOM$ WHERE BOM_id = ?"
+        cursor.execute(existing_bom_query, (BOM_id,))
+        existing_bom = cursor.fetchone()
 
-        # if existing_bom is None:
-        #     return HTTPException(status_code=404, detail=f"BOM_id {bom.BOM_id} not found")
+        if existing_bom is None:
+            raise HTTPException(status_code=404, detail=f"BOM_id {BOM_id} not found")
 
-        # if existing_bom[0] != 'active':
-        #     return HTTPException(status_code=400, detail="The BOM entry is not active or already updated.")
-    
-        # update_status_query = """
-        # UPDATE dbo.BOM$
-        # SET status = 'NA'
-        # WHERE BOM_id = ?
-        # """
-        # cursor.execute(update_status_query, (bom.BOM_id,))
-
+        if existing_bom[0] != 'active':
+            raise HTTPException(status_code=400, detail="The BOM entry is not active or already updated.")
+        
+        # Update status of the existing BOM entry to 'NA'
         update_status_query = """
         UPDATE dbo.BOM$
         SET status = 'NA'
-        WHERE BOM_id = ? and status = 'active'
+        WHERE BOM_id = ? AND status = 'active'
         """
         cursor.execute(update_status_query, (BOM_id,))
         
         if cursor.rowcount == 0:
-            return HTTPException(status_code=500, detail=f"Unable to update status for BOM_id {bom.BOM_id}")
+            raise HTTPException(status_code=500, detail=f"Unable to update status for BOM_id {BOM_id}")
         
+        # Generate a new BOM_id
         last_id_query = "SELECT TOP 1 BOM_id FROM dbo.BOM$ ORDER BY CAST(SUBSTRING(BOM_id, 2, LEN(BOM_id)-1) AS INT) DESC"
         cursor.execute(last_id_query)
         last_id_row = cursor.fetchone()
@@ -464,11 +460,8 @@ async def update_bom(BOM_id: str, bom: BOM):
             bom.status
         ))
 
-        # if cursor.rowcount > 0:
-        #     return HTTPException(status_code=404, detail=f"BOM_id {bom.BOM_id} not found")
-
         if cursor.rowcount == 0:
-            return HTTPException(status_code=500, detail=f"Failed to create new BOM entry for {bom.BOM_id}")
+            raise HTTPException(status_code=500, detail=f"Failed to create new BOM entry for {bom.BOM_id}")
 
         connection.commit()
 
@@ -484,6 +477,7 @@ async def update_bom(BOM_id: str, bom: BOM):
     except Exception as e:
         connection.rollback()
         return {"error": f"An unexpected error occurred: {str(e)}"}
+
 
 @app.get("/routings") 
 async def get_routings(): 
