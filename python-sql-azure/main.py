@@ -435,8 +435,8 @@ async def update_bom(BOM_id: str, bom: BOM):
         
         
 
-        # if cursor.rowcount == 0:
-        #     return HTTPException(status_code=404, detail=f"Unable to update status for BOM_id {bom.BOM_id}")
+        if cursor.rowcount == 0:
+            return HTTPException(status_code=404, detail=f"Unable to update status for BOM_id {bom.BOM_id}")
         
         last_id_query = "SELECT TOP 1 BOM_id FROM dbo.BOM$ ORDER BY CAST(SUBSTRING(BOM_id, 2, LEN(BOM_id)-1) AS INT) DESC"
         cursor.execute(last_id_query)
