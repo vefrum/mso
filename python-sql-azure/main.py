@@ -1069,10 +1069,8 @@ async def create_order(order: Order):
         if count > 0:
             return HTTPException(status_code=400, detail="order_id already exists and cannot be added")
 
-        order_date = datetime.strptime(order.order_date, "%Y-%m-%d %H:%M:%S")
-        due_date = datetime.strptime(order.due_date, "%Y-%m-%d %H:%M:%S")
-        if order_date >= due_date:
-            return HTTPException(status_code=400, detail="order_date must be before due_date")
+        if order.order_date >= order.due_date:
+            raise HTTPException(status_code=400, detail="order_date must be before due_date")
     
         # Insert data into the database
         insert_query = """
