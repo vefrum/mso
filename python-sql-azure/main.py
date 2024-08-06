@@ -413,10 +413,10 @@ async def update_bom(bom: BOM):
         existing_bom = cursor.fetchone()
 
         if existing_bom is None:
-            raise HTTPException(status_code=404, detail=f"BOM_id {bom.BOM_id} not found")
+            return HTTPException(status_code=404, detail=f"BOM_id {bom.BOM_id} not found")
 
         if existing_bom[0] != 'active':
-            raise HTTPException(status_code=400, detail="The BOM entry is not active or already updated.")
+            return HTTPException(status_code=400, detail="The BOM entry is not active or already updated.")
         
         update_status_query = """
         UPDATE dbo.BOM$
@@ -426,7 +426,7 @@ async def update_bom(bom: BOM):
         cursor.execute(update_status_query, (bom.BOM_id,))
 
         if cursor.rowcount == 0:
-            raise HTTPException(status_code=404, detail=f"Unable to update status for BOM_id {bom.BOM_id}")
+            return HTTPException(status_code=404, detail=f"Unable to update status for BOM_id {bom.BOM_id}")
         
         last_id_query = "SELECT TOP 1 BOM_id FROM dbo.BOM$ ORDER BY CAST(SUBSTRING(BOM_id, 2, LEN(BOM_id)-1) AS INT) DESC"
         cursor.execute(last_id_query)
@@ -461,7 +461,7 @@ async def update_bom(bom: BOM):
         #     return HTTPException(status_code=404, detail=f"BOM_id {bom.BOM_id} not found")
 
         if cursor.rowcount == 0:
-            raise HTTPException(status_code=500, detail=f"Failed to create new BOM entry for {bom.BOM_id}")
+            return HTTPException(status_code=500, detail=f"Failed to create new BOM entry for {bom.BOM_id}")
 
         connection.commit()
 
