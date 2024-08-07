@@ -4,7 +4,7 @@ The following is included inside:
 1. A pdf version of our presentation files
 2. 5 csv files which contain all our data in our database
 3. Screenshots of our functional frontend application (Power Apps)
-4. The backend Python code to fetch all the data from the backend server to display it on the frontend Power Apps using FastAPI
+4. The backend Python code (main.py) to fetch all the data from the backend server to display it on the frontend Power Apps using FastAPI 
 
 
 Our MRP system is easy-to-use as it eliminates the need for the user to perform any query in order to make any changes to the data.
