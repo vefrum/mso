@@ -50,8 +50,8 @@ class BOM(BaseModel):
     setup_time: Optional[int] = None
     runtime: Optional[int] = None
     routing_id: Optional[str] = None 
-    operations_sequence: Optional[int] = None # follow previous BOM
-    workcentre_id: Optional[str] = None # follow previous BOM
+    operations_sequence: Optional[int] = None 
+    workcentre_id: Optional[str] = None 
     
 class Routing(BaseModel):
     routing_id: str = None 
@@ -75,14 +75,6 @@ class Part(BaseModel):
     lead_time: int
     part_last_updated: datetime
     status: str = None
-
-# class PartIDUpdate(BaseModel):
-#     old_part_id: str
-#     new_part_id: str
-
-# class UpdateBOMRequest(BaseModel):
-#     bom: BOM
-#     routing: List[Routing]
  
 load_dotenv() 
 connection_string = os.getenv("AZURE_SQL_CONNECTIONSTRING") 
@@ -272,37 +264,6 @@ async def create_bom(bom: BOM):
             bom.BOM_last_updated,
             bom.status
         ))
-        # # Generate a new routing_id
-        # query = "SELECT TOP 1 routing_id FROM dbo.Routings$ ORDER BY routing_id DESC"
-        # cursor.execute(query)
-        # result = cursor.fetchone()
-
-        # if result:
-        #     latest_routing_id = result[0]
-        #     routing_counter = int(latest_routing_id[1:])
-        # else:
-        #     routing_counter = 0
-
-        # routing_counter += 1
-        # routing_id = f"R{str(routing_counter).zfill(3)}"
-
-        # # Insert data into the Routing table
-        # insert_routing_query = """
-        # INSERT INTO dbo.Routings$ (routing_id, BOM_id, operations_sequence, workcentre_id, process_description, setup_time, runtime, routings_last_update, status)
-        # VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
-        # """
-        # cursor.execute(insert_routing_query, (
-        #     routing_id,
-        #     bom.BOM_id,
-        #     1,  # Assuming operations_sequence starts at 1 for the new entry
-        #     bom.workcentre_id,  # Retrieved or default workcentre_id
-        #     bom.process_description,  # Replace with actual process description or parameter
-        #     bom.setup_time,  # Setup time, adjust as necessary
-        #     bom.runtime,  # Runtime, adjust as necessary
-        #     current_datetime,
-        #     "active"
-        # ))
-
         connection.commit()
 
         response = {
@@ -870,10 +831,8 @@ async def delete_part(part_id: str):
         if cursor.rowcount == 0:
             raise HTTPException(status_code=404, detail=error_messages["routing_not_found"])
         
-        # Commit the transaction
         connection.commit()
 
-        # If no exceptions, return success response
         response = {
             "message": error_messages["unexpected_error"],
             "part_id": part_id
@@ -886,7 +845,6 @@ async def delete_part(part_id: str):
         raise HTTPException(status_code=500, detail=error_messages["database_error"])
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"{error_messages['unexpected_error']}: {str(e)}")
- 
 
 @app.get("/orderdetailsfull/{order_id}")
 async def get_full_order_details(order_id: str):
@@ -967,7 +925,6 @@ async def get_orders():
     response = StreamingResponse(output, media_type="text/csv")
     response.headers["Content-Disposition"] = "attachment; filename=export_orders.csv"
     return response
-
 
 @app.post("/orders")
 async def create_order(order: Order):
@@ -1087,9 +1044,6 @@ async def delete_order(order_id: str):
         if part_count > 0:
             raise HTTPException(status_code=409, detail=error_messages["referenced_entry"])
 
-        # if referencing_count > 0:
-        #     raise HTTPException(status_code=409, detail=error_messages["referenced_entry"])
-
         # Delete BOM entry
         delete_query = "DELETE FROM dbo.Orders$ WHERE order_id = ?"
         cursor.execute(delete_query, (order_id,))
@@ -1097,10 +1051,8 @@ async def delete_order(order_id: str):
         if cursor.rowcount == 0:
             raise HTTPException(status_code=404, detail=error_messages["order_not_found"])
         
-        # Commit the transaction
         connection.commit()
 
-        # If no exceptions, return success response
         response = {
             "message": "Order successfully deleted",
             "order_id": order_id
@@ -1126,7 +1078,6 @@ async def get_work_centre():
     response = StreamingResponse(output, media_type="text/csv")
     response.headers["Content-Disposition"] = "attachment; filename=export.csv"
     return response
-
 
 @app.post("/workcentre")
 async def create_workcentre(workcentre: WorkCentre):
@@ -1166,7 +1117,6 @@ async def create_workcentre(workcentre: WorkCentre):
         workcentre_id = f"WC{str(workcentre_counter).zfill(3)}"
         workcentre.workcentre_id = workcentre_id
         workcentre.status = "active"
-       
     
         check_query = "SELECT COUNT(*) FROM dbo.Workcentre$ WHERE workcentre_id = ?"
         cursor.execute(check_query, (workcentre.workcentre_id,))
@@ -1323,41 +1273,3 @@ async def delete_workcentre(workcentre_id: str):
         raise HTTPException(status_code=500, detail=error_messages["database_error"])
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"{error_messages['unexpected_error']}: {str(e)}")
-
-#####################################################################################################
-# updating part_id across tables
-
-# @app.put("/partmasterrecords/update_part_id")
-# async def update_part_id(part_update: PartIDUpdate):
-#     old_part_id = part_update.old_part_id
-#     new_part_id = part_update.new_part_id
-
-#     try:
-#         # Update Part_Master_Records$
-#         update_query = "UPDATE dbo.Part_Master_Records$ SET part_id = ? WHERE part_id = ?"
-#         cursor.execute(update_query, new_part_id, old_part_id)
-        
-#         # Update BOM$
-#         update_query = "UPDATE dbo.BOM$ SET part_id = ? WHERE part_id = ?"
-#         cursor.execute(update_query, new_part_id, old_part_id)
-        
-#         # Update Routings$
-#         update_query = "UPDATE dbo.Routings$ SET BOM_id = ? WHERE BOM_id = ?"
-#         cursor.execute(update_query, new_part_id, old_part_id)
-        
-#         # Update Orders$
-#         update_query = "UPDATE dbo.Orders$ SET part_id = ? WHERE part_id = ?"
-#         cursor.execute(update_query, new_part_id, old_part_id)
-
-#         connection.commit()
-
-#         response = {
-#             "message": "Part ID updated successfully across all relevant tables",
-#             "old_part_id": old_part_id,
-#             "new_part_id": new_part_id
-#         }
-#         return response
-
-#     except Exception as e:
-#         connection.rollback()
-#         raise HTTPException(status_code=500, detail=str(e))
