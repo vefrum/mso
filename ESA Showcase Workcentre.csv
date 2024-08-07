@@ -1,0 +1,5 @@
+workcentre_id,workcentre_name,workcentre_description,capacity,capacity_unit,cost_rate_h,workcentre_last_updated,status
+WC001,CNC,CNC Milling Machine - Used to machine components l,50,pcs/h,100,2022-01-01 16:08:20,inactive
+WC002,FWM,Frame Welding Machine - Form the frame of a bicycl,10,frames/h,50,2022-01-02 10:38:07,Active
+WC003,WLM,Wheel Lacing Machine (Automatic) - Assemble the wh,20,wheels/h,25,2022-01-02 11:05:07,Active
+WC004,AAL,Automated Assembly Line - Assemble all components ,5,bikes/h,250,2022-01-02 05:13:18,Active

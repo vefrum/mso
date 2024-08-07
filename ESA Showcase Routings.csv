@@ -1,0 +1,416 @@
+routing_id,BOM_id,operations_sequence,workcentre_id,process_description,setup_time,runtime,routings_last_update,status
+R001,B001,1,WC001,Transform Aluminium Billet 7075 size 6 into Bottom,30,5,2020-01-15 23:39:34,inactive
+R002,B002,1,WC001,Transform Bottom Bracket Bearings 30mm Axle into B,30,20,2020-01-15 04:22:14,inactive
+R003,B003,1,WC001,Transform Bottom Bracket Seal Kit 68mm into Bottom,30,10,2020-01-15 08:16:41,inactive
+R004,B004,1,WC001,Transform Aluminium Billet 7075 size 6 into Bottom,30,5,2020-01-15 15:40:44,active
+R005,B005,1,WC001,Transform Bottom Bracket Bearings 30mm Axle into B,30,20,2020-01-15 00:48:06,active
+R006,B006,1,WC001,Transform Bottom Bracket Seal Kit 73mm into Bottom,30,10,2020-01-15 18:48:37,active
+R007,B007,1,WC001,Transform 7150 Al Crank Axle into Aluminium Cranks,30,10,2020-01-15 05:08:29,active
+R008,B008,1,WC001,Transform Aluminium Billet 7075 size 8 into Alumin,30,2.5,2020-01-15 04:19:54,active
+R009,B009,1,WC001,Transform Aluminium Billet 7075 size 6 into Alloy ,30,1,2020-01-15 04:36:59,active
+R010,B010,1,WC001,Transform Aluminium Billet 7075 size 4 into Alloy ,30,2,2020-01-15 09:50:01,active
+R011,B011,1,WC001,Transform Aluminium Billet 7075 size 4 into Alloy ,30,2.5,2020-01-15 16:25:01,active
+R012,B012,1,WC001,Transform Aluminium Billet 7075 size 6 into Alumin,30,2.5,2020-01-15 04:30:10,active
+R013,B013,1,WC001,Transform Aluminium Billet 7075 size 6 into Alumin,30,2.5,2020-01-15 00:19:42,active
+R014,B014,1,WC001,Transform 7150 Al Crank Axle into Carbon Crankset ,30,10,2020-01-15 14:25:28,inactive
+R015,B015,1,WC001,Transform Cut Pieces Kit- 150g UD Carbon Fibre Clo,30,10,2020-01-15 05:01:00,active
+R016,B016,1,WC001,Transform Cut Pieces Kit- 245g UD Carbon Fibre Clo,30,10,2020-01-15 16:28:46,active
+R017,B017,1,WC001,Transform Mould Inflation Bag HB Crank into Carbon,30,10,2020-01-15 13:14:38,active
+R018,B018,1,WC001,Transform Carbon Fibre Cloth 150g UD roll 1m lengt,30,12,2020-01-15 08:55:51,active
+R019,B019,1,WC001,Transform Carbon Fibre Cloth 150g UD roll 1m lengt,30,13,2020-01-15 19:20:35,active
+R020,B020,1,WC001,Transform Carbon Fibre Cloth 150g UD roll 1m lengt,30,14,2020-01-15 10:44:47,active
+R021,B021,1,WC001,Transform Carbon Fibre Cloth 150g UD roll 1m lengt,30,11,2020-01-15 21:32:10,active
+R022,B022,1,WC001,Transform Carbon Fibre Cloth 150g UD roll 1m lengt,30,12,2020-01-15 08:22:55,active
+R023,B023,1,WC001,Transform Carbon Fibre Cloth 150g UD roll 1m lengt,30,13,2020-01-15 01:17:08,active
+R024,B024,1,WC001,Transform Carbon Fibre Cloth 150g UD roll 1m lengt,30,12,2020-01-15 14:35:42,active
+R025,B025,1,WC001,Transform Carbon Fibre Cloth 150g UD roll 1m lengt,30,13,2020-01-15 22:35:16,active
+R026,B026,1,WC001,Transform Carbon Fibre Cloth 150g UD roll 1m lengt,30,14,2020-01-15 01:36:45,active
+R027,B027,1,WC001,Transform Carbon Fibre Cloth 150g UD roll 1m lengt,30,12,2020-01-15 02:33:58,active
+R028,B028,1,WC001,Transform Carbon Fibre Cloth 150g UD roll 1m lengt,30,13,2020-01-15 07:02:20,active
+R029,B029,1,WC001,Transform Carbon Fibre Cloth 150g UD roll 1m lengt,30,14,2020-01-15 07:06:51,active
+R030,B030,1,WC001,Transform Carbon Fibre Cloth 245g UD roll 1m lengt,30,8,2020-01-15 07:20:53,active
+R031,B031,1,WC001,Transform Carbon Fibre Cloth 245g UD roll 1m lengt,30,8,2020-01-15 19:24:26,active
+R032,B032,1,WC001,Transform Carbon Fibre Cloth 245g UD roll 1m lengt,30,8,2020-01-15 17:00:41,NA
+R033,B033,1,WC001,Transform Carbon Fibre Cloth 245g UD roll 1m lengt,30,8,2020-01-15 23:50:26,active
+R034,B034,1,WC001,Transform Carbon Fibre Cloth 416g UD roll 1m lengt,30,4,2020-01-15 15:51:35,active
+R035,B035,1,WC001,Transform Carbon Fibre Cloth 416g UD roll 1m lengt,30,4,2020-01-15 20:15:40,active
+R036,B036,1,WC004,Transform 170mm Enduro Frameset - Small into 170mm,30,10,2020-01-15 00:25:38,active
+R037,B093,2,WC002,Transform Alloy Suspension Link Kit - Enduro into ,30,10,2020-01-15 23:54:47,active
+R038,B094,3,WC001,Transform Aluminium Billet 7075 size 4 into Alloy ,30,2.5,2020-01-15 06:17:51,active
+R039,B095,2,WC002,Transform Bottom Bracket Aluminium Threaded 73mm i,30,10,2020-01-15 20:47:48,active
+R040,B096,3,WC001,Transform Aluminium Billet 7075 size 6 into Bottom,30,5,2020-01-15 13:35:06,active
+R041,B097,3,WC001,Transform Bottom Bracket Bearings 30mm Axle into B,30,20,2020-01-15 03:53:12,active
+R042,B098,3,WC001,Transform Bottom Bracket Seal Kit 73mm into Bottom,30,10,2020-01-15 12:38:45,active
+R043,B099,2,WC002,Transform Clear coat, 5ltr into 170mm Enduro Frame,30,0.55000000000000004,2020-01-15 14:59:11,active
+R044,B100,2,WC002,Transform Cut Pieces Kit- 150g UD Carbon Fibre Clo,30,10,2020-01-15 17:06:42,active
+R045,B101,3,WC001,Transform Carbon Fibre Cloth 150g UD roll 1m lengt,30,12,2020-01-15 02:51:12,active
+R046,B102,2,WC002,Transform Cut Pieces Kit- 245g UD Carbon Fibre Clo,30,10,2020-01-15 08:58:36,active
+R047,B103,3,WC001,Transform Carbon Fibre Cloth 245g UD roll 1m lengt,30,8,2020-01-15 21:35:56,active
+R048,B037,2,WC002,Transform Cut Pieces Kit- 416g UD Carbon Fibre Clo,30,10,2020-01-15 12:12:57,active
+R049,B038,3,WC001,Transform Carbon Fibre Cloth 416g UD roll 1m lengt,30,4,2020-01-15 01:26:27,active
+R050,B039,2,WC002,Transform Decals - Frame - Enduro into 170mm Endur,30,10,2020-01-15 06:36:11,active
+R051,B040,2,WC002,Transform Grommet set - Enduro into 170mm Enduro F,30,10,2020-01-15 23:42:36,active
+R052,B041,2,WC002,Transform Mould Inflation Bag - Frame into 170mm E,30,10,2020-01-15 05:20:51,active
+R053,B042,2,WC002,Transform Pivot Bolt Kit - Enduro into 170mm Endur,30,10,2020-01-15 04:47:51,active
+R054,B043,2,WC002,Transform Tapered Headset into 170mm Enduro Frames,30,10,2020-01-15 16:04:52,active
+R055,B044,1,WC004,Transform Aluminium Crankset 165mm into 170mm Endu,30,10,2020-01-15 13:50:38,active
+R056,B045,2,WC001,Transform 7150 Al Crank Axle into Aluminium Cranks,30,10,2020-01-15 20:59:53,active
+R057,B201,2,WC001,Transform Aluminium Billet 7075 size 8 into Alumin,30,2.5,2020-01-15 02:43:16,active
+R058,B202,1,WC004,Transform Aluminium Stem 55mm into 170mm Enduro Mo,30,10,2020-01-15 16:39:27,active
+R059,B046,2,WC001,Transform Aluminium Billet 7075 size 6 into Alumin,30,2.5,2020-01-15 16:53:59,active
+R060,B047,1,WC004,Transform BikeYoke Revive 2.0 160mm Seatpost into ,30,10,2020-01-15 10:26:27,active
+R061,B048,1,WC004,Transform Chainring 32T Alloy SB into 170mm Enduro,30,10,2020-01-15 16:22:17,active
+R062,B049,1,WC004,Transform DMR Deathgrip Handlebar Grips black into,30,10,2020-01-15 00:27:06,active
+R063,B050,1,WC004,Transform DMR Vault Pedals into 170mm Enduro Mount,30,10,2020-01-15 05:51:42,active
+R064,B051,1,WC004,Transform Formula Cura 4 Disc Brake Front into 170,30,10,2020-01-15 22:46:47,active
+R065,B052,1,WC004,Transform Formula Cura 4 Disc Brake Rear into 170m,30,10,2020-01-15 18:10:36,active
+R066,B053,1,WC004,Transform Handlebars Enduro/Trail 750mm into 170mm,30,10,2020-01-15 19:03:05,active
+R067,B306,2,WC002,Transform Carbon Fibre Cloth 245g UD roll 1m lengt,30,1,2020-01-15 20:31:48,active
+R068,B307,2,WC002,Transform Mould Inflation Bag HB Straight into Han,30,10,2020-01-15 02:57:59,active
+R069,B308,1,WC004,Transform KMC Chain X12 EPT Anti-Rust Chain into 1,30,10,2020-01-15 16:38:18,active
+R070,B207,1,WC004,Transform Maxxis Minion DHF Folding Tyre 27.5x2.50,30,10,2020-01-15 19:52:35,active
+R071,B208,1,WC004,Transform Maxxis Minion DHR II Folding Tyre 27.5x2,30,10,2020-01-15 11:08:17,active
+R072,B309,1,WC004,Transform RockShox Lyrik Ultimate fork 275 into 17,30,10,2020-01-15 12:10:11,active
+R073,B310,1,WC004,Transform RockShox Super Deluxe Ultimate Coil RCT ,30,10,2020-01-15 19:24:15,active
+R074,B311,1,WC004,Transform Shimano XT M8000 Cassette 12 speed into ,30,10,2020-01-15 13:46:29,active
+R075,B054,1,WC004,Transform Shimano XT M8000 Derailleur 12 speed int,30,10,2020-01-15 20:51:40,active
+R076,B055,2,WC003,Transform Front Hub Boost 32h into Wheelset 275 wi,30,10,2020-01-15 12:28:16,active
+R077,B104,2,WC003,Transform Rear Hub Superboost 32h 12 speed hub MS ,30,10,2020-01-15 15:14:35,active
+R078,B105,2,WC003,Transform Rim - 275 Enduro/Trail into Wheelset 275,30,20,2020-01-15 14:32:53,active
+R079,B106,3,WC001,Transform Carbon Fibre Cloth 245g UD roll 1m lengt,30,1,2020-01-15 08:40:14,active
+R080,B107,3,WC001,Transform Mould Inflation Bag - Rims into Rim - 27,30,10,2020-01-15 18:25:24,active
+R081,B108,2,WC003,Transform Rim Tape into Wheelset 275 with Enduro/T,30,2.2999999999999998,2020-01-15 03:53:38,active
+R082,B109,2,WC003,Transform Sapim straight-pull spokes into Wheelset,30,10,2020-01-15 08:24:20,active
+R083,B110,2,WC003,Transform Tubeless valves - Presta into Wheelset 2,30,10,2020-01-15 15:49:18,active
+R084,B111,1,WC004,Transform WTB Volt Saddle black into 170mm Enduro ,30,10,2020-01-15 21:44:41,active
+R085,B112,0,WC004,Transform 170mm Enduro Mountain Bike - Medium into,30,10,2020-01-15 05:44:07,active
+R086,B113,1,WC002,Transform 170mm Enduro Frameset - Medium into 170m,30,10,2020-01-15 18:55:02,active
+R087,B114,2,WC002,Transform Alloy Suspension Link Kit - Enduro into ,30,10,2020-01-15 03:27:56,active
+R088,B056,3,WC001,Transform Aluminium Billet 7075 size 4 into Alloy ,30,2.5,2020-01-15 17:17:06,active
+R089,B057,2,WC002,Transform Bottom Bracket Aluminium Threaded 73mm i,30,10,2020-01-15 12:10:57,active
+R090,B058,3,WC001,Transform Aluminium Billet 7075 size 6 into Bottom,30,5,2020-01-15 17:16:07,active
+R091,B059,3,WC001,Transform Bottom Bracket Bearings 30mm Axle into B,30,20,2020-01-15 02:43:49,active
+R092,B060,3,WC001,Transform Bottom Bracket Seal Kit 73mm into Bottom,30,10,2020-01-15 05:51:18,active
+R093,B061,2,WC002,Transform Clear coat, 5ltr into 170mm Enduro Frame,30,0.58999999999999997,2020-01-15 06:29:35,active
+R094,B062,2,WC002,Transform Cut Pieces Kit- 150g UD Carbon Fibre Clo,30,10,2020-01-15 16:51:23,active
+R095,B063,3,WC001,Transform Carbon Fibre Cloth 150g UD roll 1m lengt,30,13,2020-01-15 20:03:19,active
+R096,B064,2,WC002,Transform Cut Pieces Kit- 245g UD Carbon Fibre Clo,30,10,2020-01-15 19:13:48,active
+R097,B203,3,WC001,Transform Carbon Fibre Cloth 245g UD roll 1m lengt,30,8,2020-01-15 04:14:30,active
+R098,B204,2,WC002,Transform Cut Pieces Kit- 416g UD Carbon Fibre Clo,30,10,2020-01-15 01:54:03,active
+R099,B065,3,WC001,Transform Carbon Fibre Cloth 416g UD roll 1m lengt,30,4,2020-01-15 00:49:38,active
+R100,B066,2,WC002,Transform Decals - Frame - Enduro into 170mm Endur,30,10,2020-01-15 13:37:48,active
+R101,B067,2,WC002,Transform Grommet set - Enduro into 170mm Enduro F,30,10,2020-01-15 03:24:08,active
+R102,B068,2,WC002,Transform Mould Inflation Bag - Frame into 170mm E,30,10,2020-01-15 05:59:21,active
+R103,B069,2,WC002,Transform Pivot Bolt Kit - Enduro into 170mm Endur,30,10,2020-01-15 13:21:49,active
+R104,B070,2,WC002,Transform Tapered Headset into 170mm Enduro Frames,30,10,2020-01-15 05:07:18,active
+R105,B071,1,WC004,Transform Aluminium Crankset 165mm into 170mm Endu,30,10,2020-01-15 18:03:37,active
+R106,B072,2,WC001,Transform 7150 Al Crank Axle into Aluminium Cranks,30,10,2020-01-15 22:18:25,active
+R107,B312,2,WC001,Transform Aluminium Billet 7075 size 8 into Alumin,30,2.5,2020-01-15 14:17:59,active
+R108,B313,1,WC004,Transform Aluminium Stem 55mm into 170mm Enduro Mo,30,10,2020-01-15 00:59:38,active
+R109,B314,2,WC001,Transform Aluminium Billet 7075 size 6 into Alumin,30,2.5,2020-01-15 07:20:28,active
+R110,B209,1,WC004,Transform BikeYoke Revive 2.0 185mm Seatpost into ,30,10,2020-01-15 04:30:03,active
+R111,B210,1,WC004,Transform Chainring 32T Alloy SB into 170mm Enduro,30,10,2020-01-15 13:56:06,active
+R112,B315,1,WC004,Transform DMR Deathgrip Handlebar Grips black into,30,10,2020-01-15 17:54:44,active
+R113,B316,1,WC004,Transform DMR Vault Pedals into 170mm Enduro Mount,30,10,2020-01-15 22:56:41,active
+R114,B317,1,WC004,Transform Formula Cura 4 Disc Brake Front into 170,30,10,2020-01-15 19:52:20,active
+R115,B073,1,WC004,Transform Formula Cura 4 Disc Brake Rear into 170m,30,10,2020-01-15 00:22:02,active
+R116,B074,2,WC002,Transform Carbon Fibre Cloth 245g UD roll 1m lengt,30,1,2020-01-15 12:18:51,active
+R117,B115,2,WC002,Transform Mould Inflation Bag HB Straight into Han,30,10,2020-01-15 05:06:06,active
+R118,B116,1,WC004,Transform KMC Chain X11 EPT Anti-Rust Chain into 1,30,10,2020-01-15 10:40:35,active
+R119,B117,1,WC004,Transform Maxxis Minion DHF Folding Tyre 29x2.50" ,30,10,2020-01-15 06:12:49,active
+R120,B118,1,WC004,Transform Maxxis Minion DHR II Folding Tyre 29x2.5,30,10,2020-01-15 04:00:34,active
+R121,B119,1,WC004,Transform RockShox Super Deluxe Ultimate Coil RCT ,30,10,2020-01-15 19:52:24,active
+R122,B120,1,WC004,Transform RockShox Zeb Ultimate fork 295 into 170m,30,10,2020-01-15 00:12:55,active
+R123,B121,1,WC004,Transform Shimano XT M8000 Cassette 12 speed into ,30,10,2020-01-15 03:08:27,active
+R124,B122,1,WC004,Transform Shimano XT M8000 Derailleur 12 speed int,30,10,2020-01-15 13:52:05,active
+R125,B123,1,WC004,Transform Wheelset 295 with Enduro/Trail Wide rims,30,10,2020-01-15 19:42:24,active
+R126,B124,2,WC003,Transform Front Hub Boost 32h into Wheelset 295 wi,30,10,2020-01-15 16:51:47,active
+R127,B125,2,WC003,Transform Rear Hub Superboost 32h 12 speed hub MS ,30,10,2020-01-15 05:46:43,active
+R128,B075,2,WC003,Transform Rim - 295 Enduro/Trail into Wheelset 295,30,20,2020-01-15 20:32:46,active
+R129,B076,3,WC001,Transform Carbon Fibre Cloth 245g UD roll 1m lengt,30,2.6000000000000001,2020-01-15 14:38:58,active
+R130,B077,3,WC001,Transform Mould Inflation Bag - Rims into Rim - 29,30,10,2020-01-15 01:46:11,active
+R131,B078,2,WC003,Transform Rim Tape into Wheelset 295 with Enduro/T,30,3.1000000000000001,2020-01-15 16:41:05,active
+R132,B079,2,WC003,Transform Sapim straight-pull spokes into Wheelset,30,10,2020-01-15 14:47:38,active
+R133,B080,2,WC003,Transform Tubeless valves - Presta into Wheelset 2,30,10,2020-01-15 09:01:29,active
+R134,B081,1,WC004,Transform WTB Volt Saddle black into 170mm Enduro ,30,10,2020-01-15 14:02:21,active
+R135,B082,0,WC004,Transform 170mm Enduro Mountain Bike - Large into ,30,10,2020-01-15 07:20:56,active
+R136,B083,1,WC002,Transform 170mm Enduro Frameset - Large into 170mm,30,10,2020-01-15 13:20:20,active
+R137,B084,2,WC002,Transform Alloy Suspension Link Kit - Enduro into ,30,10,2020-01-15 05:30:57,active
+R138,B085,3,WC001,Transform Aluminium Billet 7075 size 4 into Alloy ,30,2.5,2020-01-15 07:23:53,active
+R139,B086,2,WC002,Transform Bottom Bracket Aluminium Threaded 73mm i,30,10,2020-01-15 07:20:37,active
+R140,B087,3,WC001,Transform Aluminium Billet 7075 size 6 into Bottom,30,5,2020-01-15 09:19:56,active
+R141,B088,3,WC001,Transform Bottom Bracket Bearings 30mm Axle into B,30,20,2020-01-15 23:20:38,active
+R142,B089,3,WC001,Transform Bottom Bracket Seal Kit 73mm into Bottom,30,10,2020-01-15 14:13:29,active
+R143,B090,2,WC002,Transform Clear coat, 5ltr into 170mm Enduro Frame,30,0.64000000000000001,2020-01-15 10:14:23,active
+R144,B091,2,WC002,Transform Cut Pieces Kit- 150g UD Carbon Fibre Clo,30,10,2020-01-15 17:53:26,active
+R145,B092,3,WC001,Transform Carbon Fibre Cloth 150g UD roll 1m lengt,30,14,2020-01-15 00:45:27,active
+R146,B126,2,WC002,Transform Decals - Frame - Enduro into 170mm Endur,30,10,2020-01-15 03:19:12,active
+R147,B127,2,WC002,Transform Grommet set - Enduro into 170mm Enduro F,30,10,2020-01-15 05:14:34,active
+R148,B128,2,WC002,Transform Mould Inflation Bag - Frame into 170mm E,30,10,2020-01-15 18:33:39,active
+R149,B129,2,WC002,Transform Pivot Bolt Kit - Enduro into 170mm Endur,30,10,2020-01-15 05:26:27,active
+R150,B130,2,WC002,Transform Tapered Headset into 170mm Enduro Frames,30,10,2020-01-15 19:20:28,inactive
+R151,B191,1,WC004,Transform Aluminium Crankset 165mm into 170mm Endu,30,10,2020-01-15 06:17:11,active
+R152,B192,2,WC001,Transform 7150 Al Crank Axle into Aluminium Cranks,30,10,2020-01-15 21:38:59,active
+R153,B131,2,WC001,Transform Aluminium Billet 7075 size 8 into Alumin,30,2.5,2020-01-15 01:16:13,active
+R154,B174,1,WC004,Transform Aluminium Stem 55mm into 170mm Enduro Mo,30,10,2020-01-15 19:06:12,active
+R155,B175,2,WC001,Transform Aluminium Billet 7075 size 6 into Alumin,30,2.5,2020-01-15 00:56:17,active
+R156,B176,1,WC004,Transform BikeYoke Revive 2.0 213mm Seatpost into ,30,10,2020-01-15 22:42:10,active
+R157,B177,1,WC004,Transform Chainring 32T Alloy SB into 170mm Enduro,30,10,2020-01-15 11:19:31,active
+R158,B178,1,WC004,Transform DMR Deathgrip Handlebar Grips black into,30,10,2020-01-15 16:12:33,active
+R159,B132,1,WC004,Transform DMR Vault Pedals into 170mm Enduro Mount,30,10,2020-01-15 04:18:47,active
+R160,B133,1,WC004,Transform Formula Cura 4 Disc Brake Front into 170,30,10,2020-01-15 03:32:32,active
+R161,B193,1,WC004,Transform Formula Cura 4 Disc Brake Rear into 170m,30,10,2020-01-15 02:23:53,active
+R162,B194,1,WC004,Transform Handlebars Enduro/Trail 800mm into 170mm,30,10,2020-01-15 21:17:56,active
+R163,B134,2,WC002,Transform Carbon Fibre Cloth 245g UD roll 1m lengt,30,1,2020-01-15 00:22:21,active
+R164,B135,2,WC002,Transform Mould Inflation Bag HB Straight into Han,30,10,2020-01-15 22:40:36,active
+R165,B136,1,WC004,Transform KMC Chain X12 EPT Anti-Rust Chain into 1,30,10,2020-01-15 15:06:48,active
+R166,B137,1,WC004,Transform Maxxis Minion DHF Folding Tyre 29x2.50" ,30,10,2020-01-15 17:20:24,active
+R167,B138,1,WC004,Transform Maxxis Minion DHR II Folding Tyre 29x2.5,30,10,2020-01-15 19:33:12,active
+R168,B139,1,WC004,Transform RockShox Super Deluxe Ultimate Coil RCT ,30,10,2020-01-15 12:48:46,active
+R169,B140,1,WC004,Transform RockShox Zeb Ultimate fork 295 into 170m,30,10,2020-01-15 02:47:20,active
+R170,B141,1,WC004,Transform Shimano XT M8000 Cassette 12 speed into ,30,10,2020-01-15 22:28:39,active
+R171,B318,1,WC004,Transform Shimano XT M8000 Derailleur 12 speed int,30,10,2020-01-15 04:55:37,active
+R172,B319,1,WC004,Transform Wheelset 295 with Enduro/Trail Wide rims,30,10,2020-01-15 03:43:37,active
+R173,B320,2,WC003,Transform Front Hub Boost 32h into Wheelset 295 wi,30,10,2020-01-15 19:50:07,active
+R174,B211,2,WC003,Transform Rear Hub Superboost 32h 12 speed hub MS ,30,10,2020-01-15 00:24:41,active
+R175,B212,2,WC003,Transform Rim - 295 Enduro/Trail into Wheelset 295,30,20,2020-01-15 19:55:05,active
+R176,B321,3,WC001,Transform Carbon Fibre Cloth 245g UD roll 1m lengt,30,2.6000000000000001,2020-01-15 14:18:37,active
+R177,B322,3,WC001,Transform Mould Inflation Bag - Rims into Rim - 29,30,10,2020-01-15 11:54:48,active
+R178,B323,2,WC003,Transform Rim Tape into Wheelset 295 with Enduro/T,30,3.1000000000000001,2020-01-15 19:25:05,active
+R179,B142,2,WC003,Transform Tubeless valves - Presta into Wheelset 2,30,10,2020-01-15 23:06:29,active
+R180,B143,1,WC004,Transform WTB Volt Saddle black into 170mm Enduro ,30,10,2020-01-15 17:13:36,active
+R181,B144,0,WC002,Transform 170mm Enduro Frameset - Small into 170mm,30,10,2020-01-15 07:22:05,active
+R182,B145,1,WC002,Transform Alloy Suspension Link Kit - Enduro into ,30,10,2020-01-15 21:21:28,active
+R183,B146,2,WC001,Transform Aluminium Billet 7075 size 4 into Alloy ,30,2.5,2020-01-15 23:11:55,active
+R184,B147,1,WC002,Transform Bottom Bracket Aluminium Threaded 73mm i,30,10,2020-01-15 07:54:32,active
+R185,B179,2,WC001,Transform Aluminium Billet 7075 size 6 into Bottom,30,5,2020-01-15 21:13:15,active
+R186,B180,2,WC001,Transform Bottom Bracket Bearings 30mm Axle into B,30,20,2020-01-15 13:48:28,active
+R187,B181,2,WC001,Transform Bottom Bracket Seal Kit 73mm into Bottom,30,10,2020-01-15 12:11:04,active
+R188,B182,1,WC002,Transform Clear coat, 5ltr into 170mm Enduro Frame,30,0.55000000000000004,2020-01-15 14:27:11,active
+R189,B183,1,WC002,Transform Cut Pieces Kit- 150g UD Carbon Fibre Clo,30,10,2020-01-15 11:28:18,active
+R190,B184,2,WC001,Transform Carbon Fibre Cloth 150g UD roll 1m lengt,30,12,2020-01-15 11:19:27,active
+R191,B148,1,WC002,Transform Cut Pieces Kit- 245g UD Carbon Fibre Clo,30,10,2020-01-15 01:48:23,active
+R192,B149,2,WC001,Transform Carbon Fibre Cloth 245g UD roll 1m lengt,30,8,2020-01-15 06:27:18,active
+R193,B195,1,WC002,Transform Cut Pieces Kit- 416g UD Carbon Fibre Clo,30,10,2020-01-15 03:18:03,active
+R194,B196,2,WC001,Transform Carbon Fibre Cloth 416g UD roll 1m lengt,30,4,2020-01-15 03:11:07,active
+R195,B150,1,WC002,Transform Decals - Frame - Enduro into 170mm Endur,30,10,2020-01-15 17:55:31,active
+R196,B151,1,WC002,Transform Grommet set - Enduro into 170mm Enduro F,30,10,2020-01-15 19:32:24,active
+R197,B152,1,WC002,Transform Mould Inflation Bag - Frame into 170mm E,30,10,2020-01-15 23:53:02,active
+R198,B153,1,WC002,Transform Pivot Bolt Kit - Enduro into 170mm Endur,30,10,2020-01-15 09:03:47,active
+R199,B154,1,WC002,Transform Tapered Headset into 170mm Enduro Frames,30,10,2020-01-15 03:44:33,active
+R200,B155,0,WC002,Transform 170mm Enduro Frameset - Medium into 170m,30,10,2020-01-15 17:54:46,active
+R201,B156,1,WC002,Transform Alloy Suspension Link Kit - Enduro into ,30,10,2020-01-15 05:48:40,active
+R202,B157,2,WC001,Transform Aluminium Billet 7075 size 4 into Alloy ,30,2.5,2020-01-15 01:01:36,active
+R203,B158,2,WC001,Transform Aluminium Billet 7075 size 6 into Bottom,30,5,2020-01-15 06:33:36,active
+R204,B159,2,WC001,Transform Bottom Bracket Bearings 30mm Axle into B,30,20,2020-01-15 12:28:39,active
+R205,B160,2,WC001,Transform Bottom Bracket Seal Kit 73mm into Bottom,30,10,2020-01-15 21:14:13,active
+R206,B161,1,WC002,Transform Clear coat, 5ltr into 170mm Enduro Frame,30,0.58999999999999997,2020-01-15 03:04:34,active
+R207,B162,1,WC002,Transform Cut Pieces Kit- 150g UD Carbon Fibre Clo,30,10,2020-01-15 04:46:43,active
+R208,B163,2,WC001,Transform Carbon Fibre Cloth 150g UD roll 1m lengt,30,13,2020-01-15 22:16:48,active
+R209,B185,1,WC002,Transform Cut Pieces Kit- 245g UD Carbon Fibre Clo,30,10,2020-01-15 08:11:13,active
+R210,B186,2,WC001,Transform Carbon Fibre Cloth 245g UD roll 1m lengt,30,8,2020-01-15 12:02:42,active
+R211,B187,1,WC002,Transform Cut Pieces Kit- 416g UD Carbon Fibre Clo,30,10,2020-01-15 04:18:13,active
+R212,B188,2,WC001,Transform Carbon Fibre Cloth 416g UD roll 1m lengt,30,4,2020-01-15 06:39:57,active
+R213,B189,1,WC002,Transform Decals - Frame - Enduro into 170mm Endur,30,10,2020-01-15 08:26:14,active
+R214,B190,1,WC002,Transform Grommet set - Enduro into 170mm Enduro F,30,10,2020-01-15 01:00:08,active
+R215,B164,1,WC002,Transform Mould Inflation Bag - Frame into 170mm E,30,10,2020-01-15 03:49:25,active
+R216,B165,1,WC002,Transform Pivot Bolt Kit - Enduro into 170mm Endur,30,10,2020-01-15 20:59:17,active
+R217,B197,1,WC002,Transform Tapered Headset into 170mm Enduro Frames,30,10,2020-01-15 16:19:50,active
+R218,B198,0,WC002,Transform 170mm Enduro Frameset - Large into 170mm,30,10,2020-01-15 16:51:14,active
+R219,B166,1,WC002,Transform Alloy Suspension Link Kit - Enduro into ,30,10,2020-01-15 06:52:48,active
+R220,B167,2,WC001,Transform Aluminium Billet 7075 size 4 into Alloy ,30,2.5,2020-01-15 03:29:41,active
+R221,B168,1,WC002,Transform Bottom Bracket Aluminium Threaded 73mm i,30,10,2020-01-15 16:09:03,active
+R222,B169,2,WC001,Transform Aluminium Billet 7075 size 6 into Bottom,30,5,2020-01-15 02:05:12,active
+R223,B170,2,WC001,Transform Bottom Bracket Bearings 30mm Axle into B,30,20,2020-01-15 03:57:28,active
+R224,B171,2,WC001,Transform Bottom Bracket Seal Kit 73mm into Bottom,30,10,2020-01-15 02:57:11,active
+R225,B172,1,WC002,Transform Clear coat, 5ltr into 170mm Enduro Frame,30,0.64000000000000001,2020-01-15 11:37:48,active
+R226,B173,1,WC002,Transform Cut Pieces Kit- 150g UD Carbon Fibre Clo,30,10,2020-01-15 21:34:40,active
+R227,B199,1,WC002,Transform Pivot Bolt Kit - Enduro into 170mm Endur,30,10,2020-01-15 09:29:36,active
+R228,B200,1,WC002,Transform Tapered Headset into 170mm Enduro Frames,30,10,2020-01-15 17:57:15,active
+R229,B205,2,WC001,Transform 7150 Al Crank Axle into Carbon Crankset ,30,10,2020-01-15 00:23:09,active
+R230,B206,2,WC001,Transform Cut Pieces Kit- 150g UD Carbon Fibre Clo,30,10,2020-01-15 07:20:59,active
+R231,B213,1,WC002,Transform 20GR Gravel/CX Bike Carbon fork 700c int,30,10,2020-01-15 17:28:17,active
+R232,B267,2,WC002,Transform Carbon Fibre Cloth 245g UD roll 1m lengt,30,4,2020-01-15 00:46:59,active
+R233,B268,2,WC002,Transform Mould Inflation Bag HB Straight into 20G,30,10,2020-01-15 21:29:34,active
+R234,B269,1,WC004,Transform 20GR Gravel/CX Bike Frameset - Small int,30,10,2020-01-15 11:41:24,active
+R235,B270,2,WC002,Transform Bottom Bracket Aluminium Threaded 68mm i,30,10,2020-01-15 07:01:52,active
+R236,B271,3,WC001,Transform Aluminium Billet 7075 size 6 into Bottom,30,5,2020-01-15 06:09:11,active
+R237,B272,3,WC001,Transform Bottom Bracket Bearings 30mm Axle into B,30,20,2020-01-15 15:53:59,active
+R238,B273,3,WC001,Transform Bottom Bracket Seal Kit 68mm into Bottom,30,10,2020-01-15 12:58:39,active
+R239,B274,2,WC002,Transform Cable Grommets Gravel into 20GR Gravel/C,30,10,2020-01-15 23:51:45,active
+R240,B275,2,WC002,Transform Cane Creek 40-Series Headset into 20GR G,30,10,2020-01-15 08:32:52,active
+R241,B276,2,WC002,Transform Cut Pieces Kit- 150g UD Carbon Fibre Clo,30,10,2020-01-15 06:49:18,active
+R242,B277,3,WC001,Transform Carbon Fibre Cloth 150g UD roll 1m lengt,30,11,2020-01-15 04:21:54,active
+R243,B214,2,WC002,Transform Cut Pieces Kit- 245g UD Carbon Fibre Clo,30,10,2020-01-15 06:08:12,active
+R244,B215,3,WC001,Transform Carbon Fibre Cloth 245g UD roll 1m lengt,30,8,2020-01-15 21:24:24,active
+R245,B216,1,WC004,Transform Grip Tape into 20GR Gravel Bike - Small,30,10,2020-01-15 00:27:43,active
+R246,B217,1,WC004,Transform Handlebars Gravel 420mm into 20GR Gravel,30,10,2020-01-15 22:20:42,active
+R247,B218,2,WC002,Transform Carbon Fibre Cloth 245g UD roll 1m lengt,30,1,2020-01-15 18:21:46,active
+R248,B219,2,WC002,Transform Mould Inflation Bag HB Drop into Handleb,30,10,2020-01-15 07:22:05,active
+R249,B220,1,WC004,Transform KMC Chain X12SL Ti-N Chain into 20GR Gra,30,10,2020-01-15 03:03:52,active
+R250,B221,1,WC004,Transform Koda TI Saddle black into 20GR Gravel Bi,30,10,2020-01-15 20:35:37,active
+R251,B222,1,WC004,Transform Maxxis All Terrane Folding Tyre 700c int,30,20,2020-01-15 00:51:33,active
+R252,B223,1,WC004,Transform Shimano GRX Disc Brake Front into 20GR G,30,10,2020-01-15 20:26:00,active
+R253,B224,1,WC004,Transform Shimano GRX Disc Brake Rear into 20GR Gr,30,10,2020-01-15 16:23:23,active
+R254,B225,1,WC004,Transform Shimano XTR M8000 Cassette 12 speed into,30,10,2020-01-15 22:06:11,active
+R255,B226,1,WC004,Transform Shimano XTR M8000 Derailleur 12 speed in,30,10,2020-01-15 19:36:20,active
+R256,B227,1,WC004,Transform Wheelset 700c with 23mm rims into 20GR G,30,10,2020-01-15 11:42:19,active
+R257,B228,2,WC003,Transform Front Hub Boost 32h into Wheelset 700c w,30,10,2020-01-15 22:34:53,active
+R258,B229,2,WC003,Transform Rear Hub Superlight 32h 12 speed hub MS ,30,10,2020-01-15 04:03:53,NA
+R259,B230,2,WC003,Transform Rim - 700c Gravel into Wheelset 700c wit,30,20,2020-01-15 09:01:16,active
+R260,B231,3,WC001,Transform Mould Inflation Bag - Rims into Rim - 70,30,10,2020-01-15 11:54:32,active
+R261,B278,2,WC003,Transform Rim Tape into Wheelset 700c with 23mm ri,30,3.1000000000000001,2020-01-15 22:59:11,active
+R262,B279,2,WC003,Transform Sapim straight-pull Light spokes into Wh,30,10,2020-01-15 08:24:45,active
+R263,B280,2,WC003,Transform Tubeless valves - Presta into Wheelset 7,30,10,2020-01-15 13:20:23,active
+R264,B281,0,WC004,Transform 20GR Gravel Bike - Medium into 20GR Grav,30,10,2020-01-15 22:26:25,active
+R265,B282,1,WC004,Transform BikeYoke Divine SL 80mm Seatpost into 20,30,10,2020-01-15 03:00:27,active
+R266,B283,1,WC004,Transform Carbon Crankset 170mm into 20GR Gravel B,30,10,2020-01-15 00:52:13,active
+R267,B284,2,WC001,Transform 7150 Al Crank Axle into Carbon Crankset ,30,10,2020-01-15 13:39:08,active
+R268,B285,2,WC001,Transform Cut Pieces Kit- 150g UD Carbon Fibre Clo,30,10,2020-01-15 12:48:56,active
+R269,B286,2,WC001,Transform Cut Pieces Kit- 245g UD Carbon Fibre Clo,30,10,2020-01-15 16:10:42,active
+R270,B287,2,WC001,Transform Mould Inflation Bag HB Crank into Carbon,30,10,2020-01-15 01:10:30,active
+R271,B288,1,WC004,Transform Carbon light Stem 50mm into 20GR Gravel ,30,10,2020-01-15 03:04:15,active
+R272,B232,1,WC004,Transform Chainring 38T Alloy into 20GR Gravel Bik,30,10,2020-01-15 17:31:38,active
+R273,B233,1,WC004,Transform 20GR Gravel/CX Bike Carbon fork 700c int,30,10,2020-01-15 11:07:14,active
+R274,B234,2,WC002,Transform Carbon Fibre Cloth 245g UD roll 1m lengt,30,4,2020-01-15 16:08:50,active
+R275,B235,2,WC002,Transform Mould Inflation Bag HB Straight into 20G,30,10,2020-01-15 15:58:14,active
+R276,B236,1,WC004,Transform 20GR Gravel/CX Bike Frameset - Medium in,30,10,2020-01-15 11:16:22,active
+R277,B237,2,WC002,Transform Bottom Bracket Aluminium Threaded 68mm i,30,10,2020-01-15 05:52:11,active
+R278,B238,3,WC001,Transform Aluminium Billet 7075 size 6 into Bottom,30,5,2020-01-15 06:17:17,active
+R279,B239,3,WC001,Transform Bottom Bracket Bearings 30mm Axle into B,30,20,2020-01-15 13:52:34,active
+R280,B240,3,WC001,Transform Bottom Bracket Seal Kit 68mm into Bottom,30,10,2020-01-15 19:52:31,active
+R281,B241,2,WC002,Transform Cable Grommets Gravel into 20GR Gravel/C,30,10,2020-01-15 14:51:07,active
+R282,B242,2,WC002,Transform Cane Creek 40-Series Headset into 20GR G,30,10,2020-01-15 02:55:07,active
+R283,B243,2,WC002,Transform Cut Pieces Kit- 150g UD Carbon Fibre Clo,30,10,2020-01-15 06:10:12,active
+R284,B244,3,WC001,Transform Carbon Fibre Cloth 150g UD roll 1m lengt,30,12,2020-01-15 11:35:36,active
+R285,B245,2,WC002,Transform Cut Pieces Kit- 245g UD Carbon Fibre Clo,30,10,2020-01-15 10:45:55,active
+R286,B246,3,WC001,Transform Carbon Fibre Cloth 245g UD roll 1m lengt,30,8,2020-01-15 17:32:40,active
+R287,B247,2,WC002,Transform Mould Inflation Bag - Frame into 20GR Gr,30,10,2020-01-15 19:08:27,active
+R288,B248,1,WC004,Transform Grip Tape into 20GR Gravel Bike - Medium,30,10,2020-01-15 12:38:41,active
+R289,B249,2,WC002,Transform Carbon Fibre Cloth 245g UD roll 1m lengt,30,1,2020-01-15 23:21:12,active
+R290,B289,2,WC002,Transform Mould Inflation Bag HB Drop into Handleb,30,10,2020-01-15 16:39:16,active
+R291,B290,1,WC004,Transform KMC Chain X12SL Ti-N Chain into 20GR Gra,30,10,2020-01-15 23:28:16,active
+R292,B291,1,WC004,Transform Koda TI Saddle black into 20GR Gravel Bi,30,10,2020-01-15 16:17:55,active
+R293,B292,1,WC004,Transform Maxxis All Terrane Folding Tyre 700c int,30,20,2020-01-15 20:54:40,active
+R294,B293,1,WC004,Transform Shimano GRX Disc Brake Front into 20GR G,30,10,2020-01-15 02:53:54,active
+R295,B294,1,WC004,Transform Shimano GRX Disc Brake Rear into 20GR Gr,30,10,2020-01-15 05:31:28,active
+R296,B295,1,WC004,Transform Shimano XTR M8000 Cassette 12 speed into,30,10,2020-01-15 19:13:51,active
+R297,B296,1,WC004,Transform Shimano XTR M8000 Derailleur 12 speed in,30,10,2020-01-15 20:36:14,active
+R298,B297,1,WC004,Transform Wheelset 700c with 23mm rims into 20GR G,30,10,2020-01-15 02:58:17,active
+R299,B298,2,WC003,Transform Front Hub Boost 32h into Wheelset 700c w,30,10,2020-01-15 13:30:00,active
+R300,B299,2,WC003,Transform Rear Hub Superlight 32h 12 speed hub MS ,30,10,2020-01-15 10:14:42,active
+R301,B250,2,WC003,Transform Rim - 700c Gravel into Wheelset 700c wit,30,20,2020-01-15 21:57:25,active
+R302,B251,3,WC001,Transform Carbon Fibre Cloth 245g UD roll 1m lengt,30,2.3999999999999999,2020-01-15 07:55:34,active
+R303,B252,3,WC001,Transform Mould Inflation Bag - Rims into Rim - 70,30,10,2020-01-15 22:40:14,active
+R304,B253,2,WC003,Transform Rim Tape into Wheelset 700c with 23mm ri,30,3.1000000000000001,2020-01-15 16:00:41,active
+R305,B254,2,WC003,Transform Sapim straight-pull Light spokes into Wh,30,10,2020-01-15 22:41:04,active
+R306,B255,2,WC003,Transform Tubeless valves - Presta into Wheelset 7,30,10,2020-01-15 16:22:59,active
+R307,B256,0,WC004,Transform 20GR Gravel Bike - Large into 20GR Grave,30,10,2020-01-15 13:51:05,active
+R308,B257,1,WC004,Transform BikeYoke Divine SL 80mm Seatpost into 20,30,10,2020-01-15 13:56:33,active
+R309,B258,1,WC004,Transform Carbon Crankset 170mm into 20GR Gravel B,30,10,2020-01-15 15:03:08,active
+R310,B259,2,WC001,Transform 7150 Al Crank Axle into Carbon Crankset ,30,10,2020-01-15 08:51:40,active
+R311,B260,2,WC001,Transform Cut Pieces Kit- 150g UD Carbon Fibre Clo,30,10,2020-01-15 20:15:11,active
+R312,B261,2,WC001,Transform Cut Pieces Kit- 245g UD Carbon Fibre Clo,30,10,2020-01-15 02:29:21,active
+R313,B262,2,WC001,Transform Mould Inflation Bag HB Crank into Carbon,30,10,2020-01-15 11:58:39,active
+R314,B263,1,WC004,Transform Carbon light Stem 50mm into 20GR Gravel ,30,10,2020-01-15 15:02:58,active
+R315,B264,1,WC004,Transform Chainring 38T Alloy into 20GR Gravel Bik,30,10,2020-01-15 07:31:18,active
+R316,B265,1,WC004,Transform 20GR Gravel/CX Bike Carbon fork 700c int,30,10,2020-01-15 19:07:34,active
+R317,B266,2,WC002,Transform Carbon Fibre Cloth 245g UD roll 1m lengt,30,4,2020-01-15 10:45:24,active
+R318,B300,3,WC001,Transform Bottom Bracket Bearings 30mm Axle into B,30,20,2020-01-15 09:37:43,active
+R319,B301,3,WC001,Transform Bottom Bracket Seal Kit 68mm into Bottom,30,10,2020-01-15 01:21:19,active
+R320,B302,2,WC002,Transform Cable Grommets Gravel into 20GR Gravel/C,30,10,2020-01-15 14:23:09,active
+R321,B303,2,WC002,Transform Cane Creek 40-Series Headset into 20GR G,30,10,2020-01-15 09:42:26,active
+R322,B304,2,WC002,Transform Cut Pieces Kit- 150g UD Carbon Fibre Clo,30,10,2020-01-15 20:38:34,active
+R323,B305,3,WC001,Transform Carbon Fibre Cloth 150g UD roll 1m lengt,30,13,2020-01-15 19:07:00,active
+R324,B324,1,WC004,Transform Handlebars Gravel 460mm into 20GR Gravel,30,10,2020-01-15 03:24:05,active
+R325,B375,2,WC002,Transform Carbon Fibre Cloth 245g UD roll 1m lengt,30,1,2020-01-15 08:42:44,active
+R326,B376,2,WC002,Transform Mould Inflation Bag HB Drop into Handleb,30,10,2020-01-15 22:14:38,active
+R327,B377,1,WC004,Transform KMC Chain X12SL Ti-N Chain into 20GR Gra,30,10,2020-01-15 07:41:56,active
+R328,B378,1,WC004,Transform Koda TI Saddle black into 20GR Gravel Bi,30,10,2020-01-15 12:06:03,active
+R329,B379,1,WC004,Transform Maxxis All Terrane Folding Tyre 700c int,30,20,2020-01-15 16:09:01,active
+R330,B380,1,WC004,Transform Shimano GRX Disc Brake Front into 20GR G,30,10,2020-01-15 08:50:23,active
+R331,B381,1,WC004,Transform Shimano GRX Disc Brake Rear into 20GR Gr,30,10,2020-01-15 13:36:22,active
+R332,B382,1,WC004,Transform Shimano XTR M8000 Cassette 12 speed into,30,10,2020-01-15 15:28:15,active
+R333,B383,1,WC004,Transform Shimano XTR M8000 Derailleur 12 speed in,30,10,2020-01-15 00:38:34,active
+R334,B384,1,WC004,Transform Wheelset 700c with 23mm rims into 20GR G,30,10,2020-01-15 12:10:11,active
+R335,B325,2,WC003,Transform Front Hub Boost 32h into Wheelset 700c w,30,10,2020-01-15 17:55:57,active
+R336,B326,2,WC003,Transform Rear Hub Superlight 32h 12 speed hub MS ,30,10,2020-01-15 12:29:16,active
+R337,B327,2,WC003,Transform Rim - 700c Gravel into Wheelset 700c wit,30,20,2020-01-15 18:36:03,active
+R338,B328,3,WC001,Transform Carbon Fibre Cloth 245g UD roll 1m lengt,30,2.3999999999999999,2020-01-15 02:26:13,active
+R339,B329,3,WC001,Transform Mould Inflation Bag - Rims into Rim - 70,30,10,2020-01-15 15:16:08,active
+R340,B330,2,WC003,Transform Rim Tape into Wheelset 700c with 23mm ri,30,3.1000000000000001,2020-01-15 09:51:25,active
+R341,B331,2,WC003,Transform Sapim straight-pull Light spokes into Wh,30,10,2020-01-15 04:56:42,active
+R342,B332,2,WC003,Transform Tubeless valves - Presta into Wheelset 7,30,10,2020-01-15 15:47:27,active
+R343,B333,0,WC002,Transform 20GR Gravel/CX Bike Frameset - Small int,30,10,2020-01-15 03:57:20,active
+R344,B334,1,WC002,Transform Bottom Bracket Aluminium Threaded 68mm i,30,10,2020-01-15 09:06:34,active
+R345,B335,2,WC001,Transform Aluminium Billet 7075 size 6 into Bottom,30,5,2020-01-15 21:33:22,active
+R346,B336,2,WC001,Transform Bottom Bracket Bearings 30mm Axle into B,30,20,2020-01-15 12:49:06,active
+R347,B337,2,WC001,Transform Bottom Bracket Seal Kit 68mm into Bottom,30,10,2020-01-15 23:41:58,active
+R348,B338,1,WC002,Transform Cable Grommets Gravel into 20GR Gravel/C,30,10,2020-01-15 17:31:54,active
+R349,B339,1,WC002,Transform Cane Creek 40-Series Headset into 20GR G,30,10,2020-01-15 06:43:15,active
+R350,B340,1,WC002,Transform Cut Pieces Kit- 150g UD Carbon Fibre Clo,30,10,2020-01-15 20:07:55,active
+R351,B341,1,WC002,Transform Cut Pieces Kit- 245g UD Carbon Fibre Clo,30,10,2020-01-15 16:48:10,active
+R352,B385,2,WC001,Transform Carbon Fibre Cloth 245g UD roll 1m lengt,30,8,2020-01-15 12:43:50,active
+R353,B386,0,WC002,Transform 20GR Gravel/CX Bike Frameset - Medium in,30,10,2020-01-15 19:50:07,active
+R354,B387,1,WC002,Transform Bottom Bracket Aluminium Threaded 68mm i,30,10,2020-01-15 02:03:35,active
+R355,B388,2,WC001,Transform Aluminium Billet 7075 size 6 into Bottom,30,5,2020-01-15 14:11:08,active
+R356,B389,2,WC001,Transform Bottom Bracket Bearings 30mm Axle into B,30,20,2020-01-15 08:49:53,active
+R357,B390,2,WC001,Transform Bottom Bracket Seal Kit 68mm into Bottom,30,10,2020-01-15 11:11:52,active
+R358,B391,1,WC002,Transform Cable Grommets Gravel into 20GR Gravel/C,30,10,2020-01-15 21:15:43,active
+R359,B392,1,WC002,Transform Cane Creek 40-Series Headset into 20GR G,30,10,2020-01-15 14:10:09,active
+R360,B393,1,WC002,Transform Cut Pieces Kit- 150g UD Carbon Fibre Clo,30,10,2020-01-15 04:18:40,active
+R361,B394,2,WC001,Transform Carbon Fibre Cloth 150g UD roll 1m lengt,30,12,2020-01-15 04:04:08,active
+R362,B342,1,WC002,Transform Cut Pieces Kit- 245g UD Carbon Fibre Clo,30,10,2020-01-15 06:07:49,active
+R363,B343,2,WC001,Transform Carbon Fibre Cloth 245g UD roll 1m lengt,30,8,2020-01-15 23:38:16,active
+R364,B344,1,WC002,Transform Mould Inflation Bag - Frame into 20GR Gr,30,10,2020-01-15 00:45:53,active
+R365,B345,0,WC002,Transform 20GR Gravel/CX Bike Frameset - Large int,30,10,2020-01-15 08:16:30,active
+R366,B346,1,WC002,Transform Bottom Bracket Aluminium Threaded 68mm i,30,10,2020-01-15 01:13:36,active
+R367,B347,2,WC001,Transform Aluminium Billet 7075 size 6 into Bottom,30,5,2020-01-15 22:12:44,active
+R368,B348,2,WC001,Transform Bottom Bracket Bearings 30mm Axle into B,30,20,2020-01-15 02:36:13,active
+R369,B349,2,WC001,Transform Bottom Bracket Seal Kit 68mm into Bottom,30,10,2020-01-15 19:32:26,active
+R370,B350,1,WC002,Transform Cable Grommets Gravel into 20GR Gravel/C,30,10,2020-01-15 04:56:38,active
+R371,B351,1,WC002,Transform Cane Creek 40-Series Headset into 20GR G,30,10,2020-01-15 04:02:27,active
+R372,B352,1,WC002,Transform Cut Pieces Kit- 150g UD Carbon Fibre Clo,30,10,2020-01-15 02:53:35,active
+R373,B353,2,WC001,Transform Carbon Fibre Cloth 150g UD roll 1m lengt,30,13,2020-01-15 06:03:17,active
+R374,B354,1,WC002,Transform Cut Pieces Kit- 245g UD Carbon Fibre Clo,30,10,2020-01-15 21:17:12,active
+R375,B355,2,WC001,Transform Carbon Fibre Cloth 245g UD roll 1m lengt,30,8,2020-01-15 23:54:06,active
+R376,B356,1,WC002,Transform Mould Inflation Bag - Frame into 20GR Gr,30,10,2020-01-15 11:09:42,active
+R377,B357,0,WC002,Transform 20GR Gravel/CX Bike Carbon fork 700c int,30,10,2020-01-15 22:22:48,active
+R378,B358,1,WC002,Transform Mould Inflation Bag HB Straight into 20G,30,10,2020-01-15 17:31:27,active
+R379,B395,0,WC002,Transform Handlebars Gravel 420mm into Handlebars ,30,10,2020-01-15 16:22:10,active
+R380,B396,1,WC002,Transform Carbon Fibre Cloth 245g UD roll 1m lengt,30,1,2020-01-15 03:56:51,active
+R381,B397,1,WC002,Transform Mould Inflation Bag HB Drop into Handleb,30,10,2020-01-15 01:30:17,active
+R382,B398,0,WC002,Transform Handlebars Gravel 440mm into Handlebars ,30,10,2020-01-15 05:14:25,active
+R383,B399,1,WC002,Transform Carbon Fibre Cloth 245g UD roll 1m lengt,30,1,2020-01-15 22:24:11,active
+R384,B400,1,WC002,Transform Mould Inflation Bag HB Drop into Handleb,30,10,2020-01-15 13:18:00,active
+R385,B401,0,WC002,Transform Handlebars Gravel 460mm into Handlebars ,30,10,2020-01-15 06:22:30,active
+R386,B402,1,WC002,Transform Carbon Fibre Cloth 245g UD roll 1m lengt,30,1,2020-01-15 18:16:02,active
+R387,B403,1,WC002,Transform Mould Inflation Bag HB Drop into Handleb,30,10,2020-01-15 23:39:55,active
+R388,B404,0,WC002,Transform Handlebars XC 740mm into Handlebars XC 7,30,10,2020-01-15 11:23:50,active
+R389,B359,1,WC002,Transform Carbon Fibre Cloth 245g UD roll 1m lengt,30,1,2020-01-15 00:47:55,active
+R390,B360,1,WC002,Transform Mould Inflation Bag HB Straight into Han,30,10,2020-01-15 01:18:37,active
+R391,B361,0,WC002,Transform Handlebars Enduro/Trail 750mm into Handl,30,10,2020-01-15 08:34:35,active
+R392,B362,1,WC002,Transform Carbon Fibre Cloth 245g UD roll 1m lengt,30,1,2020-01-15 06:34:50,active
+R393,B363,1,WC002,Transform Mould Inflation Bag HB Straight into Han,30,10,2020-01-15 23:15:04,active
+R394,B364,0,WC002,Transform Handlebars Enduro/Trail 800mm into Handl,30,10,2020-01-15 09:01:33,active
+R395,B365,1,WC002,Transform Carbon Fibre Cloth 245g UD roll 1m lengt,30,1,2020-01-15 13:46:04,active
+R396,B366,1,WC002,Transform Mould Inflation Bag HB Straight into Han,30,10,2020-01-15 22:47:09,active
+R397,B367,0,WC001,Transform Rim - 275 XC into Rim - 275 XC,30,10,2020-01-15 16:15:45,active
+R398,B368,1,WC001,Transform Carbon Fibre Cloth 245g UD roll 1m lengt,30,2.2000000000000002,2020-01-15 11:58:22,active
+R399,B369,1,WC001,Transform Mould Inflation Bag - Rims into Rim - 27,30,10,2020-01-15 04:56:36,active
+R400,B370,0,WC001,Transform Rim - 275 Enduro/Trail into Rim - 275 En,30,10,2020-01-15 14:23:45,active
+R401,B371,1,WC001,Transform Carbon Fibre Cloth 245g UD roll 1m lengt,30,1,2020-01-15 04:54:01,active
+R402,B372,1,WC001,Transform Mould Inflation Bag - Rims into Rim - 27,30,10,2020-01-15 04:46:58,active
+R403,B373,0,WC001,Transform Rim - 295 Enduro/Trail into Rim - 295 En,30,10,2020-01-15 12:10:22,active
+R404,B374,1,WC001,Transform Carbon Fibre Cloth 245g UD roll 1m lengt,30,2.6000000000000001,2020-01-15 17:37:33,active
+R405,B405,1,WC001,Default Process Description,0,0,2024-08-03 02:48:25,active
+R406,B406,1,WC001,Default Process Description,0,0,2024-08-02 20:03:03,active
+R407,B407,1,WC001,Default Process Description,0,0,2024-08-03 07:22:03,active
+R408,B004,0,WC001,testtt,30,10,2024-08-06 08:02:00,active
+R409,B002,0,1,1,1,1,2024-08-06 08:02:00,active
+R410,B130,0,WC003,Transform Tapered Headset into 170mm Enduro Frames,30,20,2024-08-06 08:03:00,active
+R411,B001,0,WC002,Transform Aluminium Billet 7075 size 6 into Bottom,30,5,2024-08-06 08:20:00,active
+R412,B002,0,WC002,Transform Bottom Bracket Bearings 30mm Axle into B,30,20,2024-08-06 08:23:00,active
+R413,B014,0,WC005,Transform 7150 Al Crank Axle into Carbon Crankset,30,10,2024-08-06 08:51:00,active
+R414,B009,0,WC002,AL,11,10,2024-08-06 11:37:00,active
+R415,B009,0,WC004,ALL,11,10,2024-08-06 12:12:00,active

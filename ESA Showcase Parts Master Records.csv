@@ -1,0 +1,166 @@
+part_id,part_name,inventory,POM,UOM,part_description,unit_cost,lead_time,part_last_updated,status
+P001,ABB-068,25,In-House,pcs,Updated Bottom Bracket Aluminium Threaded 68mm,22,8,2024-08-05 21:49:39.877000000,Active
+P002,ABB-073,2,In-House,pcs,Bottom Bracket Aluminium Threaded 73mm,25,7,2023-01-02 00:00:00,Active
+P003,ACR-032,85,In-House,pcs,Chainring 32T Alloy SB,15,14,2023-01-02 00:00:00,Active
+P004,ACR-034,67,In-House,pcs,Chainring 34T Alloy SB,15,14,2023-01-02 00:00:00,Active
+P005,ACR-036,52,In-House,pcs,Chainring 36T Alloy,20,14,2023-01-02 00:00:00,Active
+P006,ACR-038,41,In-House,pcs,Chainring 38T Alloy,20,30,2023-01-02 00:00:00,Active
+P007,ACS-165,84,In-House,pcs,Aluminium Crankset 165mm,80,7,2023-01-02 00:00:00,Active
+P008,ALB-754,32,In-House,pcs,Aluminium Billet 7075 size 4,10,10,2023-01-02 00:00:00,Active
+P009,ALB-756,134,In-House,pcs,Aluminium Billet 7075 size 6,12,10,2023-01-02 00:00:00,Active
+P010,ALB-758,26,In-House,pcs,Aluminium Billet 7075 size 8,15,10,2023-01-02 00:00:00,Active
+P011,ASL-110,27,In-House,pcs,Alloy Suspension Link - XC,40,3,2023-01-02 00:00:00,Active
+P012,ASL-140,30,In-House,pcs,Alloy Suspension Link Kit - Trail,80,3,2023-01-02 00:00:00,Active
+P013,ASL-170,75,In-House,pcs,Alloy Suspension Link Kit - Enduro,100,3,2023-01-02 00:00:00,Active
+P014,AST-055,84,In-House,pcs,Aluminium Stem 55mm,30,7,2023-01-02 00:00:00,Active
+P015,AST-070,29,In-House,pcs,Aluminium Stem 70mm,35,7,2023-01-02 00:00:00,Active
+P016,AXL-150,345,In-House,pcs,7150 Al Crank Axle,25,30,2023-01-02 00:00:00,Active
+P017,BBB-030,771,In-House,pcs,Bottom Bracket Bearings 30mm Axle,15,30,2023-01-02 00:00:00,Active
+P018,BBS-068,33,In-House,pcs,Bottom Bracket Seal Kit 68mm,5,30,2023-01-02 00:00:00,Active
+P019,BBS-073,352,In-House,pcs,Bottom Bracket Seal Kit 73mm,5,30,2023-01-02 00:00:00,Active
+P020,BRK-134,21,In-House,pcs,Shimano GRX Disc Brake Front,50,10,2023-01-02 00:00:00,Active
+P021,BRK-135,21,In-House,pcs,Shimano GRX Disc Brake Rear,60,10,2023-01-02 00:00:00,Active
+P022,BRK-202,170,In-House,pcs,Formula Cura Disc Brake Front,70,30,2023-01-02 00:00:00,Active
+P023,BRK-204,170,In-House,pcs,Formula Cura Disc Brake Rear,80,30,2023-01-02 00:00:00,Active
+P024,BRK-402,121,In-House,pcs,Formula Cura 4 Disc Brake Front,90,30,2023-01-02 00:00:00,Active
+P025,BRK-404,121,In-House,pcs,Formula Cura 4 Disc Brake Rear,100,30,2023-01-02 00:00:00,Active
+P026,CCS-170,79,In-House,pcs,Carbon Crankset 170mm,250,3,2023-01-02 00:00:00,Active
+P027,CFC-150,410,In-House,pcs,Carbon Fibre Cloth 150g UD roll 1m length,30,21,2023-01-02 00:00:00,Active
+P028,CFC-245,392,In-House,pcs,Carbon Fibre Cloth 245g UD roll 1m length,40,21,2023-01-02 00:00:00,Active
+P029,CFC-416,92,In-House,pcs,Carbon Fibre Cloth 416g UD roll 1m length,50,21,2023-01-02 00:00:00,Active
+P030,CGS-001,41,In-House,pcs,Cable Grommets Gravel,5,30,2023-01-02 00:00:00,Active
+P031,CHN-511,59,In-House,pcs,KMC Chain X11 EPT Anti-Rust Chain,30,30,2023-01-02 00:00:00,Active
+P032,CHN-512,157,In-House,pcs,KMC Chain X12 EPT Anti-Rust Chain,35,30,2023-01-02 00:00:00,Active
+P033,CHN-513,116,In-House,pcs,KMC Chain X12SL Ti-N Chain,50,30,2023-01-02 00:00:00,Active
+P034,CPC-120,114,In-House,pcs,Cut Pieces Kit- 150g UD Carbon Fibre Cloth - Cranks,10,21,2023-01-02 00:00:00,Active
+P035,CPE-173,9,In-House,pcs,Cut Pieces Kit- 150g UD Carbon Fibre Cloth - Enduro Frame Small,10,3,2023-01-02 00:00:00,Active
+P036,CPE-175,29,In-House,pcs,Cut Pieces Kit- 150g UD Carbon Fibre Cloth - Enduro Frame Medium,15,3,2023-01-02 00:00:00,Active
+P037,CPE-177,37,In-House,pcs,Cut Pieces Kit- 150g UD Carbon Fibre Cloth - Enduro Frame Large,20,3,2023-01-02 00:00:00,Active
+P038,CPK-103,6,In-House,pcs,Cut Pieces Kit- 150g UD Carbon Fibre Cloth - Gravel Frame Small,10,3,2023-01-02 00:00:00,Active
+P039,CPK-105,6,In-House,pcs,Cut Pieces Kit- 150g UD Carbon Fibre Cloth - Gravel Frame Medium,15,3,2023-01-02 00:00:00,Active
+P040,CPK-107,5,In-House,pcs,Cut Pieces Kit- 150g UD Carbon Fibre Cloth - Gravel Frame Large,20,3,2023-01-02 00:00:00,Active
+P041,CPK-113,11,In-House,pcs,Cut Pieces Kit- 150g UD Carbon Fibre Cloth - XC Frame Small,10,3,2023-01-02 00:00:00,Active
+P042,CPK-115,9,In-House,pcs,Cut Pieces Kit- 150g UD Carbon Fibre Cloth - XC Frame Medium,15,3,2023-01-02 00:00:00,Active
+P043,CPK-117,7,In-House,pcs,Cut Pieces Kit- 150g UD Carbon Fibre Cloth - XC Frame Large,20,3,2023-01-02 00:00:00,Active
+P044,CPK-143,7,In-House,pcs,Cut Pieces Kit- 150g UD Carbon Fibre Cloth - Trail Frame Small,10,3,2023-01-02 00:00:00,Active
+P045,CPK-145,14,In-House,pcs,Cut Pieces Kit- 150g UD Carbon Fibre Cloth - Trail Frame Medium,15,3,2023-01-02 00:00:00,Active
+P046,CPK-147,13,In-House,pcs,Cut Pieces Kit- 150g UD Carbon Fibre Cloth - Trail Frame Large,20,3,2023-01-02 00:00:00,Active
+P047,CPK-200,16,In-House,pcs,Cut Pieces Kit- 245g UD Carbon Fibre Cloth - Gravel Frame,15,3,2023-01-02 00:00:00,Active
+P048,CPK-210,27,In-House,pcs,Cut Pieces Kit- 245g UD Carbon Fibre Cloth - XC Frame,15,3,2023-01-02 00:00:00,Active
+P049,CPK-220,53,In-House,pcs,Cut Pieces Kit- 245g UD Carbon Fibre Cloth - Cranks,15,3,2023-01-02 00:00:00,Active
+P050,CPK-240,30,In-House,pcs,Cut Pieces Kit- 245g UD Carbon Fibre Cloth - Trail Frame,15,3,2023-01-02 00:00:00,Active
+P051,CPK-270,75,In-House,pcs,Cut Pieces Kit- 245g UD Carbon Fibre Cloth - Enduro Frame,20,3,2023-01-02 00:00:00,Active
+P052,CPK-440,30,In-House,pcs,Cut Pieces Kit- 416g UD Carbon Fibre Cloth - Trail Frame,20,3,2023-01-02 00:00:00,Active
+P053,CPK-470,75,In-House,pcs,Cut Pieces Kit- 416g UD Carbon Fibre Cloth - Enduro Frame,20,3,2023-01-02 00:00:00,Active
+P054,CSS-812,120,In-House,pcs,Shimano XT M8000 Cassette 12 speed,150,10,2023-01-02 00:00:00,Active
+P055,CSS-912,58,In-House,pcs,Shimano XTR M8000 Cassette 12 speed,250,10,2023-01-02 00:00:00,Active
+P056,CST-050,41,In-House,pcs,Carbon light Stem 50mm,100,30,2023-01-02 00:00:00,Active
+P057,DCL-110,49,In-House,pcs,Decals - Frame - XC,5,14,2023-01-02 00:00:00,Active
+P058,DCL-140,54,In-House,pcs,Decals - Frame - Trail,5,14,2023-01-02 00:00:00,Active
+P059,DCL-170,135,In-House,pcs,Decals - Frame - Enduro,5,14,2023-01-02 00:00:00,Active
+P060,ENB-703,10,In-House,pcs,170mm Enduro Mountain Bike - Small,2500,3,2023-01-02 00:00:00,Active
+P061,ENB-705,33,In-House,pcs,170mm Enduro Mountain Bike - Medium,3000,3,2023-01-02 00:00:00,Active
+P062,ENB-707,27,In-House,pcs,170mm Enduro Mountain Bike - Large,3500,3,2023-01-02 00:00:00,Active
+P063,ENF-703,11,In-House,pcs,170mm Enduro Frameset - Small,1000,3,2023-01-02 00:00:00,Active
+P064,ENF-705,31,In-House,pcs,170mm Enduro Frameset - Medium,1200,3,2023-01-02 00:00:00,Active
+P065,ENF-707,51,In-House,pcs,170mm Enduro Frameset - Large,1500,3,2023-01-02 00:00:00,Active
+P066,FHB-932,489,In-House,pcs,Front Hub Boost 32h,40,30,2023-01-02 00:00:00,Active
+P067,FRK-429,52,In-House,pcs,RockShox SID Ultimate fork 295,800,14,2023-01-02 00:00:00,Active
+P068,FRK-727,24,In-House,pcs,RockShox Lyrik Ultimate fork 275,700,7,2023-01-02 00:00:00,Active
+P069,FRK-729,28,In-House,pcs,RockShox Lyrik Ultimate fork 295,750,7,2023-01-02 00:00:00,Active
+P070,FRK-829,39,In-House,pcs,RockShox Zeb Ultimate fork 295,900,7,2023-01-02 00:00:00,Active
+P071,GRB-003,7,In-House,pcs,20GR Gravel Bike - Small,1800,3,2023-01-02 00:00:00,Active
+P072,GRB-005,7,In-House,pcs,20GR Gravel Bike - Medium,2000,3,2023-01-02 00:00:00,Active
+P073,GRB-007,9,In-House,pcs,20GR Gravel Bike - Large,2200,3,2023-01-02 00:00:00,Active
+P074,GRF-003,6,In-House,pcs,20GR Gravel/CX Bike Frameset - Small,800,7,2023-01-02 00:00:00,Active
+P075,GRF-005,6,In-House,pcs,20GR Gravel/CX Bike Frameset - Medium,900,7,2023-01-02 00:00:00,Active
+P076,GRF-007,5,In-House,pcs,20GR Gravel/CX Bike Frameset - Large,1000,7,2023-01-02 00:00:00,Active
+P077,GRK-000,16,In-House,pcs,20GR Gravel/CX Bike Carbon fork 700c,200,7,2023-01-02 00:00:00,Active
+P078,GRS-110,69,In-House,pcs,Grommet set - XC,5,30,2023-01-02 00:00:00,Active
+P079,GRS-140,77,In-House,pcs,Grommet set - Trail,5,30,2023-01-02 00:00:00,Active
+P080,GRS-170,193,In-House,pcs,Grommet set - Enduro,5,30,2023-01-02 00:00:00,Active
+P081,GTP-100,41,In-House,pcs,Grip Tape,10,30,2023-01-02 00:00:00,Active
+P082,HBG-100,291,In-House,pcs,DMR Deathgrip Handlebar Grips black,20,30,2023-01-02 00:00:00,Active
+P083,HBG-420,6,In-House,pcs,Handlebars Gravel 420mm,40,7,2023-01-02 00:00:00,Active
+P084,HBG-440,6,In-House,pcs,Handlebars Gravel 440mm,40,7,2023-01-02 00:00:00,Active
+P085,HBG-460,5,In-House,pcs,Handlebars Gravel 460mm,40,7,2023-01-02 00:00:00,Active
+P086,HBM-740,29,In-House,pcs,Handlebars XC 740mm,50,7,2023-01-02 00:00:00,Active
+P087,HBM-750,96,In-House,pcs,Handlebars Enduro/Trail 750mm,60,3,2023-01-02 00:00:00,Active
+P088,HBM-800,101,In-House,pcs,Handlebars Enduro/Trail 800mm,60,3,2023-01-02 00:00:00,Active
+P089,HSX-040,41,In-House,pcs,Cane Creek 40-Series Headset,30,30,2023-01-02 00:00:00,Active
+P090,HSX-214,339,In-House,pcs,Tapered Headset,40,30,2023-01-02 00:00:00,Active
+P091,MEC-813,108,In-House,pcs,Shimano XT M8000 Derailleur 12 speed,100,10,2023-01-02 00:00:00,Active
+P092,MEC-913,58,In-House,pcs,Shimano XTR M8000 Derailleur 12 speed,180,10,2023-01-02 00:00:00,Active
+P093,MIB-111,302,In-House,pcs,Mould Inflation Bag - Frame,50,21,2023-01-02 00:00:00,Active
+P094,MIB-112,411,In-House,pcs,Mould Inflation Bag - Rims,30,21,2023-01-02 00:00:00,Active
+P095,MIB-113,204,In-House,pcs,Mould Inflation Bag HB Crank,20,60,2023-01-02 00:00:00,Active
+P096,MIB-114,62,In-House,pcs,Mould Inflation Bag HB Drop,15,60,2023-01-02 00:00:00,Active
+P097,MIB-115,706,In-House,pcs,Mould Inflation Bag HB Straight,15,60,2023-01-02 00:00:00,Active
+P098,PBK-110,18,In-House,pcs,Pivot Bolt Kit - XC,10,30,2023-01-02 00:00:00,Active
+P099,PBK-140,77,In-House,pcs,Pivot Bolt Kit - Trail,10,30,2023-01-02 00:00:00,Active
+P100,PBK-170,244,In-House,pcs,Pivot Bolt Kit - Enduro,10,30,2023-01-02 00:00:00,Active
+P101,PCC-101,17,In-House,pcs,Clear coat, 5ltr,80,21,2023-01-02 00:00:00,Active
+P102,PDL-200,216,In-House,pcs,DMR Vault Pedals,40,30,2023-01-02 00:00:00,Active
+P103,RHB-732,206,In-House,pcs,Rear Hub Superlight 32h 12 speed hub MS,100,30,2023-01-02 00:00:00,Active
+P104,RHB-932,283,In-House,pcs,Rear Hub Superboost 32h 12 speed hub MS,120,30,2023-01-02 00:00:00,Active
+P105,RIM-127,100,In-House,pcs,Rim - 275 XC,50,7,2023-01-02 00:00:00,Active
+P106,RIM-333,135,In-House,pcs,Rim Tape,5,30,2023-01-02 00:00:00,Active
+P107,RIM-427,64,In-House,pcs,Rim - 275 Enduro/Trail,50,7,2023-01-02 00:00:00,Active
+P108,RIM-429,223,In-House,pcs,Rim - 295 Enduro/Trail,60,7,2023-01-02 00:00:00,Active
+P109,RIM-700,60,In-House,pcs,Rim - 700c Gravel,70,7,2023-01-02 00:00:00,Active
+P110,SDL-147,116,In-House,pcs,Koda TI Saddle black,60,30,2023-01-02 00:00:00,Active
+P111,SDL-239,216,In-House,pcs,WTB Volt Saddle black,50,30,2023-01-02 00:00:00,Active
+P112,SHX-410,52,In-House,pcs,RockShox SIDLUXE Ultimate,500,14,2023-01-02 00:00:00,Active
+P113,SHX-708,37,In-House,pcs,RockShox Super Deluxe Ultimate Air RCT,600,7,2023-01-02 00:00:00,Active
+P114,SHX-709,85,In-House,pcs,RockShox Super Deluxe Ultimate Coil RCT,700,14,2023-01-02 00:00:00,Active
+P115,SPD-080,96,In-House,pcs,BikeYoke Divine SL 80mm Seatpost,200,21,2023-01-02 00:00:00,Active
+P116,SPK-102,206,In-House,pcs,Sapim straight-pull Light spokes,0.5,30,2023-01-02 00:00:00,Active
+P117,SPK-105,283,In-House,pcs,Sapim straight-pull spokes,0.29999999999999999,30,2023-01-02 00:00:00,Active
+P118,SPR-160,36,In-House,pcs,BikeYoke Revive 2.0 160mm Seatpost,250,21,2023-01-02 00:00:00,Active
+P119,SPR-185,109,In-House,pcs,BikeYoke Revive 2.0 185mm Seatpost,250,21,2023-01-02 00:00:00,Active
+P120,SPR-213,41,In-House,pcs,BikeYoke Revive 2.0 213mm Seatpost,250,21,2023-01-02 00:00:00,Active
+P121,TBV-100,489,In-House,pcs,Tubeless valves - Presta,10,30,2023-01-02 00:00:00,Active
+P122,TRB-403,8,In-House,pcs,140mm Trail Mountain Bike - Small,2000,3,2023-01-02 00:00:00,Active
+P123,TRB-405,23,In-House,pcs,140mm Trail Mountain Bike - Medium,2500,3,2023-01-02 00:00:00,Active
+P124,TRB-407,14,In-House,pcs,140mm Trail Mountain Bike - Large,3000,3,2023-01-02 00:00:00,Active
+P125,TRF-403,13,In-House,pcs,140mm Trail Frameset - Small,800,7,2023-01-02 00:00:00,Active
+P126,TRF-405,18,In-House,pcs,140mm Trail Frameset - Medium,1000,7,2023-01-02 00:00:00,Active
+P127,TRF-407,10,In-House,pcs,140mm Trail Frameset - Large,1200,7,2023-01-02 00:00:00,Active
+P128,TYR-170,58,In-House,pcs,Maxxis All Terrane Folding Tyre 700c,40,14,2023-01-02 00:00:00,Active
+P129,TYR-229,104,In-House,pcs,Maxxis Rekon Folding Tyre 29x2.20",50,14,2023-01-02 00:00:00,Active
+P130,TYR-427,46,In-House,pcs,Maxxis Aggressor DHF Folding Tyre 27.5x2.35",50,30,2023-01-02 00:00:00,Active
+P131,TYR-429,144,In-House,pcs,Maxxis Aggressor DHF Folding Tyre 29x2.35",60,30,2023-01-02 00:00:00,Active
+P132,TYR-727,21,In-House,pcs,Maxxis Minion DHF Folding Tyre 27.5x2.50",60,30,2023-01-02 00:00:00,Active
+P133,TYR-729,100,In-House,pcs,Maxxis Minion DHF Folding Tyre 29x2.50",70,30,2023-01-02 00:00:00,Active
+P134,TYR-827,21,In-House,pcs,Maxxis Minion DHR II Folding Tyre 27.5x2.50",60,30,2023-01-02 00:00:00,Active
+P135,TYR-829,100,In-House,pcs,Maxxis Minion DHR II Folding Tyre 29x2.50",70,30,2023-01-02 00:00:00,Active
+P136,WLS-127,55,In-House,pcs,Wheelset 295 with XC rims,300,3,2023-01-02 00:00:00,Active
+P137,WLS-427,53,In-House,pcs,Wheelset 275 with Enduro/Trail Wide rims,400,3,2023-01-02 00:00:00,Active
+P138,WLS-429,83,In-House,pcs,Wheelset 295 with Enduro/Trail Wide rims,450,3,2023-01-02 00:00:00,Active
+P139,WLS-723,50,In-House,pcs,Wheelset 700c with 23mm rims,350,3,2023-01-02 00:00:00,Active
+P140,XCB-103,17,In-House,pcs,110mm XC Mountain Bike - Small,1500,3,2023-01-02 00:00:00,Active
+P141,XCB-105,14,In-House,pcs,110mm XC Mountain Bike - Medium,1800,3,2023-01-02 00:00:00,Active
+P142,XCB-107,10,In-House,pcs,110mm XC Mountain Bike - Large,2000,3,2023-01-02 00:00:00,Active
+P143,XCF-103,12,In-House,pcs,110mm XC Frameset - Small,600,7,2023-01-02 00:00:00,Active
+P144,XCF-105,10,In-House,pcs,110mm XC Frameset - Medium,800,7,2023-01-02 00:00:00,Active
+P145,XCF-107,7,In-House,pcs,110mm XC Frameset - Large,1000,7,2023-01-02 00:00:00,Active
+P163,plkjhn,3456,In-House,pcs,qwertyuiolkmnbvcdt,45,9,2024-07-29 00:00:00,Active
+P200,jjsodjwqojdq jojdso,800,house ,pcs,testing testing ,35,10,2023-07-30 00:00:00,Active
+P201,Motor,500,PCS,PCS,High-efficiency motor used in electric vehicles.,250.75,14,2024-08-01 10:00:00,Active
+P202,Motor Testing shhshshs,500,PCS,PCS,High-efficiency motor used in electric vehicles.,250.75,14,2024-08-01 10:00:00,Active
+P203,Motor Testing shhshshs,500,PCS,PCS,High-efficiency motor used in electric vehicles.,250.75,14,2024-08-01 10:00:00,Active
+P204,Motor Testing shhshshs,500,PCS,PCS,High-efficiency motor used in electric vehicles.,250.75,14,2024-08-01 10:00:00,NA
+P205,TESTING PART NAME,1233,bikes/hour,PCS,Testing part description,30,5,2026-09-10 00:00:00,Active
+P206,Electric Motor,150,PCS,PCS,High-efficiency electric motor for industrial use.,300.5,30,2024-08-05 12:00:00,Active
+P207,TESTING PART NAME 22222,252,bikes/hour,PCS,Testing part description 2222,323,54,2026-09-10 00:00:00,Active
+P208,UI side test part name,22,units,pcs,UI TESTING fsss,12,22,2024-08-06 08:09:00,active
+P209,testing name,11,unita,pcs,Testing,12,11,2024-08-08 06:09:00,active
+P210,ALB-754,32,In-House,pcs,Aluminium Billet 7075 size 4,10,10,2024-08-06 01:20:00,active
+P211,ALB-754,32,In-House,pcs,Aluminium Billet 7075 size 4,10,10,2024-08-06 01:26:00,active
+P212,ALB-754,32,In-House,pcs,Aluminium Billet 7075 size 4,10,10,2024-08-06 01:27:00,active
+P213,ABB-068,25,In-House,pcs,Updated Bottom Bracket Aluminium Threaded 68mm,22,1,2024-08-05 23:29:02.753000000,Active
+P214,ABB-068,25,In-House,pcs,Updated Bottom Bracket Aluminium Threaded 68mm,22,8,2024-08-05 23:29:07.713000000,Active
+P215,ACR-032,100,In-House,pcs,Chainring 32T Alloy SB,20,15,2024-08-05 23:51:47.457000000,Active
+P216,ABB-068,25,In-House,pcs,Updated Bottom Bracket Aluminium Threaded 68mm,22,1,2024-08-06 00:21:44.137000000,Active
+P217,ABB-068,25,In-House,pcs,Updated Bottom Bracket Aluminium Threaded 68mm,22,8,2024-08-06 00:21:46.630000000,Active
+P218,ABB-068,40,In-House,pcs,Updated Bottom Bracket Aluminium Threaded 68mm,70,10,2024-08-06 04:08:45.390000000,Active
